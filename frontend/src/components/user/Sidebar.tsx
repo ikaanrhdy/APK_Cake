@@ -1,0 +1,63 @@
+import { Link, useLocation } from "react-router";
+import { House, ShoppingBag, CircleUser, CreditCard } from "lucide-react";
+import { motion } from "motion/react";
+
+const Sidebar = ({ onClose }: { onClose?: () => void }) => {
+  const location = useLocation();
+
+  const menu = [
+    { name: "Home", icon: <House size={20} />, path: "/home" },
+    { name: "Cake", icon: <ShoppingBag size={20} />, path: "/product" },
+    { name: "Payment", icon: <CreditCard size={20} />, path: "/payment" },
+    { name: "Profile", icon: <CircleUser size={20} />, path: "/profile" },
+  ];
+
+  return (
+    <div className="h-full p-5 space-y-3 bg-background">
+      {menu.map((item, i) => {
+        const isActive = location.pathname === item.path;
+
+        return (
+          <motion.div
+            key={item.name}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Link
+              to={item.path}
+              onClick={onClose}
+              className={`flex items-center gap-3 p-3 font-medium rounded-lg transition-all
+                ${
+                  isActive
+                    ? "bg-purple-300 text-purple-900 shadow-md"
+                    : "text-purple-900 hover:bg-purple-200"
+                }
+              `}
+            >
+              {/* Icon with motion pulse on active */}
+              <motion.div
+                animate={isActive ? { scale: [1, 1.15, 1] } : {}}
+                transition={{ duration: 0.5, repeat: isActive ? Infinity : 0 }}
+              >
+                {item.icon}
+              </motion.div>
+
+              <span>{item.name}</span>
+
+              {/* Active Glow Indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeIndicator"
+                  className="ml-auto w-2 h-2 rounded-full bg-purple-700"
+                />
+              )}
+            </Link>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
+
+export default Sidebar;
