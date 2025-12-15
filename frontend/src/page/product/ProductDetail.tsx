@@ -1,7 +1,7 @@
 import { product } from "@/data/product";
 import type { products } from "@/types/data";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { FaCartShopping } from "react-icons/fa6";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -24,6 +24,7 @@ const RatingStars = ({ rating }: { rating: number }) => (
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const data = product.find((item: products) => item.id === id);
+  const navigate = useNavigate();
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -49,12 +50,12 @@ const ProductDetail = () => {
       {/* ===== HEADER ===== */}
       <div className="flex items-center justify-between bg-white shadow-md p-4 md:p-5 rounded-md">
         {/* Back */}
-        <Link
-          to="/home"
+        <button
+          onClick={() => navigate(-1)}
           className="p-2 md:p-3 rounded-full hover:bg-gray-100 transition"
         >
           <ArrowLeft className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7" />
-        </Link>
+        </button>
 
         {/* Image */}
         <motion.img
@@ -154,7 +155,7 @@ const ProductDetail = () => {
             <button
               disabled={page === 0}
               onClick={() => setPage((p) => p - 1)}
-              className="p-2 bg-primary text-white rounded disabled:opacity-40"
+              className="p-2 bg-primary text-white rounded disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
             >
               <ChevronLeft size={16} />
             </button>
@@ -162,12 +163,46 @@ const ProductDetail = () => {
             <button
               disabled={page + itemsPerPage >= otherProducts.length}
               onClick={() => setPage((p) => p + 1)}
-              className="p-2 bg-primary text-white rounded disabled:opacity-40"
+              className="p-2 bg-primary text-white rounded disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
             >
               <ChevronRight size={16} />
             </button>
           </div>
         </div>
+      </div>
+
+      <div className=" flex flex-row gap-4 md:gap-6 lg:gap-8">
+        {/* === Kustomisasi === */}
+        <motion.div
+          className="w-auto"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+        >
+          <Link
+            to={`/product/${id}/customitation`}
+            className=" flex bg-white px-10 py-4 text-sm border border-gray-400 items-center justify-center
+             hover:bg-gray-300 md:hover:bg-gray-200 lg:hover:bg-gray-100 transition-colors duration-300"
+          >
+            <h2 className="font-roboto font-medium">Kustomisasi</h2>
+          </Link>
+        </motion.div>
+
+        {/* === Masukan Keranjang === */}
+        <motion.div
+          className="w-auto"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+        >
+          <div
+            className=" flex bg-[#5F2C7A] text-white px-8 py-4 text-sm border border-gray-400 
+            items-center justify-center cursor-pointer hover:bg-[#925bb0] md:hover:bg-[#7A3E9D] 
+            lg:hover:bg-[#6B3489] hover:text-gray-900 transition-all duration-300"
+          >
+            <h5 className="font-roboto font-medium">Masukan Keranjang</h5>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );

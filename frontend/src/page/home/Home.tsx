@@ -120,11 +120,7 @@ const Home = () => {
           className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4"
         >
           {paginatedProducts.map((item) => (
-            <Link
-              key={item.id}
-              to={`/product/detail/${item.id}`}
-              className="block"
-            >
+            <Link key={item.id} to={`/product/${item.id}`} className="block">
               <motion.div
                 variants={cardAnim}
                 whileHover={{ y: -6 }}
@@ -185,11 +181,7 @@ const Home = () => {
           className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
         >
           {displayedProducts.map((item) => (
-            <Link
-              key={item.id}
-              to={`/product/detail/${item.id}`}
-              className="block"
-            >
+            <Link key={item.id} to={`/product/${item.id}`} className="block">
               <motion.div
                 key={item.id}
                 variants={cardAnim}

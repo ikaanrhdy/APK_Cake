@@ -3,6 +3,7 @@ import { Input } from "../ui/input";
 import { Menu, Search, ShoppingCart, MessageSquareText, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { ModeToggle } from "../common/Mode_Toggle";
+import { Link } from "react-router";
 
 const Navbar = ({
   onToggleSidebar,
@@ -64,21 +65,25 @@ const Navbar = ({
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <ModeToggle />
         </motion.div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-2 rounded-full transition cursor-pointer hover:bg-purple-300 hover:scale-[1.05] active:scale-95"
-        >
-          <ShoppingCart className="text-purple-900 w-6 h-6" />
-        </motion.button>
+        <Link to={"/cart"}>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2 rounded-full transition cursor-pointer hover:bg-purple-300 hover:scale-[1.05] active:scale-95"
+          >
+            <ShoppingCart className="text-purple-900 w-6 h-6" />
+          </motion.button>
+        </Link>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-2 rounded-full transition cursor-pointer hover:bg-purple-300 hover:scale-[1.05] active:scale-95"
-        >
-          <MessageSquareText className="text-purple-900 w-6 h-6" />
-        </motion.button>
+        <Link to={"/chat-bot"}>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2 rounded-full transition cursor-pointer hover:bg-purple-300 hover:scale-[1.05] active:scale-95"
+          >
+            <MessageSquareText className="text-purple-900 w-6 h-6" />
+          </motion.button>
+        </Link>
       </motion.div>
     </motion.nav>
   );

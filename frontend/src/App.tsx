@@ -25,6 +25,9 @@ import PaymentDetail from "./page/payment/Payment_Detail";
 
 import EditProfile from "./page/profile/EditProfile";
 import ProductDetail from "./page/product/ProductDetail";
+import ScreenCS from "./page/chat/ScreenCS";
+import Cart from "./page/product/Cart";
+import CustomitationWithAi from "./page/product/CustomitationWithAi";
 
 function App() {
   return (
@@ -36,12 +39,21 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/profile" element={<Profile />} />
         {/* product */}
-        <Route element={<ProductDetail />} path="/product/detail/:id" />
+        <Route element={<ProductDetail />} path="/product/:id" />
       </Route>
       {/* profile */}
       <Route element={<EditProfile />} path="/edit-profile" />
       {/* paymet */}
       <Route element={<PaymentDetail />} path="/payment/detail" />
+      {/* chat */}
+      <Route element={<ScreenCS />} path="/chat-bot" />
+      {/* cart */}
+      <Route element={<Cart />} path="/cart" />
+      {/* customitation AI */}
+      <Route
+        element={<CustomitationWithAi />}
+        path="/product/:id/customitation"
+      />
 
       {/* spalsh */}
       <Route path="/" element={<SplashScreen />} />
