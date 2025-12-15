@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -44,32 +45,30 @@ const Product = () => {
         className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
       >
         {paginatedProducts.map((item) => (
-          <motion.div
-            key={item.id}
-            variants={fadeUp}
-            whileHover={{ scale: 1.03 }}
-          >
-            <Card className="rounded-xl shadow-md cursor-pointer">
-              <CardContent className="p-2">
-                <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </CardContent>
+          <Link to={`/product/${item.id}`} key={item.id}>
+            <motion.div variants={fadeUp} whileHover={{ scale: 1.03 }}>
+              <Card className="rounded-xl shadow-md cursor-pointer">
+                <CardContent className="p-2">
+                  <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </CardContent>
 
-              <CardFooter className="flex flex-col items-start gap-1 px-2 pb-3">
-                <h2 className="text-xs md:text-sm font-semibold line-clamp-2">
-                  {item.title}
-                </h2>
-                <p className="text-xs md:text-sm font-medium text-primary">
-                  Rp {item.price.toLocaleString("id-ID")}
-                </p>
-              </CardFooter>
-            </Card>
-          </motion.div>
+                <CardFooter className="flex flex-col items-start gap-1 px-2 pb-3">
+                  <h2 className="text-xs md:text-sm font-semibold line-clamp-2">
+                    {item.title}
+                  </h2>
+                  <p className="text-xs md:text-sm font-medium text-primary">
+                    Rp {item.price.toLocaleString("id-ID")}
+                  </p>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </Link>
         ))}
       </motion.div>
 

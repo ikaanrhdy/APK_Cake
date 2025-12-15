@@ -120,29 +120,34 @@ const Home = () => {
           className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4"
         >
           {paginatedProducts.map((item) => (
-            <motion.div
+            <Link
               key={item.id}
-              variants={cardAnim}
-              whileHover={{ y: -6 }}
-              className="flex flex-col bg-white rounded-lg shadow-md p-2 cursor-pointer"
+              to={`/product/detail/${item.id}`}
+              className="block"
             >
-              <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <motion.div
+                variants={cardAnim}
+                whileHover={{ y: -6 }}
+                className="flex flex-col bg-white rounded-lg shadow-md p-2 cursor-pointer"
+              >
+                <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-              <div className="mt-2 flex flex-col gap-1">
-                <h2 className="text-xs font-semibold line-clamp-2">
-                  {item.title}
-                </h2>
-                <p className="text-xs font-medium text-primary">
-                  Rp {item.price.toLocaleString("id-ID")}
-                </p>
-              </div>
-            </motion.div>
+                <div className="mt-2 flex flex-col gap-1">
+                  <h2 className="text-xs font-semibold line-clamp-2">
+                    {item.title}
+                  </h2>
+                  <p className="text-xs font-medium text-primary">
+                    Rp {item.price.toLocaleString("id-ID")}
+                  </p>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </motion.div>
 
@@ -180,29 +185,35 @@ const Home = () => {
           className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
         >
           {displayedProducts.map((item) => (
-            <motion.div
+            <Link
               key={item.id}
-              variants={cardAnim}
-              whileHover={{ scale: 1.05 }}
-              className="flex flex-col bg-white rounded-lg shadow-md p-2"
+              to={`/product/detail/${item.id}`}
+              className="block"
             >
-              <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <motion.div
+                key={item.id}
+                variants={cardAnim}
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col bg-white rounded-lg shadow-md p-2"
+              >
+                <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-              <div className="mt-2 flex flex-col gap-1">
-                <h2 className="text-xs font-semibold line-clamp-2">
-                  {item.title}
-                </h2>
-                <p className="text-xs font-medium text-primary">
-                  Rp {item.price.toLocaleString("id-ID")}
-                </p>
-              </div>
-            </motion.div>
+                <div className="mt-2 flex flex-col gap-1">
+                  <h2 className="text-xs font-semibold line-clamp-2">
+                    {item.title}
+                  </h2>
+                  <p className="text-xs font-medium text-primary">
+                    Rp {item.price.toLocaleString("id-ID")}
+                  </p>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </motion.div>
 

@@ -10,11 +10,21 @@ import ForgotPassword from "./page/auth/ForgotPassword";
 import FBScreen from "./page/auth/FBScreen";
 import ResetPassword from "./page/auth/ResetPassword";
 import ResetPWSuccess from "./page/auth/ResetPWSuccess";
-import Home from "./page/home/Home";
+
+// layout
 import UserLayout from "./layout/UserLayout";
+
+// home
 import Profile from "./page/home/Profile";
 import Payment from "./page/home/Payment";
 import Product from "./page/home/Product";
+import Home from "./page/home/Home";
+
+// payment
+import PaymentDetail from "./page/payment/Payment_Detail";
+
+import EditProfile from "./page/profile/EditProfile";
+import ProductDetail from "./page/product/ProductDetail";
 
 function App() {
   return (
@@ -25,7 +35,14 @@ function App() {
         <Route path="/product" element={<Product />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/profile" element={<Profile />} />
+        {/* product */}
+        <Route element={<ProductDetail />} path="/product/detail/:id" />
       </Route>
+      {/* profile */}
+      <Route element={<EditProfile />} path="/edit-profile" />
+      {/* paymet */}
+      <Route element={<PaymentDetail />} path="/payment/detail" />
+
       {/* spalsh */}
       <Route path="/" element={<SplashScreen />} />
       {/* auth */}
