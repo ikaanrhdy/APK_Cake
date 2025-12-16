@@ -30,8 +30,8 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
               className={`flex items-center gap-3 p-3 font-medium rounded-lg transition-all
                 ${
                   isActive
-                    ? "bg-purple-300 text-purple-900 shadow-md"
-                    : "text-purple-900 hover:bg-purple-200"
+                    ? "bg-purple-300 text-primary shadow-md"
+                    : "text-primary hover:bg-purple-200"
                 }
               `}
             >

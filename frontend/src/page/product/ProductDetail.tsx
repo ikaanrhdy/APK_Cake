@@ -52,9 +52,9 @@ const ProductDetail = () => {
         {/* Back */}
         <button
           onClick={() => navigate(-1)}
-          className="p-2 md:p-3 rounded-full hover:bg-gray-100 transition"
+          className="p-2 md:p-3 rounded-full hover:bg-gray-200 transition"
         >
-          <ArrowLeft className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7" />
+          <ArrowLeft className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7 cursor-pointer" />
         </button>
 
         {/* Image */}
@@ -69,9 +69,9 @@ const ProductDetail = () => {
         {/* Cart */}
         <Link
           to="/cart"
-          className="p-2 md:p-3 rounded-full hover:bg-gray-100 transition"
+          className="p-2 md:p-3 rounded-full hover:bg-gray-200 transition"
         >
-          <FaCartShopping className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7 text-[#5F2C7A]" />
+          <FaCartShopping className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7 text-primary cursor-pointer" />
         </Link>
       </div>
 
@@ -189,19 +189,22 @@ const ProductDetail = () => {
         </motion.div>
 
         {/* === Masukan Keranjang === */}
+
         <motion.div
           className="w-auto"
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 260, damping: 18 }}
         >
-          <div
-            className=" flex bg-[#5F2C7A] text-white px-8 py-4 text-sm border border-gray-400 
+          <Link to={`/product/${id}/checkoutManual`}>
+            <div
+              className=" flex bg-primary text-white px-8 py-4 text-sm border border-gray-400 
             items-center justify-center cursor-pointer hover:bg-[#925bb0] md:hover:bg-[#7A3E9D] 
-            lg:hover:bg-[#6B3489] hover:text-gray-900 transition-all duration-300"
-          >
-            <h5 className="font-roboto font-medium">Masukan Keranjang</h5>
-          </div>
+            lg:hover:bg-[#6B3489] hover:text-white transition-all duration-300"
+            >
+              <h5 className="font-roboto font-medium">Masukan Keranjang</h5>
+            </div>
+          </Link>
         </motion.div>
       </div>
     </motion.div>

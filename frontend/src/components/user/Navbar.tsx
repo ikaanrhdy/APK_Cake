@@ -23,13 +23,9 @@ const Navbar = ({
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button
           onClick={onToggleSidebar}
-          className="
-            hidden lg:flex items-center justify-center cursor-pointer 
-            bg-primary text-white p-2 rounded-xl 
-            border border-purple-600 shadow-sm
-            transition-all duration-200
-            hover:bg-purple-700 hover:shadow-md hover:scale-[1.05]
-            active:scale-95
+          className="hidden lg:flex items-center justify-center cursor-pointer bg-primary 
+          text-white p-2 rounded-xl border border-primary shadow-smtransition-all 
+          duration-200hover:bg-purple-700 hover:shadow-md hover:scale-[1.05]active:scale-95
           "
         >
           {isSidebarOpen ? (
@@ -71,7 +67,7 @@ const Navbar = ({
             whileTap={{ scale: 0.95 }}
             className="p-2 rounded-full transition cursor-pointer hover:bg-purple-300 hover:scale-[1.05] active:scale-95"
           >
-            <ShoppingCart className="text-purple-900 w-6 h-6" />
+            <ShoppingCart className="text-primary w-6 h-6" />
           </motion.button>
         </Link>
 
@@ -81,7 +77,7 @@ const Navbar = ({
             whileTap={{ scale: 0.95 }}
             className="p-2 rounded-full transition cursor-pointer hover:bg-purple-300 hover:scale-[1.05] active:scale-95"
           >
-            <MessageSquareText className="text-purple-900 w-6 h-6" />
+            <MessageSquareText className="text-primary w-6 h-6" />
           </motion.button>
         </Link>
       </motion.div>

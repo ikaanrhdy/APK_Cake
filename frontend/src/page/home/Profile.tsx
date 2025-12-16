@@ -128,7 +128,7 @@ const Profile = () => {
                 hover:shadow-md transition
               "
             >
-              <div className="text-[#5F2C7A]">{item.icon}</div>
+              <div className="text-primary">{item.icon}</div>
               <h5 className="text-sm font-medium font-serif">{item.name}</h5>
             </Link>
           </motion.div>

@@ -73,7 +73,7 @@ const GetStarted = () => {
             className="w-full flex justify-center"
           >
             <Button asChild className="btn w-3/4 bg-purple-900 text-white">
-              <Link to="#">Sign In as Admin</Link>
+              <Link to="/login-admin">Sign In as Admin</Link>
             </Button>
           </motion.div>
         </div>

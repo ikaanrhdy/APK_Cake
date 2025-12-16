@@ -15,9 +15,9 @@ const Payment = () => {
 
   const menu = [
     {
-      name: "Payment",
+      name: "E-Wallet",
       icon: <IoIosWallet size={30} />,
-      path: "/payment/detail",
+      path: "/payment/bank",
     },
     {
       name: "QR Code",

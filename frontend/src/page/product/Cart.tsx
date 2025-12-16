@@ -49,7 +49,7 @@ const Cart = () => {
 
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">Ubah</span>
-          <IoMdHelpCircleOutline size={20} className="text-[#5F2C7A]" />
+          <IoMdHelpCircleOutline className="text-primary size-6 md:size-8" />
         </div>
       </motion.div>
 
@@ -159,7 +159,7 @@ const Cart = () => {
         <motion.button
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.03 }}
-          className=" bg-[#5F2C7A] text-white px-4 py-2 rounded-md text-sm"
+          className=" bg-primary text-white px-4 py-2 rounded-md text-sm"
         >
           Checkout (0)
         </motion.button>
