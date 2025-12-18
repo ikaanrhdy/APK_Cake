@@ -34,59 +34,86 @@ import Payment from "./page/home/Payment";
 import Profile from "./page/home/Profile";
 
 // payment
-import PaymentDetail from "./page/payment/Payment_Detail";
 import CheckManual from "./page/product/CheckManual";
+import PaymentBank from "./page/payment/PaymentBank";
+import PaymentDetail from "./page/payment/PaymentDetail";
+import { Toaster } from "sonner";
+import ScreenPusatBantuan from "./page/chat/ScreenPusatBantuan";
+import SettingDetails from "./page/setting/SettingDetails";
+import SettingAccount from "./page/setting/SettingAccount";
+import SettingAddress from "./page/setting/SettingAddress";
+import SettingLanguage from "./page/setting/SettingLanguage";
+import AddAddress from "./page/setting/AddAddress";
+import OrderPage from "./page/order/OrderPage";
+import Checkout from "./page/product/Checkout";
 
 function App() {
   return (
-    <Routes>
-      {/* home */}
-      <Route element={<UserLayout />}>
-        <Route path="/home" element={<Home />} />
-        <Route path="/product" element={<Product />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/profile" element={<Profile />} />
-        {/* product */}
-        <Route element={<ProductDetail />} path="/product/:id" />
-      </Route>
-      {/* profile */}
-      <Route element={<EditProfile />} path="/edit-profile" />
-      {/* paymet */}
-      <Route element={<PaymentDetail />} path="/payment/bank" />
-      {/* chat */}
-      <Route element={<ScreenCS />} path="/chat-bot" />
-      {/* cart */}
-      <Route element={<Cart />} path="/cart" />
-      {/* customitation AI */}
-      <Route
-        element={<CustomitationWithAi />}
-        path="/product/:id/customitation"
-      />
+    <>
+      <Toaster position="bottom-right" richColors closeButton />
+      <Routes>
+        {/* home */}
+        <Route element={<UserLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/profile" element={<Profile />} />
+          {/* product */}
+          <Route element={<ProductDetail />} path="/product/:id" />
+        </Route>
+        {/* profile */}
+        <Route element={<EditProfile />} path="/edit-profile" />
 
-      <Route
-        element={<CheckManual />}
-        path="/product/:id/checkoutManual"
-      />
+        {/* paymet */}
+        <Route element={<PaymentBank />} path="/payment/bank" />
+        <Route element={<PaymentDetail />} path="/payment/bank/detail" />
 
-      {/* spalsh */}
-      <Route path="/" element={<SplashScreen />} />
-      {/* auth */}
-      <Route path="/get-started" element={<GetStarted />} />
-      {/* users */}
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/2fa" element={<VerifyLogin />} />
-      <Route path="/fb-screen" element={<FBScreen />} />
+        {/* chat */}
+        <Route element={<ScreenCS />} path="/chat-bot" />
+        <Route element={<ScreenPusatBantuan />} path="/help" />
 
-      {/* admin */}
-      <Route path="/login-admin" element={<LoginAdmin />} />
-      <Route path="/register-admin" element={<RegisterAdmin />} />
+        {/* cart */}
+        <Route element={<Cart />} path="/cart" />
+        {/* cart */}
+        <Route element={<Checkout />} path="/checkout" />
+        {/* customitation AI */}
+        <Route
+          element={<CustomitationWithAi />}
+          path="/product/:id/customitation"
+        />
+        <Route element={<CheckManual />} path="/product/:id/checkoutManual" />
+        <Route element={<OrderPage />} path="/order" />
 
-      {/* password */}
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/reset-password-success" element={<ResetPWSuccess />} />
-    </Routes>
+        {/* settings */}
+        <Route path="/profile/settings" element={<SettingDetails />} />
+        <Route path="/profile/settings/account" element={<SettingAccount />} />
+        <Route path="/profile/settings/account/add" element={<AddAddress />} />
+        <Route path="/profile/settings/address" element={<SettingAddress />} />
+        <Route
+          path="/profile/settings/language"
+          element={<SettingLanguage />}
+        />
+
+        {/* spalsh */}
+        <Route path="/" element={<SplashScreen />} />
+        {/* auth */}
+        <Route path="/get-started" element={<GetStarted />} />
+        {/* users */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/2fa" element={<VerifyLogin />} />
+        <Route path="/fb-screen" element={<FBScreen />} />
+
+        {/* admin */}
+        <Route path="/login-admin" element={<LoginAdmin />} />
+        <Route path="/register-admin" element={<RegisterAdmin />} />
+
+        {/* password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password-success" element={<ResetPWSuccess />} />
+      </Routes>
+    </>
   );
 }
 

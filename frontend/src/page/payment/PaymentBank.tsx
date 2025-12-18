@@ -1,5 +1,5 @@
 import { ArrowLeft, Plus, ChevronRight } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 
 interface PaymentDetailProps {
@@ -38,14 +38,18 @@ const PaymentItem = ({ image, title }: PaymentDetailProps) => (
 
 /* ================= MAIN PAGE ================= */
 
-const PaymentDetail = () => {
+const PaymentBank = () => {
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col space-y-4 min-h-screen bg-gray-50">
+    <div className="flex flex-col space-y-4 min-h-screen ">
       {/* ===== HEADER ===== */}
       <div className="flex items-center gap-2 bg-white px-4 py-3 shadow-sm">
-        <Link to="/payment" className="p-2 rounded-full hover:bg-gray-100">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-full hover:bg-gray-300 cursor-pointer"
+        >
           <ArrowLeft />
-        </Link>
+        </button>
         <h2 className="font-serif text-lg">Payment</h2>
       </div>
 
@@ -74,7 +78,9 @@ const PaymentDetail = () => {
           {/* Bank List */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {PaymentMenuBank.map((item) => (
-              <PaymentItem key={item.id} {...item} />
+              <Link to={"/payment/bank/detail"}>
+                <PaymentItem key={item.id} {...item} />
+              </Link>
             ))}
           </div>
         </div>
@@ -85,7 +91,9 @@ const PaymentDetail = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {PaymentMenuE_wallet.map((item) => (
-              <PaymentItem key={item.id} {...item} />
+              <Link to={"/payment/bank/detail"}>
+                <PaymentItem key={item.id} {...item} />
+              </Link>
             ))}
           </div>
         </div>
@@ -94,4 +102,4 @@ const PaymentDetail = () => {
   );
 };
 
-export default PaymentDetail;
+export default PaymentBank;

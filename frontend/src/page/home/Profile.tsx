@@ -33,7 +33,11 @@ const Profile = () => {
       icon: <FaCartShopping size={20} />,
       path: "/cart",
     },
-    { name: "Pengaturan Akun", icon: <Settings size={20} />, path: "/setting" },
+    {
+      name: "Pengaturan Akun",
+      icon: <Settings size={20} />,
+      path: "/profile/settings",
+    },
     {
       name: "Pusat Banyuan",
       icon: <IoMdHelpCircleOutline size={20} />,

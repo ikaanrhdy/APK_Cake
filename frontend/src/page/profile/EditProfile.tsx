@@ -1,6 +1,6 @@
 import { ChevronLeft, CircleUser, ChevronRight } from "lucide-react";
 import { LuFolderPen } from "react-icons/lu";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -70,6 +70,7 @@ const item = {
 /* ================= COMPONENT ================= */
 
 const EditProfile = () => {
+  const navigate = useNavigate();
   const [activeField, setActiveField] = useState<EditField>(null);
 
   return (
@@ -101,20 +102,20 @@ const EditProfile = () => {
           className="flex flex-col bg-white w-full p-5 space-y-8 lg:bg-transparent lg:p-0"
         >
           <div className="flex items-center space-x-3">
-            <Link
-              to="/profile"
-              className="bg-white border rounded-lg border-gray-300 p-2"
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-white border rounded-lg border-gray-300 p-2 cursor-pointer"
             >
               <ChevronLeft />
-            </Link>
-            <h2 className="text-[#5F2C7A] font-serif text-lg">Profile Saya</h2>
+            </button>
+            <h2 className="text-primary font-serif text-lg">Profile Saya</h2>
           </div>
 
           <div className="flex flex-col items-center">
-            <CircleUser className="w-20 h-20 text-[#5F2C7A]" />
+            <CircleUser className="w-20 h-20 text-primary" />
             <div className="flex items-center space-x-2 mt-2">
-              <LuFolderPen className="w-4 h-4 text-[#5F2C7A]" />
-              <h4 className="text-[#5F2C7A] text-sm">Ubah</h4>
+              <LuFolderPen className="w-4 h-4 text-primary" />
+              <h4 className="text-primary text-sm">Ubah</h4>
             </div>
           </div>
         </motion.div>
@@ -223,11 +224,11 @@ const EditProfile = () => {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => setActiveField(null)}
-                  className="text-sm text-gray-500"
+                  className="text-sm text-gray-500 cursor-pointer"
                 >
                   Batal
                 </button>
-                <button className="px-4 py-2 bg-[#5F2C7A] text-white text-sm rounded-md">
+                <button className="px-4 py-2 bg-primary text-white text-sm rounded-md cursor-pointer">
                   Simpan
                 </button>
               </div>
