@@ -69,7 +69,7 @@ const Pengembalian = () => {
           <div className="flex justify-end">
             <Button
               variant="ghost"
-              className="bg-gray-100 text-gray-600 cursor-default text-xs md:text-sm md:py-4 w-2/3"
+              className="bg-gray-100 text-gray-600  cursor-pointer text-xs md:text-sm md:py-4 w-2/3"
             >
               Rincian Pengembalian
             </Button>

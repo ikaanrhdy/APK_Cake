@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -61,7 +61,7 @@ const Checkout = () => {
       <div className="bg-white border-b px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-full hover:bg-gray-200"
+          className="p-2 rounded-full hover:bg-gray-300 cursor-pointer"
         >
           <ArrowLeft />
         </button>
@@ -84,19 +84,32 @@ const Checkout = () => {
         {/* ===== PRODUCT ===== */}
         <div className="bg-white border rounded-md divide-y">
           {data.items.map((item: CheckoutItem) => (
-            <div key={item.id} className="p-4 flex gap-4">
-              <img
-                src={item.image}
-                className="w-16 h-16 object-contain border rounded"
-              />
-              <div className="flex-1">
-                <p className="text-sm font-medium">{item.title}</p>
-                <p className="text-xs text-gray-500">x{item.qty}</p>
+            <Link
+              key={item.id}
+              to={`${item.id}/detail`}
+              state={{
+                item,
+                subtotal: item.price * item.qty,
+                shipping,
+                voucher,
+                payment,
+              }}
+              className="block"
+            >
+              <div className="p-4 flex gap-4">
+                <img
+                  src={item.image}
+                  className="w-16 h-16 object-contain border rounded"
+                />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{item.title}</p>
+                  <p className="text-xs text-gray-500">x{item.qty}</p>
+                </div>
+                <p className="text-sm font-semibold text-red-500">
+                  Rp {(item.price * item.qty).toLocaleString("id-ID")}
+                </p>
               </div>
-              <p className="text-sm font-semibold text-red-500">
-                Rp {(item.price * item.qty).toLocaleString("id-ID")}
-              </p>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -196,12 +209,17 @@ const Checkout = () => {
           </p>
         </div>
 
-        <button
-          className="bg-primary text-white px-6 py-2 rounded-md"
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-primary text-white px-6 py-2 rounded-md cursor-pointer shadow-md"
           onClick={() => alert("Pesanan dibuat (dummy)")}
         >
           Buat Pesanan
-        </button>
+        </motion.button>
       </div>
 
       {/* ================= PAYMENT MODAL ================= */}
@@ -233,7 +251,7 @@ const Checkout = () => {
                     setPayment(m);
                     setOpenPayment(false);
                   }}
-                  className="p-3 border rounded mb-2 flex justify-between cursor-pointer"
+                  className="p-3 border rounded mb-2 flex justify-between cursor-pointer "
                 >
                   {m}
                   {payment === m && "✓"}

@@ -67,12 +67,12 @@ const SelesaiPage = () => {
           <div className="flex justify-end gap-2">
             <Button
               variant="ghost"
-              className="bg-gray-100 text-gray-600 cursor-default text-xs md:text-sm md:py-4"
+              className="bg-gray-100 text-gray-600  cursor-pointer text-xs md:text-sm md:py-4"
             >
               Lihat Penilaian
             </Button>
 
-            <Button className="bg-purple-50 text-primary w-fit text-xs md:text-sm md:px-6 md:py-4">
+            <Button className="bg-purple-50 text-primary w-fit text-xs md:text-sm md:px-6 md:py-4 hover:text-white cursor-pointer">
               Beli Lagi
             </Button>
           </div>

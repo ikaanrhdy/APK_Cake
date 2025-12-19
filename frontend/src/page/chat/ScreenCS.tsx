@@ -3,22 +3,23 @@ import { ArrowLeft, UserCircle } from "lucide-react";
 import { IoSend } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 const ScreenCS = () => {
   const data = product;
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col  min-h-screen">
       {/* ===== Header ===== */}
       <div className="flex items-center gap-3 bg-white p-4 shadow-sm">
-        <Link
-          to={"/profile"}
+        <button
+          onClick={() => navigate(-1)}
           className="cursor-pointer  hover:bg-gray-400 hover:rounded-full p-2"
         >
           <ArrowLeft />
-        </Link>
+        </button>
 
         <UserCircle size={30} />
         <h2 className="text-lg font-medium font-roboto">Citra</h2>

@@ -37,7 +37,6 @@ import Profile from "./page/home/Profile";
 import CheckManual from "./page/product/CheckManual";
 import PaymentBank from "./page/payment/PaymentBank";
 import PaymentDetail from "./page/payment/PaymentDetail";
-import { Toaster } from "sonner";
 import ScreenPusatBantuan from "./page/chat/ScreenPusatBantuan";
 import SettingDetails from "./page/setting/SettingDetails";
 import SettingAccount from "./page/setting/SettingAccount";
@@ -46,6 +45,10 @@ import SettingLanguage from "./page/setting/SettingLanguage";
 import AddAddress from "./page/setting/AddAddress";
 import OrderPage from "./page/order/OrderPage";
 import Checkout from "./page/product/Checkout";
+import OrderTrackingPage from "./page/order/tabs/OrderTrackingPage";
+import { Toaster } from "sonner";
+import CheckoutDetail from "./page/product/CheckoutDetail";
+import BadgeUser from "./page/badge/BadgeUser";
 
 function App() {
   return (
@@ -63,7 +66,8 @@ function App() {
         </Route>
         {/* profile */}
         <Route element={<EditProfile />} path="/edit-profile" />
-
+        {/* badge */}
+        <Route element={<BadgeUser />} path="/badge" />
         {/* paymet */}
         <Route element={<PaymentBank />} path="/payment/bank" />
         <Route element={<PaymentDetail />} path="/payment/bank/detail" />
@@ -76,6 +80,7 @@ function App() {
         <Route element={<Cart />} path="/cart" />
         {/* cart */}
         <Route element={<Checkout />} path="/checkout" />
+        <Route element={<CheckoutDetail />} path="/checkout/:id/detail" />
         {/* customitation AI */}
         <Route
           element={<CustomitationWithAi />}
@@ -83,6 +88,7 @@ function App() {
         />
         <Route element={<CheckManual />} path="/product/:id/checkoutManual" />
         <Route element={<OrderPage />} path="/order" />
+        <Route element={<OrderTrackingPage />} path="/order/tracking" />
 
         {/* settings */}
         <Route path="/profile/settings" element={<SettingDetails />} />

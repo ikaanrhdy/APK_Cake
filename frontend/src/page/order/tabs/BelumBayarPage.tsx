@@ -115,7 +115,7 @@ const BelumBayarPage = () => {
 
           {/* INFO */}
           <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
-            <Button className="bg-purple-50 text-gray-800 md:text-base md:py-6 w-full">
+            <Button className="bg-purple-50 text-gray-800 md:text-base md:py-6 w-full hover:text-white cursor-pointer">
               Ayo bayar sekarang!
             </Button>
           </motion.div>
@@ -123,13 +123,13 @@ const BelumBayarPage = () => {
           {/* ACTION */}
           <div className="flex justify-end gap-2">
             <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
-              <Button className="text-gray-800 bg-white border border-gray-300 w-fit md:px-8 md:py-6">
+              <Button className="text-gray-800 bg-white border border-gray-300 w-fit md:px-8 md:py-6 cursor-pointer hover:text-white">
                 Ubah Pembayaran
               </Button>
             </motion.div>
 
             <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
-              <Button className="bg-purple-50 text-primary w-fit md:px-8 md:py-6">
+              <Button className="bg-purple-50 text-primary w-fit md:px-8 md:py-6 cursor-pointer hover:text-white">
                 Bayar
               </Button>
             </motion.div>

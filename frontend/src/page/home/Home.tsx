@@ -91,18 +91,36 @@ const Home = () => {
           className="bg-white rounded-md shadow-lg shadow-black/40 p-4 md:p-6"
         >
           <div className="flex justify-between items-center">
-            <Crown className="text-[#5F2C7A] w-10 h-10" />
+            <Crown className="text-primary w-10 h-10" />
             <div className="flex flex-col gap-1">
               <h2 className="text-[#D77C43] font-medium">Gold Baker</h2>
-              <h2 className="text-[#5F2C7A] font-medium">
+              <h2 className="text-primary font-medium">
                 150 Lavender <br /> Point
               </h2>
             </div>
-            <div className="px-6 py-3 rounded-md bg-background">
-              <h1 className="text-center text-[#5F2C7A] font-medium text-xs">
-                View <br /> Rewards
-              </h1>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 6px 16px rgba(0,0,0,0.12)",
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-md"
+            >
+              <Link
+                to="/badge"
+                className="block px-6 py-3 rounded-md bg-background"
+              >
+                <h1 className="text-center text-[#5F2C7A] font-medium text-xs leading-tight">
+                  View <br /> Rewards
+                </h1>
+              </Link>
+            </motion.div>
+          </div>
+          <div className="w-full h-2 bg-purple-100 rounded-full overflow-hidden">
+            <div className="w-1/2 h-full bg-primary rounded-full" />
           </div>
         </motion.div>
       </motion.div>
