@@ -99,7 +99,8 @@ const Profile = () => {
           </Link>
         </div>
 
-        <div
+        <Link
+          to="/badge"
           className="
           flex bg-linear-to-b from-[#D77C43] to-[#E6C5B0]
           px-5 py-2 items-center rounded-md text-black
@@ -107,7 +108,7 @@ const Profile = () => {
         "
         >
           <h6 className="text-xs">Level 2 baker</h6>
-        </div>
+        </Link>
       </motion.div>
 
       {/* === MENU LIST === */}

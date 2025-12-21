@@ -46,16 +46,21 @@ import AddAddress from "./page/setting/AddAddress";
 import OrderPage from "./page/order/OrderPage";
 import Checkout from "./page/product/Checkout";
 import OrderTrackingPage from "./page/order/tabs/OrderTrackingPage";
-import { Toaster } from "sonner";
 import CheckoutDetail from "./page/product/CheckoutDetail";
 import BadgeUser from "./page/badge/BadgeUser";
+import AdminLayout from "./layout/AdminLayout";
+import DashboardAdmin from "./page/admin/DashboardAdmin";
+import ProductAdmin from "./page/admin/ProductAdmin";
+import FinanceAdmin from "./page/admin/FinanceAdmin";
+import AnalyticsAdmin from "./page/admin/AnalyticsAdmin";
+import { Toaster } from "sonner";
 
 function App() {
   return (
     <>
       <Toaster position="bottom-right" richColors closeButton />
       <Routes>
-        {/* home */}
+        {/* user */}
         <Route element={<UserLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/product" element={<Product />} />
@@ -63,6 +68,13 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           {/* product */}
           <Route element={<ProductDetail />} path="/product/:id" />
+        </Route>
+        {/* admin */}
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<DashboardAdmin />} />
+          <Route path="/admin/product" element={<ProductAdmin />} />
+          <Route path="/admin/finance" element={<FinanceAdmin />} />
+          <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
         </Route>
         {/* profile */}
         <Route element={<EditProfile />} path="/edit-profile" />
@@ -84,8 +96,9 @@ function App() {
         {/* customitation AI */}
         <Route
           element={<CustomitationWithAi />}
-          path="/product/:id/customitation"
+          path="/product/customitation"
         />
+
         <Route element={<CheckManual />} path="/product/:id/checkoutManual" />
         <Route element={<OrderPage />} path="/order" />
         <Route element={<OrderTrackingPage />} path="/order/tracking" />

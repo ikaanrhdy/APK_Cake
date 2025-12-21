@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { product } from "@/data/product";
-import type { products } from "@/types/data";
 
 // Icons & UI
 import { ArrowLeft } from "lucide-react";
@@ -42,9 +41,8 @@ const item = {
 };
 
 const CustomitationWithAi = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const data = product.find((item: products) => item.id === id);
+  const data = product[0];
 
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedVariant, setSelectedVariant] = useState("");
@@ -90,24 +88,32 @@ const CustomitationWithAi = () => {
             <FaPen size={18} />
             <h6 className="text-sm font-bold">Desain dengan AI</h6>
           </div>
-          <Switch checked={aiEnabled} onCheckedChange={setAiEnabled} />
+          <Switch
+            checked={aiEnabled}
+            onCheckedChange={setAiEnabled}
+            className="cursor-pointer"
+          />
         </div>
 
-        <p className="pl-4 text-sm">
-          Deskripsikan kue impian Anda dan AI akan
-          <br /> membuatkan desainnya
-        </p>
+        {aiEnabled && (
+          <>
+            <p className="pl-4 text-sm">
+              Deskripsikan kue impian Anda dan AI akan
+              <br /> membuatkan desainnya
+            </p>
 
-        <Input
-          placeholder="Contoh: Kue ulang tahun unicorn biru"
-          className="bg-transparent placeholder:text-gray-300"
-        />
+            <Input
+              placeholder="Contoh: Kue ulang tahun unicorn biru"
+              className="bg-transparent placeholder:text-gray-300"
+            />
 
-        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-          <Button className="bg-primary text-gray-200 w-full md:w-1/2">
-            Generate Desain
-          </Button>
-        </motion.div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Button className="bg-primary text-gray-200 w-full md:w-1/2">
+                Generate Desain
+              </Button>
+            </motion.div>
+          </>
+        )}
       </motion.div>
 
       {/* PRODUCT IMAGE */}
@@ -168,9 +174,16 @@ const CustomitationWithAi = () => {
       </motion.div>
 
       {/* TEXT */}
+
       <motion.div variants={item} className="p-5 space-y-3">
-        <Input placeholder="Happy Birthday 🎉" />
-        <Input placeholder="Catatan tambahan" />
+        <h3 className="font-bold text-lg">Tambah Ucapan</h3>
+        <div className="flex p-2">
+          <Input placeholder="Happy Birthday 🎉" className="border bg-white" />
+        </div>
+        <h3 className="font-bold text-lg">Catatan</h3>
+        <div className="flex p-2">
+          <Input placeholder="Catatan tambahan" className="border bg-white" />
+        </div>
       </motion.div>
 
       {/* ACTION */}

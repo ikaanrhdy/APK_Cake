@@ -200,7 +200,7 @@ const LoginAdmin = () => {
                       asChild
                       className="w-full sm:w-3/4 md:w-1/2 lg:w-full bg-purple-900 text-xl h-12 font-light hover:bg-purple-800"
                     >
-                      <Link to="#">Login</Link>
+                      <Link to="/admin">Login</Link>
                     </Button>
                   </motion.div>
 

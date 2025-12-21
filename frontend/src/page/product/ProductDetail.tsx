@@ -6,6 +6,8 @@ import { FaCartShopping } from "react-icons/fa6";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useCartStore } from "@/app/store/useCartProduct";
+import { toast } from "sonner";
 
 /* ================= RATING ================= */
 const RatingStars = ({ rating }: { rating: number }) => (
@@ -25,6 +27,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const data = product.find((item: products) => item.id === id);
   const navigate = useNavigate();
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -101,7 +104,7 @@ const ProductDetail = () => {
               key={s}
               whileTap={{ scale: 0.9 }}
               onClick={() => setSelectedSize((prev) => (prev === s ? null : s))}
-              className={`px-3 py-1 rounded-md border text-xs transition
+              className={`px-3 py-1 rounded-md border text-xs transition hover:scale-75 cursor-pointer
                 ${
                   active
                     ? "bg-primary text-white border-primary"
@@ -138,7 +141,7 @@ const ProductDetail = () => {
                 className="min-w-[120px] md:min-w-40
                   bg-white rounded-md shadow-md p-2 cursor-pointer"
               >
-                <Link to={`/product/detail/${item.id}`}>
+                <Link to={`/product/${item.id}`}>
                   <img
                     src={item.image}
                     alt={item.title}
@@ -180,7 +183,7 @@ const ProductDetail = () => {
           transition={{ type: "spring", stiffness: 260, damping: 18 }}
         >
           <Link
-            to={`/product/${id}/customitation`}
+            to={"/product/customitation"}
             className=" flex bg-white px-10 py-4 text-sm border border-gray-400 items-center justify-center
              hover:bg-gray-300 md:hover:bg-gray-200 lg:hover:bg-gray-100 transition-colors duration-300"
           >
@@ -196,15 +199,21 @@ const ProductDetail = () => {
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 260, damping: 18 }}
         >
-          <Link to={`/product/${id}/checkoutManual`}>
-            <div
-              className=" flex bg-primary text-white px-8 py-4 text-sm border border-gray-400 
+          <div
+            onClick={() => {
+              if (!selectedSize) {
+                toast.error("Pilih ukuran terlebih dahulu!");
+                return;
+              }
+              addToCart({ ...data, size: selectedSize }); // tambahkan size juga
+              toast.success("Berhasil masukan ke keranjang!");
+            }}
+            className="flex bg-primary text-white px-8 py-4 text-sm border border-gray-400  
             items-center justify-center cursor-pointer hover:bg-[#925bb0] md:hover:bg-[#7A3E9D] 
             lg:hover:bg-[#6B3489] hover:text-white transition-all duration-300"
-            >
-              <h5 className="font-roboto font-medium">Masukan Keranjang</h5>
-            </div>
-          </Link>
+          >
+            <h5 className="font-roboto font-medium">Masukan Keranjang</h5>
+          </div>
         </motion.div>
       </div>
     </motion.div>

@@ -1,0 +1,106 @@
+import { motion } from "framer-motion";
+import { ShoppingCart, DollarSign, Users, Clock } from "lucide-react";
+
+// ================= DATA DUMMY =================
+const dashboardStats = [
+  {
+    title: "Total Penjualan",
+    value: "Rp 12.500.000",
+    desc: "Bulan ini",
+    icon: DollarSign,
+    color: "text-green-500",
+    bg: "bg-green-500/10",
+  },
+  {
+    title: "Total Pesanan",
+    value: "486",
+    desc: "Semua pesanan",
+    icon: ShoppingCart,
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+  },
+  {
+    title: "Pelanggan Baru",
+    value: "78",
+    desc: "30 hari terakhir",
+    icon: Users,
+    color: "text-purple-500",
+    bg: "bg-purple-500/10",
+  },
+  {
+    title: "Pesanan Pending",
+    value: "19",
+    desc: "Belum diproses",
+    icon: Clock,
+    color: "text-orange-500",
+    bg: "bg-orange-500/10",
+  },
+];
+
+// ================= MOTION =================
+const cardVariant = {
+  hidden: { opacity: 0, y: 16 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.08 },
+  }),
+};
+
+const DashboardAdmin = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-4"
+    >
+      {/* ================= STATS GRID ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {dashboardStats.map((item, i) => {
+          const Icon = item.icon;
+
+          return (
+            <motion.div
+              key={item.title}
+              variants={cardVariant}
+              initial="hidden"
+              animate="show"
+              custom={i}
+              className="
+                bg-card border border-border rounded-lg
+                p-3 sm:p-4
+                flex items-center gap-3
+              "
+            >
+              {/* Icon */}
+              <div
+                className={`
+                  ${item.bg} ${item.color}
+                  p-2.5 sm:p-3
+                  rounded-lg
+                `}
+              >
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+
+              {/* Text */}
+              <div className="flex flex-col">
+                <p className="text-[11px] sm:text-xs text-muted-foreground">
+                  {item.title}
+                </p>
+                <h2 className="text-base sm:text-lg font-semibold leading-tight">
+                  {item.value}
+                </h2>
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground">
+                  {item.desc}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+};
+
+export default DashboardAdmin;

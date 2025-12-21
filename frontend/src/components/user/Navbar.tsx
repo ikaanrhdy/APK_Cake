@@ -1,9 +1,12 @@
+import { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Menu, Search, ShoppingCart, MessageSquareText, X } from "lucide-react";
+import { Menu, ShoppingCart, MessageSquareText, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { ModeToggle } from "../common/Mode_Toggle";
 import { Link } from "react-router";
+import { useProductStore } from "@/app/store/useProduct";
+import SearchResult from "./SearchBar";
 
 const Navbar = ({
   onToggleSidebar,
@@ -12,21 +15,22 @@ const Navbar = ({
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
 }) => {
+  const { inputSearch, setSearch } = useProductStore();
+  const [isOpen, setIsOpen] = useState(false); // state kontrol dropdown
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="flex items-center justify-between px-4 py-3 shadow-sm "
+      className="flex items-center justify-between px-4 py-3 shadow-sm"
     >
-      {/* === Hamburger (Desktop Only) === */}
+      {/* Hamburger */}
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button
           onClick={onToggleSidebar}
-          className="hidden lg:flex items-center justify-center cursor-pointer bg-primary 
-          text-white p-2 rounded-xl border border-primary shadow-smtransition-all 
-          duration-200hover:bg-purple-700 hover:shadow-md hover:scale-[1.05]active:scale-95
-          "
+          className="hidden lg:flex items-center justify-center cursor-pointer bg-primary text-white p-2 rounded-xl border border-primary shadow-sm transition-all duration-200 hover:bg-purple-700 hover:shadow-md hover:scale-[1.05] active:scale-95"
         >
           {isSidebarOpen ? (
             <X className="w-6 h-6" />
@@ -36,7 +40,7 @@ const Navbar = ({
         </Button>
       </motion.div>
 
-      {/* === Search Bar === */}
+      {/* Search Bar */}
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -44,14 +48,24 @@ const Navbar = ({
         className="relative w-full max-w-xs lg:max-w-sm mx-4"
       >
         <Input
+          ref={inputRef}
           type="search"
+          value={inputSearch}
+          onChange={(e) => setSearch(e.target.value)}
+          onFocus={() => setIsOpen(true)} // buka dropdown saat fokus
           placeholder="Search"
           className="bg-purple-200 text-black placeholder:text-gray-600 pr-10"
         />
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 w-5 h-5 pointer-events-none" />
+
+        {/* Pass state dan setter ke SearchResult */}
+        <SearchResult
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          inputRef={inputRef}
+        />
       </motion.div>
 
-      {/* === Right Buttons === */}
+      {/* Right Buttons */}
       <motion.div
         className="flex items-center gap-4"
         initial={{ opacity: 0 }}

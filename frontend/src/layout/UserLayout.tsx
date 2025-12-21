@@ -2,14 +2,24 @@ import { Outlet } from "react-router";
 import Footer from "../components/user/Footer";
 import Navbar from "../components/user/Navbar";
 import Sidebar from "../components/user/Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useProductStore } from "@/app/store/useProduct";
 
 const UserLayout = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
 
+  // 🔥 AMBIL ACTION
+  const getProducts = useProductStore((s) => s.getProducts);
+  console.log("getProducts:", getProducts);
+
+  // 🔥 LOAD SEKALI SAAT MASUK USER AREA
+  useEffect(() => {
+    getProducts();
+  }, [getProducts]);
+
   return (
-    <div className="min-h-screen  flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <Navbar
         onToggleSidebar={() => setOpenSidebar(!openSidebar)}
@@ -17,7 +27,7 @@ const UserLayout = () => {
       />
 
       <div className="flex flex-1 w-full relative">
-        {/* === Sidebar Desktop (Animated) === */}
+        {/* === Sidebar Desktop === */}
         <AnimatePresence mode="wait">
           {openSidebar && (
             <motion.aside
@@ -61,12 +71,11 @@ const UserLayout = () => {
           )}
         </AnimatePresence>
 
-        <main className="flex-1 p-4 lg:p-6 ">
+        <main className="flex-1 p-4 lg:p-6">
           <Outlet />
         </main>
       </div>
 
-      {/* Footer mobile */}
       <div className="block lg:hidden">
         <Footer />
       </div>

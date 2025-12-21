@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -10,44 +10,23 @@ import {
   TicketPercent,
   X,
 } from "lucide-react";
-
-type CheckoutItem = {
-  id: string;
-  title: string;
-  image: string;
-  price: number;
-  qty: number;
-};
-
-const STORAGE_KEY = "checkout-cart";
+import { useCartStore } from "@/app/store/useCartProduct";
+import { toast } from "sonner";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const cartStore = useCartStore();
 
+  // ===== STATE =====
   const [shipping, setShipping] = useState(15000);
   const [voucher, setVoucher] = useState(0);
   const [payment, setPayment] = useState("COD");
   const [openPayment, setOpenPayment] = useState(false);
 
-  /* ================= DATA ================= */
-  const data = useMemo(() => {
-    if (state?.items && state?.totalPrice) {
-      const payload = {
-        items: state.items as CheckoutItem[],
-        subtotal: state.totalPrice as number,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      return payload;
-    }
+  // ===== DATA CHECKOUT DARI STORE =====
+  const data = cartStore.getCheckout();
 
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : { items: [], subtotal: 0 };
-  }, [state]);
-
-  const total = data.subtotal + shipping - voucher;
-
-  if (!data.items.length) {
+  if (!data || data.items.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500">
         Checkout kosong
@@ -55,8 +34,10 @@ const Checkout = () => {
     );
   }
 
+  const total = data.subtotal + shipping - voucher;
+
   return (
-    <div className="min-h-screen  flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* ================= HEADER ================= */}
       <div className="bg-white border-b px-4 py-3 flex items-center gap-3">
         <button
@@ -83,7 +64,7 @@ const Checkout = () => {
 
         {/* ===== PRODUCT ===== */}
         <div className="bg-white border rounded-md divide-y">
-          {data.items.map((item: CheckoutItem) => (
+          {data.items.map((item) => (
             <Link
               key={item.id}
               to={`${item.id}/detail`}
@@ -216,7 +197,12 @@ const Checkout = () => {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
           className="bg-primary text-white px-6 py-2 rounded-md cursor-pointer shadow-md"
-          onClick={() => alert("Pesanan dibuat (dummy)")}
+          onClick={() => {
+            toast.success("Pesanan dibuat (dummy)");
+            cartStore.clearCart();
+            cartStore.clearCheckout();
+            navigate("/home");
+          }}
         >
           Buat Pesanan
         </motion.button>

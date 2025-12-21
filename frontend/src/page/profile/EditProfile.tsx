@@ -1,242 +1,215 @@
-import { ChevronLeft, CircleUser, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LuFolderPen } from "react-icons/lu";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+
+import { useProfileStore } from "@/app/store/useProfile";
+import { Button } from "@/components/ui/button";
 
 /* ================= TYPES ================= */
 
-type EditField = "name" | "gender" | "birth" | "phone" | "email" | null;
+type EditField =
+  | "name"
+  | "gender"
+  | "birthdate"
+  | "phone"
+  | "email"
+  | "avatar"
+  | null;
 
-type TextFieldConfig = {
+type FieldConfig = {
   label: string;
-  type: "text" | "email" | "tel" | "date";
-  placeholder?: string;
+  type: "text" | "email" | "tel" | "date" | "select";
+  options?: string[];
 };
-
-type SelectFieldConfig = {
-  label: string;
-  type: "select";
-  options: string[];
-};
-
-type FieldConfig = TextFieldConfig | SelectFieldConfig;
 
 /* ================= CONFIG ================= */
 
 const fieldConfig: Record<Exclude<EditField, null>, FieldConfig> = {
-  name: {
-    label: "Nama",
-    type: "text",
-    placeholder: "Masukkan nama",
-  },
+  name: { label: "Nama", type: "text" },
   gender: {
     label: "Jenis Kelamin",
     type: "select",
     options: ["Laki-laki", "Perempuan", "Lainnya"],
   },
-  birth: {
-    label: "Tanggal Lahir",
-    type: "date",
-  },
-  phone: {
-    label: "No. Handphone",
-    type: "tel",
-    placeholder: "08xxxxxxxxxx",
-  },
-  email: {
-    label: "Email",
-    type: "email",
-    placeholder: "example@email.com",
-  },
-};
-
-/* ================= MOTION ================= */
-
-const container = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0 },
+  birthdate: { label: "Tanggal Lahir", type: "date" },
+  phone: { label: "No. Handphone", type: "tel" },
+  email: { label: "Email", type: "email" },
+  avatar: { label: "Foto Profil", type: "text" },
 };
 
 /* ================= COMPONENT ================= */
 
 const EditProfile = () => {
   const navigate = useNavigate();
+
+  const { name, gender, birthdate, phone, email, avatar, updateField } =
+    useProfileStore();
+
   const [activeField, setActiveField] = useState<EditField>(null);
+  const [tempValue, setTempValue] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const openEdit = (field: EditField) => {
+    if (!field) return;
+    setActiveField(field);
+    setTempValue(useProfileStore.getState()[field]);
+  };
+
+  const handleSave = async () => {
+    if (!activeField) return;
+
+    setIsSaving(true);
+
+    await new Promise((r) => setTimeout(r, 800)); // simulasi API
+
+    updateField(activeField, tempValue);
+
+    toast.success(`${fieldConfig[activeField].label} berhasil diperbarui`);
+
+    setIsSaving(false);
+    setActiveField(null);
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="
-        min-h-screen bg-gray-100
-        lg:flex lg:justify-center lg:pt-10
-      "
-    >
-      {/* ===== DESKTOP CARD WRAPPER ===== */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="
-          flex flex-col space-y-4
-          md:max-w-3xl md:mx-auto
-          lg:w-full lg:max-w-4xl
-          lg:bg-white lg:rounded-2xl lg:shadow-lg
-          lg:p-6
-        "
-      >
-        {/* ===== HEADER ===== */}
-        <motion.div
-          variants={item}
-          className="flex flex-col bg-white w-full p-5 space-y-8 lg:bg-transparent lg:p-0"
-        >
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-white border rounded-lg border-gray-300 p-2 cursor-pointer"
+    <div className="min-h-screen bg-gray-100 lg:flex lg:justify-center lg:pt-10">
+      <div className="w-full max-w-4xl bg-white lg:rounded-2xl lg:shadow-lg p-5 space-y-6">
+        {/* HEADER */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="border rounded-lg p-2 cursor-pointer"
+          >
+            <ChevronLeft />
+          </button>
+          <h2 className="text-primary font-serif text-lg">Profile Saya</h2>
+        </div>
+
+        {/* AVATAR */}
+        <div className="flex flex-col items-center gap-2">
+          <img
+            src={avatar}
+            className="w-24 h-24 rounded-full object-cover border"
+          />
+          <button
+            onClick={() => openEdit("avatar")}
+            className="flex items-center gap-1 text-primary text-sm hover:opacity-80 transition hover:scale-75 cursor-pointer"
+          >
+            <LuFolderPen size={16} />
+            Ubah Foto
+          </button>
+        </div>
+
+        {/* INFO */}
+        <div className="border rounded-md divide-y">
+          {[
+            ["Nama", name, "name"],
+            ["Jenis Kelamin", gender, "gender"],
+            ["Tanggal Lahir", birthdate, "birthdate"],
+            ["No. Handphone", phone, "phone"],
+            ["Email", email, "email"],
+          ].map(([label, value, key]) => (
+            <div
+              key={key}
+              onClick={() => openEdit(key as EditField)}
+              className="flex justify-between items-center px-3 py-3 cursor-pointer"
             >
-              <ChevronLeft />
-            </button>
-            <h2 className="text-primary font-serif text-lg">Profile Saya</h2>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <CircleUser className="w-20 h-20 text-primary" />
-            <div className="flex items-center space-x-2 mt-2">
-              <LuFolderPen className="w-4 h-4 text-primary" />
-              <h4 className="text-primary text-sm">Ubah</h4>
+              <span className="text-sm text-gray-400">{label}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-500">{value}</span>
+                <ChevronRight size={16} />
+              </div>
             </div>
-          </div>
-        </motion.div>
+          ))}
+        </div>
+      </div>
 
-        {/* ===== BASIC INFO ===== */}
-        <motion.div
-          variants={item}
-          className="flex flex-col m-5 bg-white rounded-md border border-gray-300 lg:m-0"
-        >
-          <div className="flex flex-col px-3 py-2">
-            {[
-              ["Nama", "Ika Nur Hidayati", "name"],
-              ["Jenis Kelamin", "Lainnya", "gender"],
-              ["Tanggal Lahir", "**/**/2004", "birth"],
-            ].map(([label, value, key]) => (
-              <div
-                key={key}
-                onClick={() => setActiveField(key as EditField)}
-                className="cursor-pointer"
-              >
-                <div className="flex justify-between items-center">
-                  <h4 className="text-gray-400 text-sm font-serif">{label}</h4>
-                  <div className="flex items-center">
-                    <span className="text-gray-400 text-xs font-serif">
-                      {value}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-gray-700" />
-                  </div>
-                </div>
-                <div className="border-b border-border my-3" />
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* ===== CONTACT INFO ===== */}
-        <motion.div
-          variants={item}
-          className="flex flex-col m-5 bg-white rounded-md border border-gray-300 lg:m-0"
-        >
-          <div className="flex flex-col px-3 py-2">
-            {[
-              ["No. Handphone", "08******84", "phone"],
-              ["Email", "i**********@gmail.com", "email"],
-            ].map(([label, value, key]) => (
-              <div
-                key={key}
-                onClick={() => setActiveField(key as EditField)}
-                className="cursor-pointer"
-              >
-                <div className="flex justify-between items-center">
-                  <h4 className="text-gray-400 text-sm font-serif">{label}</h4>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-xs font-serif">
-                      {value}
-                    </span>
-                    {key === "email" && (
-                      <span className="text-[#F34E4E]/60 text-xs">
-                        Verifikasi
-                      </span>
-                    )}
-                    <ChevronRight className="w-4 h-4 text-gray-700" />
-                  </div>
-                </div>
-                <div className="border-b border-border my-3" />
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* ===== EDIT DIALOG ===== */}
+      {/* MODAL */}
       <AnimatePresence>
         {activeField && (
           <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
           >
             <motion.div
               initial={{ y: 30, scale: 0.95 }}
               animate={{ y: 0, scale: 1 }}
               exit={{ y: 30, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 260, damping: 22 }}
-              className="bg-white rounded-xl p-5 w-[90%] md:max-w-md"
+              className="bg-white rounded-xl p-5 w-[90%] max-w-md"
             >
-              <h3 className="text-lg font-serif text-[#5F2C7A] mb-4">
+              <h3 className="mb-4 text-lg font-serif text-primary">
                 Edit {fieldConfig[activeField].label}
               </h3>
 
-              {fieldConfig[activeField].type === "select" ? (
-                <select className="w-full border rounded-md p-2">
-                  {fieldConfig[activeField].options.map((opt) => (
+              {activeField === "avatar" ? (
+                <div className="space-y-3">
+                  <img
+                    src={tempValue || avatar}
+                    className="w-24 h-24 rounded-full mx-auto object-cover"
+                  />
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) setTempValue(URL.createObjectURL(file));
+                    }}
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="https://image.url"
+                    value={tempValue}
+                    onChange={(e) => setTempValue(e.target.value)}
+                    className="w-full border rounded-md p-2"
+                  />
+                </div>
+              ) : fieldConfig[activeField].type === "select" ? (
+                <select
+                  value={tempValue}
+                  onChange={(e) => setTempValue(e.target.value)}
+                  className="w-full border rounded-md p-2"
+                >
+                  {fieldConfig[activeField].options?.map((opt) => (
                     <option key={opt}>{opt}</option>
                   ))}
                 </select>
               ) : (
                 <input
                   type={fieldConfig[activeField].type}
-                  placeholder={fieldConfig[activeField].placeholder}
+                  value={tempValue}
+                  onChange={(e) => setTempValue(e.target.value)}
                   className="w-full border rounded-md p-2"
                 />
               )}
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button
+              <div className="flex justify-end gap-3 mt-6 ">
+                <Button
                   onClick={() => setActiveField(null)}
-                  className="text-sm text-gray-500 cursor-pointer"
+                  className="text-sm text-gray-500 border bg-transparent border-gray-300 cursor-pointer hover:text-white hover:bg-red-700"
                 >
                   Batal
-                </button>
-                <button className="px-4 py-2 bg-primary text-white text-sm rounded-md cursor-pointer">
-                  Simpan
+                </Button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className={`px-4 py-2 rounded-md text-sm text-white cursor-pointer hover:scale-75 ${
+                    isSaving ? "bg-primary/60 cursor-not-allowed" : "bg-primary"
+                  }`}
+                >
+                  {isSaving ? "Menyimpan..." : "Simpan"}
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,12 +1,12 @@
-import { product } from "@/data/product";
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 // icons
 import { GiFallingStar } from "react-icons/gi";
 import { Crown, ChevronRight } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { useProductStore } from "@/app/store/useProduct";
 
 /* ===== VARIANTS ===== */
 const fadeUp = {
@@ -29,17 +29,23 @@ const cardAnim = {
 };
 
 const Home = () => {
+  const { data, isLoading, getProducts } = useProductStore();
+
   const [page, setPage] = useState(0);
   const [showAll, setShowAll] = useState(false);
 
   const ITEMS_PER_PAGE = 6;
 
-  const paginatedProducts = product.slice(
+  useEffect(() => {
+    getProducts();
+  }, [getProducts]);
+
+  const paginatedProducts = data.slice(
     page * ITEMS_PER_PAGE,
     (page + 1) * ITEMS_PER_PAGE
   );
 
-  const displayedProducts = showAll ? product : product.slice(0, 6);
+  const displayedProducts = showAll ? data : data.slice(0, 6);
 
   return (
     <motion.div
@@ -62,7 +68,7 @@ const Home = () => {
         <div className="flex flex-row gap-5">
           <motion.div whileHover={{ scale: 1.05 }}>
             <Link
-              to="#"
+              to={"/product/customitation"}
               className="flex px-5 py-3 items-center bg-linear-to-r from-[#5F2C7A] to-[#9A79C3]
               rounded-lg gap-3 text-white shadow-lg shadow-black/50"
             >
@@ -98,28 +104,18 @@ const Home = () => {
                 150 Lavender <br /> Point
               </h2>
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 6px 16px rgba(0,0,0,0.12)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="rounded-md"
+
+            <Link
+              to="/badge"
+              className="block px-6 py-3 rounded-md bg-background"
             >
-              <Link
-                to="/badge"
-                className="block px-6 py-3 rounded-md bg-background"
-              >
-                <h1 className="text-center text-[#5F2C7A] font-medium text-xs leading-tight">
-                  View <br /> Rewards
-                </h1>
-              </Link>
-            </motion.div>
+              <h1 className="text-center text-[#5F2C7A] font-medium text-xs">
+                View <br /> Rewards
+              </h1>
+            </Link>
           </div>
-          <div className="w-full h-2 bg-purple-100 rounded-full overflow-hidden">
+
+          <div className="w-full h-2 bg-purple-100 rounded-full overflow-hidden mt-2">
             <div className="w-1/2 h-full bg-primary rounded-full" />
           </div>
         </motion.div>
@@ -131,58 +127,54 @@ const Home = () => {
           Best Seller
         </h1>
 
-        <motion.div
-          variants={staggerGrid}
-          key={page}
-          animate="show"
-          className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4"
-        >
-          {paginatedProducts.map((item) => (
-            <Link key={item.id} to={`/product/${item.id}`} className="block">
-              <motion.div
-                variants={cardAnim}
-                whileHover={{ y: -6 }}
-                className="flex flex-col bg-white rounded-lg shadow-md p-2 cursor-pointer"
-              >
-                <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <motion.div
+            variants={staggerGrid}
+            key={page}
+            animate="show"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4"
+          >
+            {paginatedProducts.map((item) => (
+              <Link key={item.id} to={`/product/${item.id}`} className="block">
+                <motion.div
+                  variants={cardAnim}
+                  whileHover={{ y: -6 }}
+                  className="flex flex-col bg-white rounded-lg shadow-md p-2 cursor-pointer"
+                >
+                  <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
 
-                <div className="mt-2 flex flex-col gap-1">
-                  <h2 className="text-xs font-semibold line-clamp-2">
-                    {item.title}
-                  </h2>
-                  <p className="text-xs font-medium text-primary">
-                    Rp {item.price.toLocaleString("id-ID")}
-                  </p>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
-        </motion.div>
+                  <div className="mt-2 flex flex-col gap-1">
+                    <h2 className="text-xs font-semibold line-clamp-2">
+                      {item.title}
+                    </h2>
+                    <p className="text-xs font-medium text-primary">
+                      Rp {item.price.toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </motion.div>
+        )}
 
         <div className="flex justify-end gap-3 mt-6">
           {page > 0 && (
-            <Button
-              onClick={() => setPage((p) => p - 1)}
-              className="flex items-center gap-1 bg-primary text-white shadow-lg shadow-black/40 cursor-pointer"
-            >
-              <ChevronRight className="rotate-180" />
-              Prev
+            <Button onClick={() => setPage((p) => p - 1)}>
+              <ChevronRight className="rotate-180 cursor-pointer" /> Prev
             </Button>
           )}
 
-          {(page + 1) * ITEMS_PER_PAGE < product.length && (
-            <Button
-              onClick={() => setPage((p) => p + 1)}
-              className="flex items-center gap-1 bg-primary text-white shadow-lg shadow-black/40 cursor-pointer"
-            >
-              Next Cake
-              <ChevronRight />
+          {(page + 1) * ITEMS_PER_PAGE < data.length && (
+            <Button onClick={() => setPage((p) => p + 1)}>
+              Next Cake <ChevronRight />
             </Button>
           )}
         </div>
@@ -194,14 +186,12 @@ const Home = () => {
 
         <motion.div
           variants={staggerGrid}
-          key={page}
           animate="show"
           className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
         >
           {displayedProducts.map((item) => (
-            <Link key={item.id} to={`/product/${item.id}`} className="block">
+            <Link key={item.id} to={`/product/${item.id}`}>
               <motion.div
-                key={item.id}
                 variants={cardAnim}
                 whileHover={{ scale: 1.05 }}
                 className="flex flex-col bg-white rounded-lg shadow-md p-2"
@@ -227,20 +217,15 @@ const Home = () => {
           ))}
         </motion.div>
 
-        {!showAll && product.length > 6 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex justify-center"
-          >
+        {!showAll && data.length > 6 && (
+          <div className="flex justify-center">
             <button
               onClick={() => setShowAll(true)}
-              className="px-6 py-2 rounded-full bg-primary text-white text-sm
-              font-medium shadow-lg shadow-black/40 active:scale-95 transition cursor-pointer"
+              className="px-6 py-2 rounded-full bg-primary text-white cursor-pointer"
             >
               Load More Cakes 🍰
             </button>
-          </motion.div>
+          </div>
         )}
       </motion.div>
     </motion.div>
