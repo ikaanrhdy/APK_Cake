@@ -1,4 +1,3 @@
-import { product } from "@/data/product";
 import { useState } from "react";
 
 // shadCN
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router";
+import { useProductStore } from "@/app/store/useProduct";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -23,10 +23,11 @@ const staggerGrid = {
 
 const Product = () => {
   const [page, setPage] = useState(0);
+  const { data } = useProductStore();
 
-  const totalPages = Math.ceil(product.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
 
-  const paginatedProducts = product.slice(
+  const paginatedProducts = data.slice(
     page * ITEMS_PER_PAGE,
     (page + 1) * ITEMS_PER_PAGE
   );

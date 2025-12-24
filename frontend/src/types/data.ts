@@ -10,6 +10,21 @@ export interface products {
   reviews: number;
 }
 
+export interface productsAdmin {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  price: number;
+  category: string;
+  size: string[];
+  rating: number;
+  reviews: number;
+  variant: string[];
+  stock: number;
+  note: string;
+}
+
 export interface productCart {
   id: string;
   title: string;

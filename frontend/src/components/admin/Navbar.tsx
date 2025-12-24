@@ -1,11 +1,16 @@
 import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLocation } from "react-router";
+import { menus } from "@/data/menu";
 
-type Props = {
+type NavbarProps = {
   onToggle: () => void;
 };
 
-const Navbar = ({ onToggle }: Props) => {
+const Navbar = ({ onToggle }: NavbarProps) => {
+  const location = useLocation();
+  const activeMenu = menus.find((m) => m.path === location.pathname);
+
   return (
     <motion.header
       initial={{ y: -16, opacity: 0 }}
@@ -13,7 +18,6 @@ const Navbar = ({ onToggle }: Props) => {
       transition={{ duration: 0.25 }}
       className="h-16 bg-card border-b border-border flex items-center gap-4 px-4 lg:px-6"
     >
-      {/* Hamburger */}
       <button
         onClick={onToggle}
         className="lg:hidden p-2 rounded-md hover:bg-muted transition"
@@ -21,7 +25,9 @@ const Navbar = ({ onToggle }: Props) => {
         <Menu className="w-5 h-5" />
       </button>
 
-      <h1 className="text-lg font-semibold">Dashboard</h1>
+      <h1 className="text-lg font-semibold">
+        {activeMenu ? activeMenu.name : "Dashboard"}
+      </h1>
     </motion.header>
   );
 };
