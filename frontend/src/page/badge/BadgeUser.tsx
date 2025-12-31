@@ -104,10 +104,12 @@ const BadgeUser = () => {
               </div>
             </div>
 
-            <div className="flex items-center text-xs text-gray-700 cursor-pointer">
-              <span>Lihat Semua Level</span>
-              <ChevronRight className="w-4 h-4" />
-            </div>
+            <Link to="/badge/detail">
+              <div className="flex items-center text-xs text-gray-700 cursor-pointer">
+                <span>Lihat Semua Level</span>
+                <ChevronRight className="w-4 h-4" />
+              </div>
+            </Link>
           </div>
 
           {/* progress */}
@@ -121,9 +123,11 @@ const BadgeUser = () => {
 
           <div className="flex justify-between text-[10px] text-gray-800">
             <span>Belanja & pertahankan level-mu sebelum 31.12.2025</span>
-            <span className="flex items-center gap-1 cursor-pointer">
-              Rincian <ChevronRight className="w-3 h-3" />
-            </span>
+            <Link to={"/badge/progess/history"}>
+              <span className="flex items-center gap-1 cursor-pointer">
+                Rincian <ChevronRight className="w-3 h-3" />
+              </span>
+            </Link>
           </div>
         </div>
       </motion.div>

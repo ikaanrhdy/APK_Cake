@@ -54,6 +54,9 @@ import ProductAdmin from "./page/admin/ProductAdmin";
 import FinanceAdmin from "./page/admin/FinanceAdmin";
 import AnalyticsAdmin from "./page/admin/AnalyticsAdmin";
 import { Toaster } from "sonner";
+import BadgeDetail from "./page/badge/BadgeDetail";
+import HistoryProgresBadge from "./page/badge/HistoryProgresBadge";
+import ProgresBadge from "./page/badge/ProgresBadge";
 
 function App() {
   return (
@@ -80,6 +83,12 @@ function App() {
         <Route element={<EditProfile />} path="/edit-profile" />
         {/* badge */}
         <Route element={<BadgeUser />} path="/badge" />
+        <Route element={<BadgeDetail />} path="/badge/detail" />
+        <Route
+          element={<HistoryProgresBadge />}
+          path="/badge/progess/history"
+        />
+        <Route element={<ProgresBadge />} path="/badge/progress" />
         {/* paymet */}
         <Route element={<PaymentBank />} path="/payment/bank" />
         <Route element={<PaymentDetail />} path="/payment/bank/detail" />

@@ -11,7 +11,6 @@ const UserLayout = () => {
 
   // 🔥 AMBIL ACTION
   const getProducts = useProductStore((s) => s.getProducts);
-  console.log("getProducts:", getProducts);
 
   // 🔥 LOAD SEKALI SAAT MASUK USER AREA
   useEffect(() => {
