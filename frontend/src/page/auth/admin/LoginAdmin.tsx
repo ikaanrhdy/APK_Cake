@@ -249,7 +249,7 @@ const LoginAdmin = () => {
                         whileTap={{ scale: 0.95 }}
                       >
                         <Link
-                          to="/fb-screen"
+                          to="/fb-screen-admin"
                           className="rounded-md bg-white shadow-md w-12 h-12 flex justify-center items-center"
                         >
                           <img

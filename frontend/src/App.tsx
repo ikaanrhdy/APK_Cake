@@ -57,6 +57,7 @@ import { Toaster } from "sonner";
 import BadgeDetail from "./page/badge/BadgeDetail";
 import HistoryProgresBadge from "./page/badge/HistoryProgresBadge";
 import ProgresBadge from "./page/badge/ProgresBadge";
+import FBScreenAdmin from "./page/auth/admin/FBAdmin";
 
 function App() {
   return (
@@ -135,6 +136,7 @@ function App() {
         {/* admin */}
         <Route path="/login-admin" element={<LoginAdmin />} />
         <Route path="/register-admin" element={<RegisterAdmin />} />
+        <Route path="/fb-screen-admin" element={<FBScreenAdmin />} />
 
         {/* password */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
