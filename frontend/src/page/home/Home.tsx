@@ -81,7 +81,7 @@ const Home = () => {
 
           <motion.div whileHover={{ scale: 1.05 }}>
             <Link
-              to="#"
+              to="/product"
               className="flex px-10 py-2 items-center bg-white rounded-lg gap-3
               shadow-lg shadow-black/50"
             >
