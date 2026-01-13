@@ -12,6 +12,7 @@ const Cart = () => {
 
   // ambil data dari store
   const items = useCartStore((state) => state.items);
+  console.log(items);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const increaseQty = useCartStore((state) => state.increaseQty);
   const decreaseQty = useCartStore((state) => state.decreaseQty);
@@ -103,7 +104,7 @@ const Cart = () => {
                   )}
                   <div className="flex gap-3">
                     <span className="text-[9px] md:text-sm text-red-500">
-                      Rp {item.price.toLocaleString("id-ID")}
+                      Rp {(item.finalPrice * item.qty).toLocaleString("id-ID")}
                     </span>
                   </div>
                 </div>
@@ -113,7 +114,7 @@ const Cart = () => {
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     className="px-2 md:px-3 py-1 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => decreaseQty(item.id)}
+                    onClick={() => decreaseQty(item.id, item.selectedSize)}
                   >
                     −
                   </motion.button>
@@ -125,7 +126,7 @@ const Cart = () => {
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     className="px-2 md:px-3 py-1 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => increaseQty(item.id)}
+                    onClick={() => increaseQty(item.id, item.selectedSize)}
                   >
                     +
                   </motion.button>
@@ -136,7 +137,7 @@ const Cart = () => {
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.1 }}
                   onClick={() => {
-                    removeFromCart(item.id);
+                    removeFromCart(item.id, item.selectedSize);
                     toast.success("Produk dihapus dari keranjang");
                   }}
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 cursor-pointer transition"

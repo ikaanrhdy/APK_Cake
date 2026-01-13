@@ -33,7 +33,7 @@ export interface productCart {
   image: string;
   price: number;
   category: string;
-  size: string;
+  size: string[];
   rating: number;
   reviews: number;
 }

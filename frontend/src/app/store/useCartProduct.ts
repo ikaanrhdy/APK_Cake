@@ -1,8 +1,11 @@
 import { create } from "zustand";
 import type { productCart } from "@/types/data";
+import { calculatePriceBySize } from "@/utils/data";
 
 export type CartItem = productCart & {
   qty: number;
+  selectedSize: string;
+  finalPrice: number;
 };
 
 export type CheckoutData = {
@@ -15,10 +18,10 @@ type CartState = {
   totalQty: number;
   totalPrice: number;
 
-  addToCart: (product: productCart) => void;
-  removeFromCart: (id: string) => void;
-  increaseQty: (id: string) => void;
-  decreaseQty: (id: string) => void;
+  addToCart: (product: productCart, selectedSize: string) => void;
+  removeFromCart: (id: string, selectedItems: string) => void;
+  increaseQty: (id: string, selectedItems: string) => void;
+  decreaseQty: (id: string, selectedItems: string) => void;
   clearCart: () => void;
 
   // Checkout
@@ -34,58 +37,84 @@ export const useCartStore = create<CartState>((set, get) => ({
   totalQty: 0,
   totalPrice: 0,
 
-  addToCart: (product) => {
+  addToCart: (product: productCart, selectedSize: string) => {
     const items = get().items;
+
+    const finalPrice = calculatePriceBySize(
+      product.price,
+      product.size,
+      selectedSize
+    );
+
     const exist = items.find(
-      (i) => i.id === product.id && i.size === product.size
+      (i) => i.id === product.id && i.selectedSize === selectedSize
     );
 
     let newItems: CartItem[];
+
     if (exist) {
       newItems = items.map((i) =>
-        i.id === product.id && i.size === product.size
+        i.id === product.id && i.selectedSize === selectedSize
           ? { ...i, qty: i.qty + 1 }
           : i
       );
     } else {
-      newItems = [...items, { ...product, qty: 1 }];
+      newItems = [
+        ...items,
+        {
+          ...product,
+          size: [selectedSize],
+          qty: 1,
+          selectedSize,
+          finalPrice,
+        },
+      ];
     }
 
     set({
       items: newItems,
       totalQty: newItems.reduce((a, b) => a + b.qty, 0),
-      totalPrice: newItems.reduce((a, b) => a + b.qty * b.price, 0),
+      totalPrice: newItems.reduce((a, b) => a + b.qty * b.finalPrice, 0),
     });
   },
 
-  removeFromCart: (id) => {
-    const newItems = get().items.filter((i) => i.id !== id);
+  removeFromCart: (id: string, selectedSize: string) => {
+    const newItems = get().items.filter(
+      (i) => !(i.id === id && i.selectedSize === selectedSize)
+    );
+
     set({
       items: newItems,
       totalQty: newItems.reduce((a, b) => a + b.qty, 0),
-      totalPrice: newItems.reduce((a, b) => a + b.qty * b.price, 0),
+      totalPrice: newItems.reduce((a, b) => a + b.qty * b.finalPrice, 0),
     });
   },
 
-  increaseQty: (id) => {
+  increaseQty: (id: string, selectedSize: string) => {
     const newItems = get().items.map((i) =>
-      i.id === id ? { ...i, qty: i.qty + 1 } : i
+      i.id === id && i.selectedSize === selectedSize
+        ? { ...i, qty: i.qty + 1 }
+        : i
     );
     set({
       items: newItems,
       totalQty: newItems.reduce((a, b) => a + b.qty, 0),
-      totalPrice: newItems.reduce((a, b) => a + b.qty * b.price, 0),
+      totalPrice: newItems.reduce((a, b) => a + b.qty * b.finalPrice, 0),
     });
   },
 
-  decreaseQty: (id) => {
+  decreaseQty: (id: string, selectedSize: string) => {
     const newItems = get()
-      .items.map((i) => (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+      .items.map((i) =>
+        i.id === id && i.selectedSize === selectedSize
+          ? { ...i, qty: i.qty - 1 }
+          : i
+      )
       .filter((i) => i.qty > 0);
     set({
       items: newItems,
       totalQty: newItems.reduce((a, b) => a + b.qty, 0),
-      totalPrice: newItems.reduce((a, b) => a + b.qty * b.price, 0),
+      totalPrice: newItems.reduce((a, b) => a + b.qty * b.finalPrice, 0),
     });
   },
 
@@ -94,7 +123,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   // ================= CHECKOUT =================
   checkout: (selectedItems) => {
     const subtotal = selectedItems.reduce(
-      (sum, item) => sum + item.price * item.qty,
+      (sum, item) => sum + item.finalPrice * item.qty,
       0
     );
     const payload: CheckoutData = { items: selectedItems, subtotal };

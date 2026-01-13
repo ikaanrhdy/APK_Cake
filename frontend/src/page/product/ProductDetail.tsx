@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useCartStore } from "@/app/store/useCartProduct";
 import { toast } from "sonner";
+import { calculatePriceBySize } from "@/utils/data";
 
 /* ================= RATING ================= */
 const RatingStars = ({ rating }: { rating: number }) => (
@@ -43,6 +44,11 @@ const ProductDetail = () => {
 
   const otherProducts = product.filter((p) => p.id !== id);
   const displayed = otherProducts.slice(page, page + itemsPerPage);
+
+  const previewPrice = selectedSize
+    ? calculatePriceBySize(data.price, size, selectedSize)
+    : data.price;
+  console.log("previewPrice", previewPrice);
 
   return (
     <motion.div
@@ -91,7 +97,7 @@ const ProductDetail = () => {
         </div>
 
         <h4 className="text-sm font-medium md:text-lg">
-          Rp {data.price.toLocaleString("id-ID")}
+          Rp {previewPrice.toLocaleString("id-ID")}
         </h4>
       </div>
 
@@ -205,7 +211,7 @@ const ProductDetail = () => {
                 toast.error("Pilih ukuran terlebih dahulu!");
                 return;
               }
-              addToCart({ ...data, size: selectedSize }); // tambahkan size juga
+              addToCart(data, selectedSize); // tambahkan size juga
               toast.success("Berhasil masukan ke keranjang!");
             }}
             className="flex bg-primary text-white px-8 py-4 text-sm border border-gray-400  
