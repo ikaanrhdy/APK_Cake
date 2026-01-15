@@ -144,8 +144,7 @@ const ProductDetail = () => {
               <motion.div
                 key={item.id}
                 whileHover={{ y: -4 }}
-                className="min-w-[120px] md:min-w-40
-                  bg-white rounded-md shadow-md p-2 cursor-pointer"
+                className="min-w-30 md:min-w-40 bg-white rounded-md shadow-md p-2 cursor-pointer"
               >
                 <Link to={`/product/${item.id}`}>
                   <img

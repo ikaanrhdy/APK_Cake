@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 // UI
 import {
@@ -24,6 +24,9 @@ import { Eye, EyeOff, Mail, LockKeyhole, User, Phone } from "lucide-react";
 
 // motion
 import { m, LazyMotion, domAnimation } from "motion/react";
+import useAuthStore from "@/app/store/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/utils/firebase";
 
 // ======================
 // VALIDATION SCHEMA
@@ -34,7 +37,12 @@ const formSchema = z
       .string()
       .min(2, { message: "Name must be at least 2 characters long" }),
     email: z.string().email({ message: "Email is invalid" }),
-    phoneNumber: z.string().min(10, { message: "Phone number is invalid" }),
+    phoneNumber: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 10, {
+        message: "Phone number is invalid",
+      }),
     password: z
       .string()
       .min(6, { message: "Password must be at least 6 characters long" }),
@@ -50,6 +58,8 @@ const formSchema = z
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { setLoading, setError } = useAuthStore();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -62,8 +72,17 @@ const Register = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      setLoading(true);
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+      navigate("/2fa");
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Stagger variant untuk form fields

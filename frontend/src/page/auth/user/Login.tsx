@@ -17,7 +17,10 @@ import { motion } from "framer-motion";
 // icons
 import { Eye, EyeOff, Mail, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import useAuthStore from "@/app/store/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/utils/firebase";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email is invalid" }),
@@ -48,6 +51,8 @@ const childVariant = {
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { setLoading, setError } = useAuthStore();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -57,8 +62,17 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      setLoading(true);
+
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      navigate("/2fa");
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

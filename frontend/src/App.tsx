@@ -58,21 +58,13 @@ import BadgeDetail from "./page/badge/BadgeDetail";
 import HistoryProgresBadge from "./page/badge/HistoryProgresBadge";
 import ProgresBadge from "./page/badge/ProgresBadge";
 import FBScreenAdmin from "./page/auth/admin/FBAdmin";
+import ProtectedRoutes from "./middleware/ProtectedRoutes";
 
 function App() {
   return (
     <>
       <Toaster position="bottom-right" richColors closeButton />
       <Routes>
-        {/* user */}
-        <Route element={<UserLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/profile" element={<Profile />} />
-          {/* product */}
-          <Route element={<ProductDetail />} path="/product/:id" />
-        </Route>
         {/* admin */}
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<DashboardAdmin />} />
@@ -80,49 +72,69 @@ function App() {
           <Route path="/admin/finance" element={<FinanceAdmin />} />
           <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
         </Route>
-        {/* profile */}
-        <Route element={<EditProfile />} path="/edit-profile" />
-        {/* badge */}
-        <Route element={<BadgeUser />} path="/badge" />
-        <Route element={<BadgeDetail />} path="/badge/detail" />
-        <Route
-          element={<HistoryProgresBadge />}
-          path="/badge/progess/history"
-        />
-        <Route element={<ProgresBadge />} path="/badge/progress" />
-        {/* paymet */}
-        <Route element={<PaymentBank />} path="/payment/bank" />
-        <Route element={<PaymentDetail />} path="/payment/bank/detail" />
 
-        {/* chat */}
-        <Route element={<ScreenCS />} path="/chat-bot" />
-        <Route element={<ScreenPusatBantuan />} path="/help" />
+        {/* user */}
+        <Route element={<ProtectedRoutes />}>
+          <Route element={<UserLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/product" element={<Product />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/profile" element={<Profile />} />
+            {/* product */}
+            <Route element={<ProductDetail />} path="/product/:id" />
+          </Route>
+          {/* profile */}
+          <Route element={<EditProfile />} path="/edit-profile" />
+          {/* badge */}
+          <Route element={<BadgeUser />} path="/badge" />
+          <Route element={<BadgeDetail />} path="/badge/detail" />
+          <Route
+            element={<HistoryProgresBadge />}
+            path="/badge/progess/history"
+          />
+          <Route element={<ProgresBadge />} path="/badge/progress" />
+          {/* paymet */}
+          <Route element={<PaymentBank />} path="/payment/bank" />
+          <Route element={<PaymentDetail />} path="/payment/bank/detail" />
 
-        {/* cart */}
-        <Route element={<Cart />} path="/cart" />
-        {/* cart */}
-        <Route element={<Checkout />} path="/checkout" />
-        <Route element={<CheckoutDetail />} path="/checkout/:id/detail" />
-        {/* customitation AI */}
-        <Route
-          element={<CustomitationWithAi />}
-          path="/product/customitation"
-        />
+          {/* chat */}
+          <Route element={<ScreenCS />} path="/chat-bot" />
+          <Route element={<ScreenPusatBantuan />} path="/help" />
 
-        <Route element={<CheckManual />} path="/product/:id/checkoutManual" />
-        <Route element={<OrderPage />} path="/order" />
-        <Route element={<OrderTrackingPage />} path="/order/tracking" />
+          {/* cart */}
+          <Route element={<Cart />} path="/cart" />
+          {/* cart */}
+          <Route element={<Checkout />} path="/checkout" />
+          <Route element={<CheckoutDetail />} path="/checkout/:id/detail" />
+          {/* customitation AI */}
+          <Route
+            element={<CustomitationWithAi />}
+            path="/product/customitation"
+          />
 
-        {/* settings */}
-        <Route path="/profile/settings" element={<SettingDetails />} />
-        <Route path="/profile/settings/account" element={<SettingAccount />} />
-        <Route path="/profile/settings/account/add" element={<AddAddress />} />
-        <Route path="/profile/settings/address" element={<SettingAddress />} />
-        <Route
-          path="/profile/settings/language"
-          element={<SettingLanguage />}
-        />
+          <Route element={<CheckManual />} path="/product/:id/checkoutManual" />
+          <Route element={<OrderPage />} path="/order" />
+          <Route element={<OrderTrackingPage />} path="/order/tracking" />
 
+          {/* settings */}
+          <Route path="/profile/settings" element={<SettingDetails />} />
+          <Route
+            path="/profile/settings/account"
+            element={<SettingAccount />}
+          />
+          <Route
+            path="/profile/settings/account/add"
+            element={<AddAddress />}
+          />
+          <Route
+            path="/profile/settings/address"
+            element={<SettingAddress />}
+          />
+          <Route
+            path="/profile/settings/language"
+            element={<SettingLanguage />}
+          />
+        </Route>
         {/* spalsh */}
         <Route path="/" element={<SplashScreen />} />
         {/* auth */}

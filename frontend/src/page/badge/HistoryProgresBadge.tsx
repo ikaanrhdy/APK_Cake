@@ -89,16 +89,7 @@ const HistoryProgresBadge = () => {
               <div className="min-w-0">
                 <p className="text-xs text-gray-500">{trx.type}</p>
 
-                <p
-                  className="
-                    text-sm font-medium text-gray-800
-                    truncate
-                    max-w-[180px]
-                    sm:max-w-[260px]
-                    md:max-w-[360px]
-                    lg:max-w-[520px]
-                  "
-                >
+                <p className="text-sm font-medium text-gray-800 truncate max-w-45 sm:max-w-65 md:max-w-90 lg:max-w-130">
                   {trx.title}
                 </p>
 
