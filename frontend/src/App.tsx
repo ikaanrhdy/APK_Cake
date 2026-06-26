@@ -23,7 +23,6 @@ import Register from "./page/auth/user/Register";
 import VerifyLogin from "./page/auth/user/VerifyLogin";
 // admin
 import LoginAdmin from "./page/auth/admin/LoginAdmin";
-import RegisterAdmin from "./page/auth/admin/RegisterAdmin";
 // layout
 import UserLayout from "./layout/UserLayout";
 
@@ -74,16 +73,19 @@ function App() {
         </Route>
 
         {/* user */}
+        <Route element={<UserLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/product" element={<Product />} />
+          {/* product */}
+
+          <Route element={<ProductDetail />} path="/product/:id" />
+        </Route>
         <Route element={<ProtectedRoutes />}>
-          <Route element={<UserLayout />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/product" element={<Product />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/profile" element={<Profile />} />
-            {/* product */}
-            <Route element={<ProductDetail />} path="/product/:id" />
-          </Route>
           {/* profile */}
+          <Route element={<UserLayout />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/payment" element={<Payment />} />
+          </Route>
           <Route element={<EditProfile />} path="/edit-profile" />
           {/* badge */}
           <Route element={<BadgeUser />} path="/badge" />
@@ -147,7 +149,6 @@ function App() {
 
         {/* admin */}
         <Route path="/login-admin" element={<LoginAdmin />} />
-        <Route path="/register-admin" element={<RegisterAdmin />} />
         <Route path="/fb-screen-admin" element={<FBScreenAdmin />} />
 
         {/* password */}

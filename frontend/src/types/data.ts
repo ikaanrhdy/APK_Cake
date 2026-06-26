@@ -48,7 +48,7 @@ export interface Profile {
 
   updateField: (
     field: keyof Omit<Profile, "updateField" | "reset">,
-    value: string
+    value: string,
   ) => void;
   reset: () => void;
 }

@@ -18,107 +18,102 @@ const itemVariants = {
 const GetStarted = () => {
   return (
     <motion.div
-      className="grid sm:grid-cols-1 lg:grid-cols-2 items-center justify-center bg-purple-100 min-h-screen w-full"
+      className="grid sm:grid-cols-1 lg:grid-cols-2 items-center min-h-screen w-full bg-purple-100"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       {/* Logo */}
-      <motion.div className="flex justify-center" variants={itemVariants}>
+      <motion.div
+        className="flex justify-center items-center p-8"
+        variants={itemVariants}
+      >
         <motion.img
           src="/logo/logo.png"
           alt="logo"
           initial={{ opacity: 0, scale: 0.8, y: -10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="sm:w-20 sm:h-20 md:w-60 md:h-60 lg:w-80 lg:h-80"
+          className="sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-110 lg:h-110 object-contain"
         />
       </motion.div>
 
-      {/* Buttons + Social Login */}
+      {/* Buttons */}
       <motion.div
-        className="flex flex-col justify-center items-center space-y-8"
+        className="flex flex-col justify-center items-center gap-4 p-5 w-full"
         variants={containerVariants}
       >
-        <div className="flex flex-col space-y-4 w-full items-center">
-          {/* Sign In */}
-          <motion.div
-            variants={itemVariants}
-            className="w-full flex justify-center"
+        {/* Login */}
+        <motion.div
+          variants={itemVariants}
+          className="w-full flex justify-center"
+        >
+          <Button
+            asChild
+            className="w-3/4 bg-purple-900 text-white hover:bg-purple-700"
           >
-            <Button
-              asChild
-              className="btn w-3/4 bg-purple-900 text-white hover:bg-purple-700"
-            >
-              <Link to="/login">Sign In</Link>
-            </Button>
-          </motion.div>
+            <Link to="/login">Login</Link>
+          </Button>
+        </motion.div>
 
-          {/* Sign Up */}
-          <motion.div
-            variants={itemVariants}
-            className="w-full flex justify-center"
+        {/* Register */}
+        <motion.div
+          variants={itemVariants}
+          className="w-full flex justify-center"
+        >
+          <Button
+            asChild
+            className="w-3/4 bg-white border border-purple-800 text-purple-800 hover:bg-purple-50"
           >
-            <Button
-              asChild
-              className="btn w-3/4 bg-white border border-purple-800 text-purple-800 hover:bg-gray-300"
-            >
-              <Link to="/register">Sign Up</Link>
-            </Button>
-          </motion.div>
+            <Link to="/register">Register</Link>
+          </Button>
+        </motion.div>
 
-          {/* Admin */}
-          <motion.div
-            variants={itemVariants}
-            className="w-full flex justify-center"
+        {/* Continue as Guest */}
+        <motion.div
+          variants={itemVariants}
+          className="w-full flex justify-center"
+        >
+          <Button
+            asChild
+            variant="ghost"
+            className="w-3/4 border border-gray-300 text-[#364153] hover:bg-gray-100"
           >
-            <Button asChild className="btn w-3/4 bg-purple-900 text-white">
-              <Link to="/login-admin">Sign In as Admin</Link>
-            </Button>
-          </motion.div>
+            <Link to="/home">Continue as Guest</Link>
+          </Button>
+        </motion.div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 w-3/4">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="text-sm text-gray-400">atau</span>
+          <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        {/* Social Login */}
+        {/* Login as Admin */}
         <motion.div
-          className="flex flex-col space-y-2 items-center"
           variants={itemVariants}
+          className="w-full flex justify-center"
         >
-          <h2>Or Login with</h2>
-
-          <div className="flex flex-row justify-center gap-8">
-            {/* Google */}
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 250 }}
-              className="flex justify-center items-center bg-white rounded-md cursor-pointer 
-              p-1 w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 lg:p-2 shadow-sm hover:shadow-lg"
-            >
-              <Link to="">
-                <img
-                  src="/logo/google.png"
-                  alt="google"
-                  className="w-5 h-5 md:w-7 md:h-7 lg:w-10 lg:h-10"
-                />
-              </Link>
-            </motion.div>
-
-            {/* Facebook */}
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 250 }}
-              className="flex justify-center items-center bg-white rounded-md cursor-pointer 
-              p-1 w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 lg:p-2 shadow-sm hover:shadow-lg"
-            >
-              <Link to="/fb-screen">
-                <img
-                  src="/logo/fb.png"
-                  alt="fb"
-                  className="w-6 h-6 md:w-9 md:h-9 lg:w-12 lg:h-12"
-                />
-              </Link>
-            </motion.div>
-          </div>
+          <Button
+            asChild
+            className="w-3/4 bg-purple-900 text-white hover:bg-purple-700"
+          >
+            <Link to="/login-admin">Login as Admin</Link>
+          </Button>
         </motion.div>
+
+        {/* Kebijakan */}
+        <p className="text-xs text-center text-[#6A7282] pt-2">
+          Dengan melanjutkan, Anda menyetujui{" "}
+          <span className="text-purple-800 underline cursor-pointer">
+            Syarat & Ketentuan
+          </span>{" "}
+          dan{" "}
+          <span className="text-purple-800 underline cursor-pointer">
+            Kebijakan Privasi
+          </span>
+        </p>
       </motion.div>
     </motion.div>
   );

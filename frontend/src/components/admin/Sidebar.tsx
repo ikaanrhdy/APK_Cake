@@ -72,7 +72,7 @@ const SidebarContent = ({
       {/* Top: Logo + Menu */}
       <div>
         <div className="h-16 flex items-center px-6 text-xl font-semibold text-primary">
-          Panel
+          Admin Citra
         </div>
 
         <nav className="px-2 space-y-1">

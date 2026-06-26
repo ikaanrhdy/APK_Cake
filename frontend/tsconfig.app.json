@@ -8,12 +8,9 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
 
-    // tailwindcss 
-    "baseUrl": ".",
+    // tailwindcss
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
 
     /* Bundler mode */

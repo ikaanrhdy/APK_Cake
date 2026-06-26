@@ -116,8 +116,11 @@ export const ProductModal = ({
               <input
                 type="number"
                 placeholder="Harga"
-                value={form.price}
-                onChange={(e) => updateField("price", Number(e.target.value))}
+                value={form.price === 0 ? "" : form.price}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/^0+/, "");
+                  updateField("price", value === "" ? 0 : Number(value));
+                }}
                 className="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
               />
             </div>
@@ -192,8 +195,11 @@ export const ProductModal = ({
               <input
                 type="number"
                 placeholder="Stok"
-                value={form.stock}
-                onChange={(e) => updateField("stock", Number(e.target.value))}
+                value={form.stock === 0 ? "" : form.stock}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/^0+/, "");
+                  updateField("stock", value === "" ? 0 : Number(value));
+                }}
                 className="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
               />
             </div>

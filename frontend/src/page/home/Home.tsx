@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 // icons
-import { GiFallingStar } from "react-icons/gi";
 import { Crown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProductStore } from "@/app/store/useProduct";
@@ -42,7 +41,7 @@ const Home = () => {
 
   const paginatedProducts = data.slice(
     page * ITEMS_PER_PAGE,
-    (page + 1) * ITEMS_PER_PAGE
+    (page + 1) * ITEMS_PER_PAGE,
   );
 
   const displayedProducts = showAll ? data : data.slice(0, 6);
@@ -60,7 +59,7 @@ const Home = () => {
             Lavender <br className="block md:hidden" /> Dreams
           </h1>
           <p className="font-medium font-serif text-primary text-xs md:text-sm">
-            AI-Power Cake <br className="block md:hidden" />
+            Custom Cake <br className="block md:hidden" />
             Customization studio
           </p>
         </div>
@@ -72,21 +71,13 @@ const Home = () => {
               className="flex px-5 py-3 items-center bg-linear-to-r from-[#5F2C7A] to-[#9A79C3]
               rounded-lg gap-3 text-white shadow-lg shadow-black/50"
             >
-              <GiFallingStar className="scale-x-[-1] w-8 h-8" />
-              <h2 className="text-xs font-Inter text-center">
-                Start <br /> Creating
-              </h2>
-            </Link>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Link
-              to="/product"
-              className="flex px-10 py-2 items-center bg-white rounded-lg gap-3
-              shadow-lg shadow-black/50"
-            >
-              <h2 className="font-Inter text-sm text-center">
-                View <br /> Gallery
+              <img
+                src="/icon/Kustomisasi.svg"
+                alt="icon-kustomisasi"
+                className="w-5 h-5"
+              />
+              <h2 className="text-[12px] font-Inter text-center">
+                Start Customization
               </h2>
             </Link>
           </motion.div>
