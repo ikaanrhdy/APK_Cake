@@ -1,5 +1,11 @@
 import { useLocation, useNavigate } from "react-router";
-import { ArrowLeft, MapPin, Truck, TicketPercent, Wallet } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
+
+const paymentLabels: Record<string, string> = {
+  transfer: "Transfer Bank",
+  cod: "COD (Bayar di Tempat)",
+  pickup: "Ambil di Tempat",
+};
 
 const CheckoutDetail = () => {
   const navigate = useNavigate();
@@ -13,87 +19,96 @@ const CheckoutDetail = () => {
     );
   }
 
-  const { item, subtotal, shipping, voucher, payment } = state;
-  const total = subtotal + shipping - voucher;
+  const {
+    item,
+    subtotal,
+    shipping,
+    serviceFee,
+    nama,
+    alamat,
+    telepon,
+    payment,
+    bankName,
+  } = state;
+
+  const total = subtotal + shipping + serviceFee;
+  const paymentLabel = paymentLabels[payment] ?? payment;
 
   return (
-    <div className="min-h-screen flex flex-col ">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* ================= HEADER ================= */}
       <div className="bg-white border-b px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-full hover:bg-gray-300 cursor-pointer"
+          className="p-2 rounded-full hover:bg-gray-100 cursor-pointer"
         >
-          <ArrowLeft />
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <h2 className="font-medium">Detail Checkout</h2>
       </div>
 
       {/* ================= CONTENT ================= */}
       <div className="flex-1 space-y-3 p-4 max-w-3xl mx-auto w-full">
-        {/* ADDRESS */}
-        <div className="bg-white p-4 rounded-md border flex gap-3">
-          <MapPin className="text-primary" />
-          <div>
-            <p className="font-medium">Hana Nana</p>
-            <p className="text-sm text-gray-500">
-              Jl. Mawar No.12, Jakarta Selatan
-            </p>
+        {/* ===== ALAMAT PENGIRIMAN ===== */}
+        <div className="bg-white p-4 rounded-md border space-y-2">
+          <p className="text-sm font-semibold">Alamat Pengiriman</p>
+          <div className="flex gap-2">
+            <MapPin className="text-primary shrink-0 mt-0.5" size={16} />
+            <div className="text-sm space-y-0.5">
+              <p>
+                <span className="font-medium">{nama || "Tidak diisi"}</span>{" "}
+                <span className="text-gray-500">
+                  ({telepon || "Tidak diisi"})
+                </span>
+              </p>
+              <p className="text-gray-500">{alamat || "Tidak diisi"}</p>
+            </div>
           </div>
         </div>
 
-        {/* PRODUCT */}
-        <div className="bg-white border rounded-md p-4 flex gap-4">
+        {/* ===== PRODUCT ===== */}
+        <div className="bg-white p-4 rounded-md border flex items-center gap-4">
           <img
             src={item.image}
-            className="w-20 h-20 object-contain border rounded"
+            alt={item.title}
+            className="w-16 h-16 object-cover border rounded-md shrink-0"
           />
-          <div className="flex-1">
-            <p className="font-medium text-sm">{item.title}</p>
-            <p className="text-xs text-gray-500">Qty: {item.qty}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium line-clamp-1">{item.title}</p>
+            <p className="text-sm font-semibold mt-1">
+              Rp {item.price.toLocaleString("id-ID")}
+            </p>
           </div>
-          <p className="font-semibold text-red-500">
-            Rp {(item.price * item.qty).toLocaleString("id-ID")}
-          </p>
+          <p className="text-xs text-gray-500 shrink-0">x{item.qty}</p>
         </div>
 
-        {/* SHIPPING */}
-        <div className="bg-white border rounded-md p-4 flex justify-between text-sm">
-          <div className="flex items-center gap-2 font-medium">
-            <Truck size={16} />
-            Ongkir
-          </div>
-          <span>Rp {shipping.toLocaleString("id-ID")}</span>
-        </div>
-
-        {/* SUMMARY */}
-        <div className="bg-white border rounded-md p-4 space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span>Rp {subtotal.toLocaleString("id-ID")}</span>
-          </div>
-
-          <div className="flex justify-between text-green-600">
-            <div className="flex items-center gap-2">
-              <TicketPercent size={16} />
-              Voucher
+        {/* ===== SUMMARY ===== */}
+        <div className="bg-white rounded-md border overflow-hidden text-sm">
+          <div className="p-4 space-y-2">
+            <div className="flex justify-between">
+              <span>Total `1 Produk</span>
+              <span>Rp {subtotal.toLocaleString("id-ID")}</span>
             </div>
-            <span>- Rp {voucher.toLocaleString("id-ID")}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <div className="flex items-center gap-2">
-              <Wallet size={16} />
-              Pembayaran
+            <div className="flex justify-between">
+              <span>Subtotal Pengiriman</span>
+              <span>Rp {shipping.toLocaleString("id-ID")}</span>
             </div>
-            <span>{payment}</span>
+            <div className="flex justify-between">
+              <span>Biaya Layanan</span>
+              <span>Rp {serviceFee.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Pembayaran</span>
+              <span>
+                {paymentLabel}
+                {payment === "transfer" && bankName ? ` • ${bankName}` : ""}
+              </span>
+            </div>
           </div>
 
-          <hr />
-
-          <div className="flex justify-between font-semibold text-base">
-            <span>Total</span>
-            <span className="text-red-500">
+          <div className="bg-primary/10 px-4 py-3 flex justify-between font-semibold">
+            <span>Total Pembayaran</span>
+            <span className="text-primary">
               Rp {total.toLocaleString("id-ID")}
             </span>
           </div>

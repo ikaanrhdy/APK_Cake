@@ -52,12 +52,15 @@ import DashboardAdmin from "./page/admin/DashboardAdmin";
 import ProductAdmin from "./page/admin/ProductAdmin";
 import FinanceAdmin from "./page/admin/FinanceAdmin";
 import AnalyticsAdmin from "./page/admin/AnalyticsAdmin";
-import { Toaster } from "sonner";
 import BadgeDetail from "./page/badge/BadgeDetail";
 import HistoryProgresBadge from "./page/badge/HistoryProgresBadge";
 import ProgresBadge from "./page/badge/ProgresBadge";
 import FBScreenAdmin from "./page/auth/admin/FBAdmin";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
+import KustomisasiAdmin from "./page/admin/KustomisasiAdmin";
+import { Toaster } from "sonner";
+import VerifyForgotPassword from "./page/auth/user/VerifyForgotPassword";
+import PengembalianPage from "./page/order/PengembalianPage";
 
 function App() {
   return (
@@ -70,6 +73,7 @@ function App() {
           <Route path="/admin/product" element={<ProductAdmin />} />
           <Route path="/admin/finance" element={<FinanceAdmin />} />
           <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
+          <Route path="/admin/kustomisasi" element={<KustomisasiAdmin />} />
         </Route>
 
         {/* user */}
@@ -116,6 +120,7 @@ function App() {
 
           <Route element={<CheckManual />} path="/product/:id/checkoutManual" />
           <Route element={<OrderPage />} path="/order" />
+          <Route element={<PengembalianPage />} path="/pengembalian/:id" />
           <Route element={<OrderTrackingPage />} path="/order/tracking" />
 
           {/* settings */}
@@ -153,6 +158,10 @@ function App() {
 
         {/* password */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="/reset-password-verify"
+          element={<VerifyForgotPassword />}
+        />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-password-success" element={<ResetPWSuccess />} />
       </Routes>

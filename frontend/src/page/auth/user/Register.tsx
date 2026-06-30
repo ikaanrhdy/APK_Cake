@@ -13,14 +13,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // icons
-import { Eye, EyeOff, Mail, LockKeyhole, User, Phone } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  ChevronLeft,
+} from "lucide-react";
 
 // motion
 import { m, LazyMotion, domAnimation } from "motion/react";
@@ -55,6 +62,20 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
+const formVariant = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+};
+
+const fieldVariant = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 140, damping: 16 },
+  },
+};
+
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -85,93 +106,149 @@ const Register = () => {
     }
   };
 
-  // Stagger variant untuk form fields
-  const formVariant = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.12 } },
-  };
-
-  const fieldVariant = {
-    hidden: { opacity: 0, y: 15 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring" as const, stiffness: 120 },
-    },
-  };
-
   return (
     <LazyMotion features={domAnimation}>
-      <m.div className="flex flex-col min-h-screen w-full bg-purple-100 gap-2">
-        {/* HEADER */}
+      <div className="min-h-screen w-full bg-purple-100 flex lg:items-stretch">
+        {/* LEFT — Branding panel (tablet & desktop only) */}
         <m.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col justify-center items-center py-6"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center items-center bg-purple-900 text-white p-10 relative overflow-hidden"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-roboto">
+          <m.img
+            src="/logo/logo.png"
+            alt="Logo"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="max-h-64 object-contain mb-8 relative z-10"
+          />
+          <h2 className="text-3xl lg:text-4xl font-bold text-center relative z-10">
             Create Account
-          </h1>
+          </h2>
+          <p className="text-purple-200 mt-2 text-center max-w-sm relative z-10">
+            Daftar sekarang dan mulai pengalamanmu bersama kami.
+          </p>
+
+          {/* decorative blobs */}
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-purple-700/40 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -right-10 w-80 h-80 bg-purple-600/30 rounded-full blur-3xl" />
         </m.div>
 
-        {/* MAIN CONTENT */}
-        <div className="flex flex-col md:flex-row flex-1">
-          {/* LEFT SECTION (DESKTOP ONLY) */}
-          <div className="hidden lg:flex flex-1 justify-center items-center p-4">
-            <m.img
-              src="/logo/logo.png"
-              alt="Logo"
-              className="max-h-[70%] w-auto object-contain"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 120,
-                damping: 12,
-                delay: 0.2,
-              }}
-            />
-          </div>
+        {/* RIGHT — Form */}
+        <div className="w-full md:w-1/2 lg:w-2/5 flex justify-center px-6 py-10 overflow-y-auto">
+          <div className="w-full max-w-md">
+            {/* Back button */}
+            <m.button
+              type="button"
+              onClick={() => navigate(-1)}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+            >
+              <ChevronLeft size={26} />
+            </m.button>
 
-          {/* RIGHT SECTION - FORM */}
-          <div className="flex flex-col flex-2 justify-center p-8 overflow-y-auto">
+            {/* HEADER (mobile only) */}
+            <m.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="flex flex-col items-center text-center mt-4 mb-6 md:hidden"
+            >
+              <h1 className="text-2xl font-bold font-roboto text-gray-900">
+                Create Account
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Isi data diri kamu untuk mendaftar
+              </p>
+            </m.div>
+
+            {/* HEADER (desktop/tablet only) */}
+            <m.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="hidden md:block mb-6"
+            >
+              <h1 className="text-2xl lg:text-3xl font-bold font-roboto text-gray-900">
+                Register
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Lengkapi formulir berikut untuk membuat akun baru
+              </p>
+            </m.div>
+
+            {/* FORM */}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <CardContent className="space-y-4">
-                  <m.div
-                    variants={formVariant}
-                    initial="hidden"
-                    animate="show"
-                    className="space-y-3"
-                  >
-                    {/* NAME */}
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <m.div variants={fieldVariant}>
-                            <FormLabel>
-                              <h1 className="text-lg font-medium text-gray-500 pl-1">
-                                Name
-                              </h1>
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative bg-white/80 rounded-md border-2 border-gray-600">
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                                <Input
-                                  placeholder="Enter your Username"
-                                  className="pl-10"
-                                  {...field}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </m.div>
-                        </FormItem>
-                      )}
-                    />
+                <m.div variants={formVariant} initial="hidden" animate="show">
+                  <div className="space-y-5">
+                    {/* NAME + PHONE — 2 kolom mulai sm */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* NAME */}
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <m.div variants={fieldVariant}>
+                              <FormLabel>
+                                <span className="text-sm font-semibold text-gray-900">
+                                  Name
+                                </span>
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative bg-white rounded-xl border border-gray-200">
+                                  <User
+                                    size={18}
+                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                                  />
+                                  <Input
+                                    placeholder="Enter your name"
+                                    className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                                    {...field}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </m.div>
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* PHONE */}
+                      <FormField
+                        control={form.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                          <FormItem>
+                            <m.div variants={fieldVariant}>
+                              <FormLabel>
+                                <span className="text-sm font-semibold text-gray-900">
+                                  Phone Number
+                                </span>
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative bg-white rounded-xl border border-gray-200">
+                                  <Phone
+                                    size={18}
+                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                                  />
+                                  <Input
+                                    placeholder="Enter your phone number"
+                                    className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                                    {...field}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </m.div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     {/* EMAIL */}
                     <FormField
@@ -181,17 +258,20 @@ const Register = () => {
                         <FormItem>
                           <m.div variants={fieldVariant}>
                             <FormLabel>
-                              <h1 className="text-lg font-medium text-gray-500 pl-1">
+                              <span className="text-sm font-semibold text-gray-900">
                                 Email
-                              </h1>
+                              </span>
                             </FormLabel>
                             <FormControl>
-                              <div className="relative bg-white/80 rounded-md border-2 border-gray-600">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                              <div className="relative bg-white rounded-xl border border-gray-200">
+                                <Mail
+                                  size={18}
+                                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                                />
                                 <Input
                                   placeholder="Enter your email"
                                   type="email"
-                                  className="pl-10"
+                                  className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
                                   {...field}
                                 />
                               </div>
@@ -202,166 +282,148 @@ const Register = () => {
                       )}
                     />
 
-                    {/* PHONE */}
-                    <FormField
-                      control={form.control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <m.div variants={fieldVariant}>
-                            <FormLabel>
-                              <h1 className="text-lg font-medium text-gray-500 pl-1">
-                                Phone Number
-                              </h1>
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative bg-white/80 rounded-md border-2 border-gray-600">
-                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                                <Input
-                                  placeholder="Enter your phone number"
-                                  className="pl-10"
-                                  {...field}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </m.div>
-                        </FormItem>
-                      )}
-                    />
+                    {/* PASSWORD + CONFIRM — 2 kolom mulai sm */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* PASSWORD */}
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <m.div variants={fieldVariant}>
+                              <FormLabel>
+                                <span className="text-sm font-semibold text-gray-900">
+                                  Password
+                                </span>
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative bg-white rounded-xl border border-gray-200">
+                                  <Lock
+                                    size={18}
+                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                                  />
+                                  <Input
+                                    placeholder="Enter your password"
+                                    type={showPassword ? "text" : "password"}
+                                    className="pl-10 pr-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                                    {...field}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setShowPassword(!showPassword)
+                                    }
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black cursor-pointer"
+                                  >
+                                    {showPassword ? (
+                                      <EyeOff size={18} />
+                                    ) : (
+                                      <Eye size={18} />
+                                    )}
+                                  </button>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </m.div>
+                          </FormItem>
+                        )}
+                      />
 
-                    {/* PASSWORD */}
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <m.div variants={fieldVariant}>
-                            <FormLabel>
-                              <h1 className="text-lg font-medium text-gray-500 pl-1">
-                                Password
-                              </h1>
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative bg-white/80 rounded-md border-2 border-gray-600">
-                                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                                <Input
-                                  placeholder="Enter your Password"
-                                  type={showPassword ? "text" : "password"}
-                                  className="pl-10"
-                                  {...field}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setShowPassword(!showPassword)}
-                                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
-                                >
-                                  {showPassword ? (
-                                    <Eye size={20} />
-                                  ) : (
-                                    <EyeOff size={20} />
-                                  )}
-                                </button>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </m.div>
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* CONFIRM PASSWORD */}
-                    <FormField
-                      control={form.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <m.div variants={fieldVariant}>
-                            <FormLabel>
-                              <h1 className="text-lg font-medium text-gray-500 pl-1">
-                                Confirm Password
-                              </h1>
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative bg-white/80 rounded-md border-2 border-gray-600">
-                                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                                <Input
-                                  placeholder="Confirm your Password"
-                                  type={showConfirm ? "text" : "password"}
-                                  className="pl-10"
-                                  {...field}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setShowConfirm(!showConfirm)}
-                                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
-                                >
-                                  {showConfirm ? (
-                                    <Eye size={20} />
-                                  ) : (
-                                    <EyeOff size={20} />
-                                  )}
-                                </button>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </m.div>
-                        </FormItem>
-                      )}
-                    />
+                      {/* CONFIRM PASSWORD */}
+                      <FormField
+                        control={form.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <m.div variants={fieldVariant}>
+                              <FormLabel>
+                                <span className="text-sm font-semibold text-gray-900">
+                                  Confirm Password
+                                </span>
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative bg-white rounded-xl border border-gray-200">
+                                  <Lock
+                                    size={18}
+                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                                  />
+                                  <Input
+                                    placeholder="Confirm your password"
+                                    type={showConfirm ? "text" : "password"}
+                                    className="pl-10 pr-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                                    {...field}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowConfirm(!showConfirm)}
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black cursor-pointer"
+                                  >
+                                    {showConfirm ? (
+                                      <EyeOff size={18} />
+                                    ) : (
+                                      <Eye size={18} />
+                                    )}
+                                  </button>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </m.div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     {/* TERMS */}
                     <m.div
                       variants={fieldVariant}
-                      className="flex items-center gap-3 mb-2 pt-3"
+                      className="flex items-center gap-2.5 pt-1"
                     >
                       <Checkbox
                         id="terms"
                         className="bg-gray-300 border-2 border-gray-400 w-4 h-4"
                       />
-                      <Label htmlFor="terms">
-                        <span className="font-medium">
-                          I agree to the Terms of Service and Privacy Policy
-                        </span>
+                      <Label htmlFor="terms" className="text-sm text-gray-600">
+                        I agree to the Terms of Service and Privacy Policy
                       </Label>
                     </m.div>
-                  </m.div>
 
-                  {/* SUBMIT BUTTON */}
-                  <m.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                    className="flex justify-center"
-                  >
-                    <Button className="w-full bg-purple-900 h-12 text-lg hover:bg-purple-800 shadow-xl">
-                      Register
-                    </Button>
-                  </m.div>
-
-                  {/* LOGIN LINK */}
-                  <m.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.7 }}
-                    className="flex justify-center"
-                  >
-                    <h2>
-                      Already have an account?
-                      <Link
-                        to="/login"
-                        className="text-blue-500 pl-1 hover:text-blue-700 font-medium"
+                    {/* SUBMIT BUTTON */}
+                    <m.div
+                      variants={fieldVariant}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="pt-2"
+                    >
+                      <Button
+                        type="submit"
+                        className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800"
                       >
-                        Log In
-                      </Link>
-                    </h2>
-                  </m.div>
-                </CardContent>
+                        Register
+                      </Button>
+                    </m.div>
+
+                    {/* LOGIN LINK */}
+                    <m.div
+                      variants={fieldVariant}
+                      className="flex justify-center"
+                    >
+                      <p className="text-sm text-gray-600">
+                        Already have an account?{" "}
+                        <Link
+                          to="/login"
+                          className="text-purple-700 font-medium hover:text-purple-900 transition"
+                        >
+                          Log In
+                        </Link>
+                      </p>
+                    </m.div>
+                  </div>
+                </m.div>
               </form>
             </Form>
           </div>
         </div>
-      </m.div>
+      </div>
     </LazyMotion>
   );
 };

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { House, ShoppingBag, CircleUser, CreditCard } from "lucide-react";
+import { House, ShoppingBag, User } from "lucide-react";
 import { motion } from "motion/react";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
@@ -7,9 +7,12 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
 
   const menu = [
     { name: "Home", icon: <House size={20} />, path: "/home" },
-    { name: "Cake", icon: <ShoppingBag size={20} />, path: "/product" },
-    { name: "Payment", icon: <CreditCard size={20} />, path: "/payment" },
-    { name: "Profile", icon: <CircleUser size={20} />, path: "/profile" },
+    {
+      name: "Riwayat Belanja",
+      icon: <ShoppingBag size={20} />,
+      path: "/order",
+    },
+    { name: "Profile", icon: <User size={20} />, path: "/profile" },
   ];
 
   return (

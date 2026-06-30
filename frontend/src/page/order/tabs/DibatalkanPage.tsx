@@ -2,8 +2,21 @@ import { Button } from "@/components/ui/button";
 import { product } from "@/data/product";
 import { motion } from "framer-motion";
 
+type CancelStatus = "Pengembalian Selesai" | "Dibatalkan";
+
+const statusStyle: Record<CancelStatus, string> = {
+  "Pengembalian Selesai": "text-purple-600",
+  Dibatalkan: "text-primary",
+};
+
 const DibatalkanPage = () => {
-  const data = product;
+  // dummy status per item, ganti sesuai data asli dari backend
+  const data = product.slice(0, 5).map((item, i) => ({
+    ...item,
+    status: (i % 2 === 0
+      ? "Pengembalian Selesai"
+      : "Dibatalkan") as CancelStatus,
+  }));
 
   return (
     <motion.div
@@ -18,7 +31,7 @@ const DibatalkanPage = () => {
       }}
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6 lg:gap-8"
     >
-      {data.slice(0, 5).map((item) => (
+      {data.map((item) => (
         <motion.div
           key={item.id}
           variants={{
@@ -26,13 +39,13 @@ const DibatalkanPage = () => {
             show: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className=" flex flex-col gap-4 p-5 bg-white border border-gray-300 rounded-lg md:p-6 lg:p-7"
+          className="flex flex-col gap-4 p-5 bg-white border border-gray-300 rounded-lg md:p-6 lg:p-7"
         >
           {/* ================= HEADER ================= */}
           <div className="flex justify-between items-center">
             <h4 className="text-sm font-semibold">Custom Citra Cake</h4>
-            <p className="text-primary text-sm font-semibold">
-              Pengembalian Selesai
+            <p className={`text-sm font-semibold ${statusStyle[item.status]}`}>
+              {item.status}
             </p>
           </div>
 
@@ -60,20 +73,13 @@ const DibatalkanPage = () => {
               <p className="text-xs">x1</p>
               <p className="text-xs font-medium">Rp {item.price}</p>
               <p className="text-xs text-gray-600">
-                Total 1 Produk: Rp {item.price}
+                Jumlah Pengembalian Dana: Rp {item.price}
               </p>
             </div>
           </div>
 
           {/* ================= ACTION ================= */}
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              className="bg-gray-100 text-gray-600 cursor-pointer text-xs md:text-sm md:py-4 "
-            >
-              Rincian Pengembalian
-            </Button>
-
+          <div className="flex justify-end">
             <Button className="bg-purple-50 text-primary w-fit text-xs md:text-sm md:px-6 md:py-4 hover:text-white cursor-pointer">
               Beli Lagi
             </Button>

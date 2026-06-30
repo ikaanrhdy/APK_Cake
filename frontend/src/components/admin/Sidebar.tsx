@@ -78,6 +78,7 @@ const SidebarContent = ({
         <nav className="px-2 space-y-1">
           {menus.map((menu) => {
             const Icon = menu.icon;
+            console.log(menu.name, { Icon, iconUrl: menu.iconUrl });
             return (
               <NavLink
                 key={menu.name}
@@ -90,15 +91,9 @@ const SidebarContent = ({
                   <motion.div
                     whileHover={{ x: 4 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className={`
-                      flex items-center gap-3 px-4 py-2.5 rounded-md
-                      text-sm font-medium transition relative
-                      ${
-                        isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground"
-                      }
-                    `}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-md 
+                      text-sm font-medium transition relative 
+                      ${isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground"}`}
                   >
                     {isActive && (
                       <motion.span
@@ -106,9 +101,19 @@ const SidebarContent = ({
                         className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r bg-primary"
                       />
                     )}
-                    <Icon
-                      className={`w-4 h-4 ${isActive ? "text-primary" : ""}`}
-                    />
+
+                    {Icon ? (
+                      <Icon
+                        className={`w-4 h-4 ${isActive ? "text-primary" : ""}`}
+                      />
+                    ) : (
+                      <img
+                        src={menu.iconUrl}
+                        className="w-4 h-4"
+                        alt={menu.name}
+                      />
+                    )}
+
                     <span>{menu.name}</span>
                   </motion.div>
                 )}

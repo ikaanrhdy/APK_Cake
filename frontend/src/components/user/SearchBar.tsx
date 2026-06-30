@@ -4,6 +4,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Link } from "react-router";
 import type { RefObject } from "react";
+import { SearchX } from "lucide-react";
 
 interface SearchResultProps {
   isOpen: boolean;
@@ -23,12 +24,13 @@ const SearchResult = ({ isOpen, setIsOpen, inputRef }: SearchResultProps) => {
   const products = debounced
     ? allProducts
         .filter((item) =>
-          item.title.toLowerCase().includes(debounced.toLowerCase())
+          item.title.toLowerCase().includes(debounced.toLowerCase()),
         )
         .slice(0, limit)
     : [];
 
-  const isDropdownVisible = !!debounced && products.length > 0 && isOpen;
+  const hasQuery = !!debounced.trim();
+  const isDropdownVisible = hasQuery && isOpen;
 
   // klik di luar → tutup dropdown
   useEffect(() => {
@@ -47,6 +49,16 @@ const SearchResult = ({ isOpen, setIsOpen, inputRef }: SearchResultProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [inputRef, setIsOpen]);
 
+  // tombol Escape → tutup dropdown
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [setIsOpen]);
+
   if (!isDropdownVisible) return null;
 
   return (
@@ -58,30 +70,43 @@ const SearchResult = ({ isOpen, setIsOpen, inputRef }: SearchResultProps) => {
         Hasil pencarian untuk <b>“{debounced}”</b>
       </div>
 
-      <div className="flex flex-col max-h-80 overflow-y-auto">
-        {products.map((item) => (
-          <Link
-            key={item.id}
-            to={`/product/${item.id}`}
-            className="flex items-center gap-3 px-4 py-3 hover:bg-muted transition"
-            onClick={() => setIsOpen(false)}
-          >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-12 h-12 rounded-lg object-cover border"
-            />
-            <div className="flex flex-col">
-              <span className="text-sm font-medium line-clamp-1">
-                {item.title}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Rp {item.price?.toLocaleString("id-ID")}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {products.length > 0 ? (
+        <div className="flex flex-col max-h-80 overflow-y-auto">
+          {products.map((item) => (
+            <Link
+              key={item.id}
+              to={`/product/${item.id}`}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted transition"
+              onClick={() => setIsOpen(false)}
+            >
+              <img
+                src={item.image}
+                alt={item.title}
+                className="w-12 h-12 rounded-lg object-cover border bg-muted shrink-0"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src =
+                    "/placeholder.png";
+                }}
+              />
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-medium line-clamp-1">
+                  {item.title}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Rp {item.price?.toLocaleString("id-ID")}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-2 py-8 px-4 text-center">
+          <SearchX className="w-8 h-8 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            Produk dengan kata kunci <b>“{debounced}”</b> tidak ditemukan.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

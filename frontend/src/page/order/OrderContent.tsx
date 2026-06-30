@@ -1,7 +1,7 @@
 import BelumBayarPage from "./tabs/BelumBayarPage";
 import DibatalkanPage from "./tabs/DibatalkanPage";
-import DikemasPage from "./tabs/DikemasPage";
 import DikirimPage from "./tabs/DikirimPage";
+import Diproses from "./tabs/Diproses";
 import Pengembalian from "./tabs/Pengembalian";
 import SelesaiPage from "./tabs/SelesaiPage";
 
@@ -14,8 +14,8 @@ const OrderContent = ({ status }: Props) => {
     case "Belum Bayar":
       return <BelumBayarPage />;
 
-    case "Dikemas":
-      return <DikemasPage />;
+    case "DiProses":
+      return <Diproses />;
 
     case "Dikirim":
       return <DikirimPage />;

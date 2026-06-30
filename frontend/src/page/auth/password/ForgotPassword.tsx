@@ -89,7 +89,7 @@ const ForgotPassword = () => {
                 asChild
                 className="w-full bg-purple-900 text-white py-3 rounded-md hover:bg-purple-800 transition cursor-pointer"
               >
-                <Link to="/reset-password">Send Code</Link>
+                <Link to="/reset-password-verify">Send Code</Link>
               </Button>
             </m.div>
           </form>

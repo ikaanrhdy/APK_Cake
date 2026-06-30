@@ -1,207 +1,121 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { product } from "@/data/product";
-
-// Icons & UI
+import { motion } from "motion/react";
 import { ArrowLeft } from "lucide-react";
-import { FaPen } from "react-icons/fa";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 import { FaCartShopping } from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-const Size = ["12", "18", "20", "24", "30", "35", "40", "45", "50", "55"];
-const Variant = [
-  "Coklat",
-  "Vanilla",
-  "Red Velvet",
-  "Strawberry",
-  "2 Mix",
-  "3 Mix",
-  "Tiramisu",
-  "Blueberry",
-  "Almond",
-  "Black Forest",
-  "Pandan",
-  "Raspberry",
-];
+import { useCakeCustomization } from "@/hooks/useCakeCustomization";
+import PreviewCake from "@/components/user/Custom/PreviewCake";
+import UkuranSelector from "@/components/user/Custom/UkuranSelector";
+import LayerSelector from "@/components/user/Custom/LayerSelector";
+import DropdownPilihan from "@/components/user/Custom/DropdownPilihan";
+import ReferensiCake from "@/components/user/Custom/ReferensiCake";
+import DekorasiSection from "@/components/user/Custom/DekorasiSection";
+import UcapanCatatan from "@/components/user/Custom/UcapanCatatan";
+import TotalSummary from "@/components/user/Custom/TotalSummary";
 
 const container = {
   hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
 };
-
 const item = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0 },
 };
 
 const CustomitationWithAi = () => {
   const navigate = useNavigate();
-  const data = product[0];
+  const state = useCakeCustomization();
 
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedVariant, setSelectedVariant] = useState("");
-  const [aiEnabled, setAiEnabled] = useState(false);
+  const handleSubmit = (action: "cart" | "buy") => {
+    if (!state.isValid) {
+      toast.error(
+        "Lengkapi semua pilihan kustomisasi (ukuran, layer, base cake, tipe & warna cream)",
+      );
+      return;
+    }
+
+    toast.success(
+      action === "cart" ? "Ditambahkan ke keranjang" : "Lanjut ke pembelian",
+    );
+    if (action === "buy") navigate("/checkout");
+  };
 
   return (
     <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-3 bg-gray-50 min-h-screen"
     >
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <motion.div
         variants={item}
-        className="flex bg-white justify-between px-5 py-3 items-center shadow-sm"
+        className="flex bg-white justify-between px-5 py-3 items-center shadow-sm sticky top-0 z-10"
       >
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(-1)}
-          className="hover:bg-gray-300 rounded-full p-2 cursor-pointer  "
+          className="hover:bg-gray-100 rounded-full p-2 cursor-pointer"
         >
-          <ArrowLeft size={28} />
+          <ArrowLeft size={24} />
         </motion.button>
-
+        <h2 className="font-medium text-sm">Custom Cake</h2>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
           <Link
             to="/cart"
-            className="hover:bg-[#9555b8] rounded-full p-3 text-primary hover:text-white cursor-pointer"
+            className="hover:bg-primary/10 rounded-full p-2 text-primary cursor-pointer"
           >
-            <FaCartShopping size={24} />
+            <FaCartShopping size={20} />
           </Link>
         </motion.div>
       </motion.div>
 
-      {/* AI DESIGN */}
-      <motion.div
-        variants={item}
-        className="flex m-5 flex-col bg-linear-to-r from-[#9B7AC3] to-[#C199CA] p-5 rounded-md text-white gap-3"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex gap-3 items-center">
-            <FaPen size={18} />
-            <h6 className="text-sm font-bold">Desain dengan AI</h6>
-          </div>
-          <Switch
-            checked={aiEnabled}
-            onCheckedChange={setAiEnabled}
-            className="cursor-pointer"
-          />
-        </div>
-
-        {aiEnabled && (
-          <>
-            <p className="pl-4 text-sm">
-              Deskripsikan kue impian Anda dan AI akan
-              <br /> membuatkan desainnya
-            </p>
-
-            <Input
-              placeholder="Contoh: Kue ulang tahun unicorn biru"
-              className="bg-transparent placeholder:text-gray-300"
-            />
-
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              <Button className="bg-primary text-gray-200 w-full md:w-1/2">
-                Generate Desain
-              </Button>
-            </motion.div>
-          </>
-        )}
-      </motion.div>
-
-      {/* PRODUCT IMAGE */}
-      <motion.div
-        variants={item}
-        whileHover={{ scale: 1.05 }}
-        className="flex m-5 bg-white rounded-md p-5 justify-center"
-      >
-        <img
-          src={data?.image}
-          alt={data?.title}
-          className="w-40 h-40 md:w-60 md:h-60 object-contain"
-        />
-      </motion.div>
-
-      {/* SIZE */}
-      <motion.div variants={item} className="p-5 space-y-2">
-        <h3 className="font-bold text-lg">Pilih Ukuran</h3>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-          {Size.map((size) => (
-            <motion.button
-              key={size}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setSelectedSize(size)}
-              className={`py-2 rounded text-sm ${
-                selectedSize === size
-                  ? "bg-primary text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              {size} cm
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* VARIANT */}
-      <motion.div variants={item} className="p-5 space-y-2">
-        <h3 className="font-bold text-lg">Pilih Varian Rasa</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {Variant.map((variant) => (
-            <motion.button
-              key={variant}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setSelectedVariant(variant)}
-              className={`py-2 rounded text-sm ${
-                selectedVariant === variant
-                  ? "bg-primary text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              {variant}
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* TEXT */}
-
-      <motion.div variants={item} className="p-5 space-y-3">
-        <h3 className="font-bold text-lg">Tambah Ucapan</h3>
-        <div className="flex p-2">
-          <Input placeholder="Happy Birthday 🎉" className="border bg-white" />
-        </div>
-        <h3 className="font-bold text-lg">Catatan</h3>
-        <div className="flex p-2">
-          <Input placeholder="Catatan tambahan" className="border bg-white" />
-        </div>
-      </motion.div>
-
-      {/* ACTION */}
-      <motion.div
-        variants={item}
-        className="p-5 flex flex-col md:flex-row gap-3"
-      >
-        <motion.div whileTap={{ scale: 0.95 }} className="w-full">
-          <Button className="w-full bg-white border text-black cursor-pointer hover:text-white ">
-            Masukkan Keranjang
-          </Button>
+      <div className="px-4 space-y-4 max-w-2xl mx-auto w-full pb-6">
+        <motion.div variants={item}>
+          <PreviewCake state={state} />
         </motion.div>
-
-        <motion.div whileTap={{ scale: 0.95 }} className="w-full">
-          <Button className="w-full bg-primary text-white cursor-pointer">
-            Beli Sekarang
-          </Button>
+        <motion.div variants={item}>
+          <UkuranSelector state={state} />
         </motion.div>
+        <motion.div variants={item}>
+          <LayerSelector state={state} />
+        </motion.div>
+        <motion.div variants={item}>
+          <DropdownPilihan state={state} />
+        </motion.div>
+        <motion.div variants={item}>
+          <ReferensiCake state={state} />
+        </motion.div>
+        <motion.div variants={item}>
+          <DekorasiSection state={state} />
+        </motion.div>
+        <motion.div variants={item}>
+          <UcapanCatatan state={state} />
+        </motion.div>
+        <motion.div variants={item}>
+          <TotalSummary state={state} />
+        </motion.div>
+      </div>
+
+      {/* ================= FOOTER ACTION ================= */}
+      <motion.div
+        variants={item}
+        className="sticky bottom-0 bg-white border-t p-4 flex flex-col md:flex-row gap-3 max-w-2xl mx-auto w-full"
+      >
+        <Button
+          onClick={() => handleSubmit("cart")}
+          className="w-full bg-white border text-black cursor-pointer hover:text-white"
+        >
+          Masukkan Keranjang
+        </Button>
+        <Button
+          onClick={() => handleSubmit("buy")}
+          className="w-full bg-primary text-white cursor-pointer"
+        >
+          Beli Sekarang
+        </Button>
       </motion.div>
     </motion.div>
   );

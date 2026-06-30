@@ -20,9 +20,11 @@ export const useProductStore = create<ProductStore>((set) => ({
   updateProduct: (id, data) =>
     set((state) => ({
       products: state.products.map((p) =>
-        p.id === id ? { ...p, ...data } : p
+        p.id === id ? { ...p, ...data } : p,
       ),
     })),
   deleteProduct: (id) =>
-    set((state) => ({ products: state.products.filter((p) => p.id !== id) })),
+    set((state) => ({
+      products: state.products.filter((p) => p.id !== id),
+    })),
 }));

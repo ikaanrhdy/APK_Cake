@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 // icons
-import { Crown, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProductStore } from "@/app/store/useProduct";
+import { ProductCard } from "@/components/user/ProductCard";
 
 /* ===== VARIANTS ===== */
 const fadeUp = {
@@ -46,6 +47,13 @@ const Home = () => {
 
   const displayedProducts = showAll ? data : data.slice(0, 6);
 
+  const newestProducts = [...data]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 6);
+
   return (
     <motion.div
       initial="hidden"
@@ -56,11 +64,10 @@ const Home = () => {
       <motion.div variants={fadeUp} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <h1 className="font-bold text-2xl md:text-3xl lg:text-4xl font-serif">
-            Lavender <br className="block md:hidden" /> Dreams
+            Lavender Dreams
           </h1>
           <p className="font-medium font-serif text-primary text-xs md:text-sm">
-            Custom Cake <br className="block md:hidden" />
-            Customization studio
+            Custom Cake Customization studio
           </p>
         </div>
 
@@ -82,34 +89,6 @@ const Home = () => {
             </Link>
           </motion.div>
         </div>
-
-        <motion.div
-          variants={fadeUp}
-          className="bg-white rounded-md shadow-lg shadow-black/40 p-4 md:p-6"
-        >
-          <div className="flex justify-between items-center">
-            <Crown className="text-primary w-10 h-10" />
-            <div className="flex flex-col gap-1">
-              <h2 className="text-[#D77C43] font-medium">Gold Baker</h2>
-              <h2 className="text-primary font-medium">
-                150 Lavender <br /> Point
-              </h2>
-            </div>
-
-            <Link
-              to="/badge"
-              className="block px-6 py-3 rounded-md bg-background"
-            >
-              <h1 className="text-center text-[#5F2C7A] font-medium text-xs">
-                View <br /> Rewards
-              </h1>
-            </Link>
-          </div>
-
-          <div className="w-full h-2 bg-purple-100 rounded-full overflow-hidden mt-2">
-            <div className="w-1/2 h-full bg-primary rounded-full" />
-          </div>
-        </motion.div>
       </motion.div>
 
       {/* ===== BEST SELLER ===== */}
@@ -125,33 +104,15 @@ const Home = () => {
             variants={staggerGrid}
             key={page}
             animate="show"
-            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 items-stretch"
           >
             {paginatedProducts.map((item) => (
-              <Link key={item.id} to={`/product/${item.id}`} className="block">
-                <motion.div
-                  variants={cardAnim}
-                  whileHover={{ y: -6 }}
-                  className="flex flex-col bg-white rounded-lg shadow-md p-2 cursor-pointer"
-                >
-                  <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div className="mt-2 flex flex-col gap-1">
-                    <h2 className="text-xs font-semibold line-clamp-2">
-                      {item.title}
-                    </h2>
-                    <p className="text-xs font-medium text-primary">
-                      Rp {item.price.toLocaleString("id-ID")}
-                    </p>
-                  </div>
-                </motion.div>
-              </Link>
+              <ProductCard
+                key={item.id}
+                item={item}
+                cardAnim={cardAnim}
+                hoverEffect="lift"
+              />
             ))}
           </motion.div>
         )}
@@ -162,13 +123,44 @@ const Home = () => {
               <ChevronRight className="rotate-180 cursor-pointer" /> Prev
             </Button>
           )}
-
           {(page + 1) * ITEMS_PER_PAGE < data.length && (
             <Button onClick={() => setPage((p) => p + 1)}>
               Next Cake <ChevronRight />
             </Button>
           )}
         </div>
+      </motion.div>
+
+      {/* ===== TERBARU ===== */}
+      <motion.div variants={fadeUp} className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h1 className="font-bold font-roboto text-lg md:text-xl">Terbaru</h1>
+          <Link
+            to="/products?sort=terbaru"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Lihat Semua
+          </Link>
+        </div>
+
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <motion.div
+            variants={staggerGrid}
+            animate="show"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 items-stretch"
+          >
+            {newestProducts.map((item) => (
+              <ProductCard
+                key={item.id}
+                item={item}
+                cardAnim={cardAnim}
+                hoverEffect="lift"
+              />
+            ))}
+          </motion.div>
+        )}
       </motion.div>
 
       {/* ===== KATEGORI ===== */}
@@ -178,33 +170,15 @@ const Home = () => {
         <motion.div
           variants={staggerGrid}
           animate="show"
-          className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 items-stretch"
         >
           {displayedProducts.map((item) => (
-            <Link key={item.id} to={`/product/${item.id}`}>
-              <motion.div
-                variants={cardAnim}
-                whileHover={{ scale: 1.05 }}
-                className="flex flex-col bg-white rounded-lg shadow-md p-2"
-              >
-                <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-100">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="mt-2 flex flex-col gap-1">
-                  <h2 className="text-xs font-semibold line-clamp-2">
-                    {item.title}
-                  </h2>
-                  <p className="text-xs font-medium text-primary">
-                    Rp {item.price.toLocaleString("id-ID")}
-                  </p>
-                </div>
-              </motion.div>
-            </Link>
+            <ProductCard
+              key={item.id}
+              item={item}
+              cardAnim={cardAnim}
+              hoverEffect="scale"
+            />
           ))}
         </motion.div>
 

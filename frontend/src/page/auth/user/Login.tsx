@@ -9,13 +9,12 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
 // icons
-import { Eye, EyeOff, Mail, LockKeyhole } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import useAuthStore from "@/app/store/auth";
@@ -34,18 +33,18 @@ const parentVariant = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
+      staggerChildren: 0.12,
+      delayChildren: 0.15,
     },
   },
 };
 
 const childVariant = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" as const },
+    transition: { duration: 0.4, ease: "easeOut" as const },
   },
 };
 
@@ -76,52 +75,84 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-purple-100">
-      {/* HEADER */}
+    <div className="min-h-screen w-full bg-purple-100 flex lg:items-stretch">
+      {/* LEFT — Branding panel (tablet & desktop only) */}
       <motion.div
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="flex flex-col justify-center items-center py-4"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center items-center bg-purple-900 text-white p-10 relative overflow-hidden"
       >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-roboto">
+        <motion.img
+          src="/logo/logo.png"
+          alt="Logo"
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          className="max-h-64 object-contain mb-8 relative z-10"
+        />
+        <h2 className="text-3xl lg:text-4xl font-bold text-center relative z-10">
           Welcome Back!
-        </h1>
-        <motion.h3
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.6 }}
-          className="text-lg sm:text-xl md:text-2xl font-extralight"
-        >
-          Glad To See You Again!
-        </motion.h3>
+        </h2>
+        <p className="text-purple-200 mt-2 text-center max-w-sm relative z-10">
+          Glad to See You Again! Login to continue where you left off.
+        </p>
+
+        {/* decorative blobs */}
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-purple-700/40 rounded-full blur-3xl" />
+        <div className="absolute -bottom-24 -right-10 w-80 h-80 bg-purple-600/30 rounded-full blur-3xl" />
       </motion.div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* LEFT — Logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-          className="hidden lg:flex flex-1 justify-center items-center"
-        >
-          <motion.img
-            src="/logo/logo.png"
-            alt="Logo"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="max-h-full object-contain"
-          />
-        </motion.div>
+      {/* RIGHT — Form */}
+      <div className="w-full md:w-1/2 lg:w-2/5 flex justify-center items-center px-6 py-10">
+        <div className="w-full max-w-md">
+          {/* Back button */}
+          <motion.button
+            type="button"
+            onClick={() => navigate(-1)}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+          >
+            <ChevronLeft size={26} />
+          </motion.button>
 
-        {/* RIGHT — Form */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.65, ease: "easeOut" }}
-          className="flex flex-col flex-2 justify-center p-8 overflow-y-auto"
-        >
+          {/* HEADER (mobile only, since desktop shows it on the left panel) */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col items-center text-center mt-4 mb-8 md:hidden"
+          >
+            <h1 className="text-2xl font-bold font-roboto text-gray-900">
+              Welcome Back!
+            </h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
+              className="text-sm text-gray-500 mt-1"
+            >
+              Glad to See You Again!
+            </motion.p>
+          </motion.div>
+
+          {/* HEADER (desktop/tablet only, smaller, since logo panel is on the left) */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="hidden md:block mb-8"
+          >
+            <h1 className="text-2xl lg:text-3xl font-bold font-roboto text-gray-900">
+              Login
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Masukkan email dan password kamu untuk melanjutkan
+            </p>
+          </motion.div>
+
+          {/* FORM */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <motion.div
@@ -129,24 +160,27 @@ const Login = () => {
                 initial="hidden"
                 animate="show"
               >
-                <CardContent className="space-y-8 rounded-md">
+                <div className="space-y-5">
                   {/* Email */}
-                  <motion.div variants={childVariant} className="space-y-5">
+                  <motion.div variants={childVariant}>
                     <FormField
                       control={form.control}
                       name="email"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <h1 className="text-lg sm:text-xl font-medium text-gray-500 pl-1">
+                            <span className="text-sm font-semibold text-gray-900">
                               Email
-                            </h1>
+                            </span>
                           </FormLabel>
                           <FormControl>
-                            <div className="relative bg-white/80 rounded-md border-gray-600 border-2">
-                              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                            <div className="relative bg-white rounded-xl border border-gray-200">
+                              <Mail
+                                size={18}
+                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                              />
                               <Input
-                                className="pl-10"
+                                className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
                                 placeholder="Enter your email"
                                 type="email"
                                 {...field}
@@ -167,28 +201,31 @@ const Login = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <h1 className="text-lg sm:text-xl font-medium text-gray-500 pl-1">
+                            <span className="text-sm font-semibold text-gray-900">
                               Password
-                            </h1>
+                            </span>
                           </FormLabel>
                           <FormControl>
-                            <div className="relative bg-white/80 rounded-md border-gray-600 border-2">
-                              <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                            <div className="relative bg-white rounded-xl border border-gray-200">
+                              <Lock
+                                size={18}
+                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                              />
                               <Input
-                                className="h-10 pl-10"
-                                placeholder="Enter your Password"
+                                className="pl-10 pr-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                                placeholder="Enter your password"
                                 type={showPassword ? "text" : "password"}
                                 {...field}
                               />
                               <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
+                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black cursor-pointer"
                               >
                                 {showPassword ? (
-                                  <Eye size={20} />
+                                  <EyeOff size={18} />
                                 ) : (
-                                  <EyeOff size={20} />
+                                  <Eye size={18} />
                                 )}
                               </button>
                             </div>
@@ -197,24 +234,25 @@ const Login = () => {
                         </FormItem>
                       )}
                     />
+                  </motion.div>
+
+                  {/* Forgot password */}
+                  <motion.div variants={childVariant}>
                     <Link
                       to="/forgot-password"
-                      className="font-light pl-3 hover:text-gray-500"
+                      className="text-sm text-purple-700 hover:text-purple-900 transition"
                     >
-                      Forgot password?
+                      forgot password?
                     </Link>
                   </motion.div>
 
                   {/* Login Button */}
-                  <motion.div
-                    variants={childVariant}
-                    className="flex justify-center"
-                  >
+                  <motion.div variants={childVariant} className="pt-2">
                     <Button
-                      asChild
-                      className="w-full sm:w-3/4 md:w-1/2 lg:w-full bg-purple-900 text-xl h-12 font-light hover:bg-purple-800"
+                      type="submit"
+                      className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800"
                     >
-                      <Link to="/home">Login</Link>
+                      Login
                     </Button>
                   </motion.div>
 
@@ -223,63 +261,21 @@ const Login = () => {
                     variants={childVariant}
                     className="flex justify-center"
                   >
-                    <h2>
-                      Don't have an account?
+                    <p className="text-sm text-gray-600">
+                      Don't have an account?{" "}
                       <Link
                         to="/register"
-                        className="text-blue-500 font-medium pl-1 hover:text-blue-700"
+                        className="text-purple-700 font-medium hover:text-purple-900 transition"
                       >
                         Sign Up
                       </Link>
-                    </h2>
+                    </p>
                   </motion.div>
-
-                  {/* SOCIAL LOGIN */}
-                  <motion.div
-                    variants={childVariant}
-                    className="grid grid-rows-2 justify-center gap-2"
-                  >
-                    <div className="flex justify-center">
-                      <h3>Or Login With</h3>
-                    </div>
-                    <div className="flex justify-center gap-5">
-                      {/* Google */}
-                      <motion.a
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.95 }}
-                        href="#"
-                        className="rounded-md bg-white shadow-md w-12 h-12 flex justify-center items-center"
-                      >
-                        <img
-                          src="/logo/google.png"
-                          alt="google"
-                          className="w-8 h-8"
-                        />
-                      </motion.a>
-
-                      {/* Facebook */}
-                      <motion.div
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Link
-                          to="/fb-screen"
-                          className="rounded-md bg-white shadow-md w-12 h-12 flex justify-center items-center"
-                        >
-                          <img
-                            src="/logo/fb.png"
-                            alt="facebook"
-                            className="w-12 h-12"
-                          />
-                        </Link>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                </CardContent>
+                </div>
               </motion.div>
             </form>
           </Form>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

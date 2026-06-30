@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { product } from "@/data/product";
 import { motion } from "framer-motion";
 
-const DikemasPage = () => {
+const Diproses = () => {
   const data = product[0];
 
   return (
@@ -57,19 +57,15 @@ const DikemasPage = () => {
 
           {/* ================= INFO BUTTON ================= */}
           <Button className="bg-purple-50 text-gray-800 md:text-base md:py-6 lg:py-7 cursor-pointer">
-            Barang sedang dikemas!
+            Cake sedang diproses!
           </Button>
-
-          {/* ================= ACTION ================= */}
-          <div className="flex justify-end">
-            <Button className=" bg-purple-50 text-primary w-fit md:text-base md:px-8 md:py-6 cursor-pointer">
-              Batalkan Pesanan
-            </Button>
-          </div>
+          <p className="text-xs md:text-sm text-gray-600 italic text-center">
+            Pesanan sudah di proses pembuatan tidak bisa di batalkan!
+          </p>
         </motion.div>
       )}
     </div>
   );
 };
 
-export default DikemasPage;
+export default Diproses;

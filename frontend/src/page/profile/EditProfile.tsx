@@ -1,216 +1,194 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { LuFolderPen } from "react-icons/lu";
-import { useNavigate } from "react-router";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
-
-import { useProfileStore } from "@/app/store/useProfile";
+import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Camera,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-/* ================= TYPES ================= */
-
-type EditField =
-  | "name"
-  | "gender"
-  | "birthdate"
-  | "phone"
-  | "email"
-  | "avatar"
-  | null;
-
-type FieldConfig = {
-  label: string;
-  type: "text" | "email" | "tel" | "date" | "select";
-  options?: string[];
-};
-
-/* ================= CONFIG ================= */
-
-const fieldConfig: Record<Exclude<EditField, null>, FieldConfig> = {
-  name: { label: "Nama", type: "text" },
-  gender: {
-    label: "Jenis Kelamin",
-    type: "select",
-    options: ["Laki-laki", "Perempuan", "Lainnya"],
-  },
-  birthdate: { label: "Tanggal Lahir", type: "date" },
-  phone: { label: "No. Handphone", type: "tel" },
-  email: { label: "Email", type: "email" },
-  avatar: { label: "Foto Profil", type: "text" },
-};
-
-/* ================= COMPONENT ================= */
+interface EditProfileForm {
+  name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  birthDate: string;
+  address: string;
+}
 
 const EditProfile = () => {
   const navigate = useNavigate();
 
-  const { name, gender, birthdate, phone, email, avatar, updateField } =
-    useProfileStore();
+  const [form, setForm] = useState<EditProfileForm>({
+    name: "Ika Nur Hidayati",
+    email: "",
+    phone: "",
+    gender: "",
+    birthDate: "",
+    address: "",
+  });
 
-  const [activeField, setActiveField] = useState<EditField>(null);
-  const [tempValue, setTempValue] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-
-  const openEdit = (field: EditField) => {
-    if (!field) return;
-    setActiveField(field);
-    setTempValue(useProfileStore.getState()[field]);
+  const handleChange = (key: keyof EditProfileForm, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = async () => {
-    if (!activeField) return;
-
-    setIsSaving(true);
-
-    await new Promise((r) => setTimeout(r, 800)); // simulasi API
-
-    updateField(activeField, tempValue);
-
-    toast.success(`${fieldConfig[activeField].label} berhasil diperbarui`);
-
-    setIsSaving(false);
-    setActiveField(null);
+  const handleSave = () => {
+    console.log("Save profile:", form);
+    // TODO: panggil API update profile
+    navigate("/profile");
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 lg:flex lg:justify-center lg:pt-10">
-      <div className="w-full max-w-4xl bg-white lg:rounded-2xl lg:shadow-lg p-5 space-y-6">
-        {/* HEADER */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="border rounded-lg p-2 cursor-pointer"
-          >
-            <ChevronLeft />
-          </button>
-          <h2 className="text-primary font-serif text-lg">Profile Saya</h2>
-        </div>
-
-        {/* AVATAR */}
-        <div className="flex flex-col items-center gap-2">
-          <img
-            src={avatar}
-            className="w-24 h-24 rounded-full object-cover border"
-          />
-          <button
-            onClick={() => openEdit("avatar")}
-            className="flex items-center gap-1 text-primary text-sm hover:opacity-80 transition hover:scale-75 cursor-pointer"
-          >
-            <LuFolderPen size={16} />
-            Ubah Foto
-          </button>
-        </div>
-
-        {/* INFO */}
-        <div className="border rounded-md divide-y">
-          {[
-            ["Nama", name, "name"],
-            ["Jenis Kelamin", gender, "gender"],
-            ["Tanggal Lahir", birthdate, "birthdate"],
-            ["No. Handphone", phone, "phone"],
-            ["Email", email, "email"],
-          ].map(([label, value, key]) => (
-            <div
-              key={key}
-              onClick={() => openEdit(key as EditField)}
-              className="flex justify-between items-center px-3 py-3 cursor-pointer"
-            >
-              <span className="text-sm text-gray-400">{label}</span>
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-500">{value}</span>
-                <ChevronRight size={16} />
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* ================= HEADER ================= */}
+      <div className="flex items-center gap-2 bg-white p-3 md:p-5 md:px-8 border-b sticky top-0 z-20">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-gray-200 rounded-full transition cursor-pointer"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h2 className="font-serif font-bold text-base md:text-xl">
+          Edit Profil
+        </h2>
       </div>
 
-      {/* MODAL */}
-      <AnimatePresence>
-        {activeField && (
-          <motion.div
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ y: 30, scale: 0.95 }}
-              animate={{ y: 0, scale: 1 }}
-              exit={{ y: 30, scale: 0.95 }}
-              className="bg-white rounded-xl p-5 w-[90%] max-w-md"
-            >
-              <h3 className="mb-4 text-lg font-serif text-primary">
-                Edit {fieldConfig[activeField].label}
-              </h3>
-
-              {activeField === "avatar" ? (
-                <div className="space-y-3">
-                  <img
-                    src={tempValue || avatar}
-                    className="w-24 h-24 rounded-full mx-auto object-cover"
-                  />
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) setTempValue(URL.createObjectURL(file));
-                    }}
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="https://image.url"
-                    value={tempValue}
-                    onChange={(e) => setTempValue(e.target.value)}
-                    className="w-full border rounded-md p-2"
-                  />
-                </div>
-              ) : fieldConfig[activeField].type === "select" ? (
-                <select
-                  value={tempValue}
-                  onChange={(e) => setTempValue(e.target.value)}
-                  className="w-full border rounded-md p-2"
-                >
-                  {fieldConfig[activeField].options?.map((opt) => (
-                    <option key={opt}>{opt}</option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type={fieldConfig[activeField].type}
-                  value={tempValue}
-                  onChange={(e) => setTempValue(e.target.value)}
-                  className="w-full border rounded-md p-2"
-                />
-              )}
-
-              <div className="flex justify-end gap-3 mt-6 ">
-                <Button
-                  onClick={() => setActiveField(null)}
-                  className="text-sm text-gray-500 border bg-transparent border-gray-300 cursor-pointer hover:text-white hover:bg-red-700"
-                >
-                  Batal
-                </Button>
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className={`px-4 py-2 rounded-md text-sm text-white cursor-pointer hover:scale-75 ${
-                    isSaving ? "bg-primary/60 cursor-not-allowed" : "bg-primary"
-                  }`}
-                >
-                  {isSaving ? "Menyimpan..." : "Simpan"}
-                </button>
+      {/* ================= CONTENT ================= */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex-1 p-4 md:p-8 md:max-w-2xl md:mx-auto w-full"
+      >
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          {/* === HEADER CARD === */}
+          <div className="bg-linear-to-r from-[#5F2C7A] to-[#825a97] px-5 py-6 flex items-center gap-4">
+            <div className="relative shrink-0">
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
+                <User size={32} className="text-[#5F2C7A]" />
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center border-2 border-white cursor-pointer hover:bg-gray-600 transition">
+                <Camera size={12} className="text-white" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-1.5 flex-1">
+              <input
+                value={form.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="Ganti nama anda...."
+                className="bg-white/20 placeholder:text-white/70 text-white text-sm font-medium rounded-lg px-3 py-2 outline-none focus:bg-white/30 transition w-full max-w-55"
+              />
+              <p className="text-xs text-white/80">Member since 24/2/2026</p>
+            </div>
+          </div>
+
+          {/* === FORM === */}
+          <div className="flex flex-col gap-4 p-5">
+            <Field
+              icon={<Mail size={16} />}
+              label="Email"
+              value={form.email}
+              onChange={(v) => handleChange("email", v)}
+              placeholder="Cantumkan alamat email yang aktif"
+            />
+
+            <Field
+              icon={<Phone size={16} />}
+              label="Nomor Telepon"
+              value={form.phone}
+              onChange={(v) => handleChange("phone", v)}
+              placeholder="Contoh : 089..."
+            />
+
+            <Field
+              icon={<User size={16} />}
+              label="Jenis Kelamin"
+              value={form.gender}
+              onChange={(v) => handleChange("gender", v)}
+              placeholder="Wanita/Laki-laki"
+            />
+
+            <Field
+              icon={<Calendar size={16} />}
+              label="Tanggal Lahir"
+              type="date"
+              value={form.birthDate}
+              onChange={(v) => handleChange("birthDate", v)}
+              placeholder="mm / dd / yyyy"
+            />
+
+            {/* Alamat - textarea */}
+            <div className="flex flex-col gap-1.5">
+              <label className="flex items-center gap-2 text-xs text-gray-500">
+                <MapPin size={16} />
+                Alamat
+              </label>
+              <textarea
+                value={form.address}
+                onChange={(e) => handleChange("address", e.target.value)}
+                placeholder="Masukkan alamat lengkap"
+                rows={3}
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm resize-none placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleSave}
+                className="bg-[#5F2C7A] hover:bg-[#4d2363] text-white px-8 cursor-pointer"
+              >
+                Simpan
+              </Button>
+              <Button
+                onClick={() => navigate(-1)}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 cursor-pointer"
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
+
+/* ================= REUSABLE FIELD ================= */
+const Field = ({
+  icon,
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  type?: string;
+}) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="flex items-center gap-2 text-xs text-gray-500">
+      {icon}
+      {label}
+    </label>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+    />
+  </div>
+);
 
 export default EditProfile;

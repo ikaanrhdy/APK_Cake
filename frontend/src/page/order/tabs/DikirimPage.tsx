@@ -56,7 +56,7 @@ const DikirimPage = () => {
 
         {/* INFO */}
         <Button className="bg-purple-50 text-gray-800 md:text-base md:py-6 cursor-pointer hover:text-white">
-          Barang sedang dikirim!
+          Cake sedang dikirim!
         </Button>
 
         {/* ACTION */}
@@ -78,7 +78,7 @@ const DikirimPage = () => {
             }
             className="bg-purple-50 text-primary w-fit md:text-base md:px-8 md:py-6 cursor-pointer hover:text-white"
           >
-            Riwayat Pesanan
+            Riwayat Pengiriman
           </Button>
         </div>
       </motion.div>

@@ -7,22 +7,26 @@ export const product: products[] = [
     description:
       "Cake cantik dengan sponge lembut & cream manis ringan, dihiasi drip glaze pink glossy dan sprinkle warna-warni. Cocok untuk ulang tahun, anniversary, baby shower, dan surprise spesial 🎉",
     image: "/product/1.avif",
-    price: 150000,
+    price: 153000,
+    originalPrice: 180000,
     category: "Category 1",
     size: ["18", "24", "30"],
     rating: 4.5,
     reviews: 100,
+    createdAt: "2023-08-01",
   },
   {
     id: "2",
     title: "Mini Cupcake",
     description: "Description 2",
     image: "/product/2.avif",
-    price: 15000,
+    price: 150000,
+    originalPrice: 180000,
     category: "Category 1",
     size: ["10"],
     rating: 4.2,
     reviews: 50,
+    createdAt: "2023-08-01",
   },
   {
     id: "3",
@@ -34,6 +38,7 @@ export const product: products[] = [
     size: ["18", "24", "30"],
     rating: 4.8,
     reviews: 200,
+    createdAt: "2023-08-01",
   },
   {
     id: "4",
@@ -45,6 +50,7 @@ export const product: products[] = [
     size: ["18", "24", "30"],
     rating: 3.9,
     reviews: 150,
+    createdAt: "2023-08-01",
   },
   {
     id: "5",
@@ -56,6 +62,7 @@ export const product: products[] = [
     size: ["18", "24", "30"],
     rating: 4.0,
     reviews: 100,
+    createdAt: "2023-08-01",
   },
   {
     id: "6",
@@ -68,6 +75,7 @@ export const product: products[] = [
     size: ["18", "24", "30", "42"],
     rating: 4.5,
     reviews: 350,
+    createdAt: "2023-08-01",
   },
   {
     id: "7",
@@ -79,6 +87,7 @@ export const product: products[] = [
     size: ["18", "24", "30", "40"],
     rating: 5.0,
     reviews: 400,
+    createdAt: "2023-08-01",
   },
   {
     id: "8",
@@ -90,6 +99,7 @@ export const product: products[] = [
     size: ["18", "24", "30", "35"],
     rating: 4.5,
     reviews: 250,
+    createdAt: "2023-08-01",
   },
   {
     id: "9",
@@ -101,6 +111,7 @@ export const product: products[] = [
     size: ["18", "24", "30", "35"],
     rating: 2.8,
     reviews: 150,
+    createdAt: "2023-07-01",
   },
   {
     id: "10",
@@ -112,6 +123,7 @@ export const product: products[] = [
     size: ["18", "24", "30", "48", "50"],
     rating: 4.5,
     reviews: 500,
+    createdAt: "2023-08-01",
   },
   {
     id: "11",
@@ -124,5 +136,6 @@ export const product: products[] = [
     size: ["10", "12"],
     rating: 4.5,
     reviews: 500,
+    createdAt: "2023-07-01",
   },
 ];

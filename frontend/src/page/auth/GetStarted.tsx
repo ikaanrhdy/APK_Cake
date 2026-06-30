@@ -63,7 +63,7 @@ const GetStarted = () => {
         >
           <Button
             asChild
-            className="w-3/4 bg-white border border-purple-800 text-purple-800 hover:bg-purple-50"
+            className="w-3/4 bg-white border border-purple-800 text-purple-800 hover:bg-purple-200"
           >
             <Link to="/register">Register</Link>
           </Button>
@@ -77,7 +77,7 @@ const GetStarted = () => {
           <Button
             asChild
             variant="ghost"
-            className="w-3/4 border border-gray-300 text-[#364153] hover:bg-gray-100"
+            className="w-3/4 border bg-white text-[#364153] hover:bg-gray-200 hover:text-purple-800"
           >
             <Link to="/home">Continue as Guest</Link>
           </Button>

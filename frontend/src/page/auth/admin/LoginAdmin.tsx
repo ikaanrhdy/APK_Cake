@@ -9,21 +9,18 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
 // icons
-import { Eye, EyeOff, Mail, LockKeyhole } from "lucide-react";
+import { Eye, EyeOff, User, Lock, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Email is invalid" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" }),
+  username: z.string().min(1, { message: "Username wajib diisi" }),
+  password: z.string().min(6, { message: "Password minimal 6 karakter" }),
 });
 
 // Variants for staggered animation
@@ -31,241 +28,180 @@ const parentVariant = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
+      staggerChildren: 0.12,
+      delayChildren: 0.15,
     },
   },
 };
 
 const childVariant = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" as const },
+    transition: { duration: 0.4, ease: "easeOut" as const },
   },
 };
 
 const LoginAdmin = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
+    navigate("/admin");
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-purple-100 mt-4">
-      {/* HEADER */}
-      <motion.div
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="flex flex-col justify-center items-center  py-4"
-      >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-roboto">
-          Citra Admin
-        </h1>
-        <motion.h3
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.6 }}
-          className="text-sm sm:text-sm md:text-2xl font-extralight text-gray-600"
-        >
-          Glad To See You Again!
-        </motion.h3>
-      </motion.div>
-
-      {/* MAIN CONTENT */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* LEFT — Logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-          className="hidden lg:flex flex-1 justify-center items-center"
-        >
-          <motion.img
-            src="/logo/logo.png"
-            alt="Logo"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="max-h-full object-contain"
-          />
-        </motion.div>
-
-        {/* RIGHT — Form */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
+    <div className="min-h-screen w-full bg-purple-100 flex justify-center">
+      <div className="w-full max-w-md px-6 pt-6 pb-10">
+        {/* Back button */}
+        <motion.button
+          type="button"
+          onClick={() => navigate(-1)}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.65, ease: "easeOut" }}
-          className="flex flex-col flex-2 justify-center p-8 overflow-y-auto"
+          transition={{ duration: 0.4 }}
+          className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
         >
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <motion.div
-                variants={parentVariant}
-                initial="hidden"
-                animate="show"
-              >
-                <CardContent className="space-y-8 rounded-md">
-                  {/* Email */}
-                  <motion.div variants={childVariant} className="space-y-5">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            <h1 className="text-lg sm:text-xl font-medium text-gray-500 pl-1">
-                              Email
-                            </h1>
-                          </FormLabel>
-                          <FormControl>
-                            <div className="relative bg-white/80 rounded-md border-gray-600 border-2">
-                              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                              <Input
-                                className="pl-10"
-                                placeholder="Enter your email"
-                                type="email"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
+          <ChevronLeft size={26} />
+        </motion.button>
 
-                  {/* Password */}
-                  <motion.div variants={childVariant}>
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            <h1 className="text-lg sm:text-xl font-medium text-gray-500 pl-1">
-                              Password
-                            </h1>
-                          </FormLabel>
-                          <FormControl>
-                            <div className="relative bg-white/80 rounded-md border-gray-600 border-2">
-                              <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                              <Input
-                                className="h-10 pl-10"
-                                placeholder="Enter your Password"
-                                type={showPassword ? "text" : "password"}
-                                {...field}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
-                              >
-                                {showPassword ? (
-                                  <Eye size={20} />
-                                ) : (
-                                  <EyeOff size={20} />
-                                )}
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Link
-                      to="/forgot-password"
-                      className="font-light pl-3 hover:text-gray-500"
-                    >
-                      Forgot password?
-                    </Link>
-                  </motion.div>
-
-                  {/* Login Button */}
-                  <motion.div
-                    variants={childVariant}
-                    className="flex justify-center"
-                  >
-                    <Button
-                      asChild
-                      className="w-full sm:w-3/4 md:w-1/2 lg:w-full bg-purple-900 text-xl h-12 font-light hover:bg-purple-800"
-                    >
-                      <Link to="/admin">Login</Link>
-                    </Button>
-                  </motion.div>
-
-                  {/* Sign Up */}
-                  <motion.div
-                    variants={childVariant}
-                    className="flex justify-center"
-                  >
-                    <h2>
-                      Don't have an account?
-                      <Link
-                        to="/register-admin"
-                        className="text-blue-500 font-medium pl-1 hover:text-blue-700"
-                      >
-                        Sign Up
-                      </Link>
-                    </h2>
-                  </motion.div>
-
-                  {/* SOCIAL LOGIN */}
-                  <motion.div
-                    variants={childVariant}
-                    className="grid grid-rows-2 justify-center gap-2"
-                  >
-                    <div className="flex justify-center">
-                      <h3>Or Login With</h3>
-                    </div>
-                    <div className="flex justify-center gap-5">
-                      {/* Google */}
-                      <motion.a
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.95 }}
-                        href="#"
-                        className="rounded-md bg-white shadow-md w-12 h-12 flex justify-center items-center"
-                      >
-                        <img
-                          src="/logo/google.png"
-                          alt="google"
-                          className="w-8 h-8"
-                        />
-                      </motion.a>
-
-                      {/* Facebook */}
-                      <motion.div
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Link
-                          to="/fb-screen-admin"
-                          className="rounded-md bg-white shadow-md w-12 h-12 flex justify-center items-center"
-                        >
-                          <img
-                            src="/logo/fb.png"
-                            alt="facebook"
-                            className="w-12 h-12"
-                          />
-                        </Link>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                </CardContent>
-              </motion.div>
-            </form>
-          </Form>
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="flex flex-col items-center text-center mt-4 mb-8"
+        >
+          <h1 className="text-2xl font-bold font-roboto text-gray-900">
+            Welcome Back!
+          </h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="text-sm text-gray-500 mt-1"
+          >
+            Glad to See You Again!
+          </motion.p>
         </motion.div>
+
+        {/* FORM */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <motion.div
+              variants={parentVariant}
+              initial="hidden"
+              animate="show"
+            >
+              <div className="space-y-5">
+                {/* Username */}
+                <motion.div variants={childVariant}>
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          <span className="text-sm font-semibold text-gray-900">
+                            Username
+                          </span>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative bg-white rounded-xl border border-gray-900">
+                            <User
+                              size={18}
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                            />
+                            <Input
+                              className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                              placeholder="Enter your username"
+                              type="text"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Password */}
+                <motion.div variants={childVariant}>
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          <span className="text-sm font-semibold text-gray-900">
+                            Password Admin
+                          </span>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative bg-white rounded-xl border border-gray-200">
+                            <Lock
+                              size={18}
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-700"
+                            />
+                            <Input
+                              className="pl-10 pr-10 h-12 border-0 rounded-xl focus-visible:ring-0"
+                              placeholder="Password"
+                              type={showPassword ? "text" : "password"}
+                              {...field}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black cursor-pointer"
+                            >
+                              {showPassword ? (
+                                <EyeOff size={18} />
+                              ) : (
+                                <Eye size={18} />
+                              )}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Forgot password */}
+                <motion.div variants={childVariant}>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-purple-700 hover:text-purple-900 transition"
+                  >
+                    forgot password?
+                  </Link>
+                </motion.div>
+
+                {/* Login Button */}
+                <motion.div variants={childVariant} className="pt-2">
+                  <Button
+                    type="submit"
+                    className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800"
+                  >
+                    Login as Admin
+                  </Button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </form>
+        </Form>
       </div>
     </div>
   );

@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { product } from "@/data/product";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
+import { Link } from "react-router";
+import { useReturnStore } from "@/app/store/useReturnStore";
 
 const SelesaiPage = () => {
   const data = product;
+  const isReturned = useReturnStore((s) => s.isReturned);
+
+  // sembunyikan item yang sudah diajukan pengembalian
+  const visibleData = data.slice(0, 5).filter((item) => !isReturned(item.id));
 
   return (
     <motion.div
@@ -18,7 +24,7 @@ const SelesaiPage = () => {
       }}
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6 lg:gap-8"
     >
-      {data.slice(0, 5).map((item) => (
+      {visibleData.map((item) => (
         <motion.div
           key={item.id}
           variants={{
@@ -64,7 +70,16 @@ const SelesaiPage = () => {
           </div>
 
           {/* ================= ACTION ================= */}
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              asChild
+              variant="ghost"
+              className="bg-red-50 text-red-500 cursor-pointer text-xs md:text-sm md:py-4"
+            >
+              <Link to={`/pengembalian/${item.id}`} state={{ item, qty: 1 }}>
+                Ajukan Pengembalian
+              </Link>
+            </Button>
             <Button
               variant="ghost"
               className="bg-gray-100 text-gray-600  cursor-pointer text-xs md:text-sm md:py-4"

@@ -1,5 +1,4 @@
 import { Outlet } from "react-router";
-import Footer from "../components/user/Footer";
 import Navbar from "../components/user/Navbar";
 import Sidebar from "../components/user/Sidebar";
 import { useEffect, useState } from "react";
@@ -8,25 +7,21 @@ import { useProductStore } from "@/app/store/useProduct";
 
 const UserLayout = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
-
-  // 🔥 AMBIL ACTION
   const getProducts = useProductStore((s) => s.getProducts);
 
-  // 🔥 LOAD SEKALI SAAT MASUK USER AREA
   useEffect(() => {
     getProducts();
   }, [getProducts]);
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
       <Navbar
-        onToggleSidebar={() => setOpenSidebar(!openSidebar)}
+        onToggleSidebar={() => setOpenSidebar((prev) => !prev)}
         isSidebarOpen={openSidebar}
       />
 
       <div className="flex flex-1 w-full relative">
-        {/* === Sidebar Desktop === */}
+        {/* Sidebar Desktop */}
         <AnimatePresence mode="wait">
           {openSidebar && (
             <motion.aside
@@ -41,42 +36,35 @@ const UserLayout = () => {
           )}
         </AnimatePresence>
 
-        {/* === Sidebar Mobile === */}
+        {/* Sidebar Mobile & Tablet */}
         <AnimatePresence>
           {openSidebar && (
-            <motion.aside
-              initial={{ x: -260 }}
-              animate={{ x: 0 }}
-              exit={{ x: -260 }}
-              transition={{ type: "spring", stiffness: 90, damping: 15 }}
-              className="lg:hidden fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50"
-            >
-              <Sidebar onClose={() => setOpenSidebar(false)} />
-            </motion.aside>
-          )}
-        </AnimatePresence>
+            <>
+              <motion.aside
+                initial={{ x: -260 }}
+                animate={{ x: 0 }}
+                exit={{ x: -260 }}
+                transition={{ type: "spring", stiffness: 90, damping: 15 }}
+                className="lg:hidden fixed top-0 left-0 h-full w-56 bg-white shadow-xl z-50"
+              >
+                <Sidebar onClose={() => setOpenSidebar(false)} />
+              </motion.aside>
 
-        {/* === Overlay Mobile === */}
-        <AnimatePresence>
-          {openSidebar && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black lg:hidden z-40"
-              onClick={() => setOpenSidebar(false)}
-            />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.4 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-black lg:hidden z-40"
+                onClick={() => setOpenSidebar(false)}
+              />
+            </>
           )}
         </AnimatePresence>
 
         <main className="flex-1 p-4 lg:p-6">
           <Outlet />
         </main>
-      </div>
-
-      <div className="block lg:hidden">
-        <Footer />
       </div>
     </div>
   );
