@@ -1,7 +1,10 @@
-import Navbar from "@/components/admin/Navbar";
 import Sidebar from "@/components/admin/Sidebar";
 import { useState } from "react";
 import { Outlet } from "react-router";
+
+export type AdminLayoutContext = {
+  onOpenSidebar: () => void;
+};
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,9 +25,8 @@ const AdminLayout = () => {
 
       {/* Content */}
       <div className="flex flex-col">
-        <Navbar onToggle={() => setSidebarOpen(true)} />
         <main className="flex-1 p-4 md:p-6">
-          <Outlet />
+          <Outlet context={{ onOpenSidebar: () => setSidebarOpen(true) }} />
         </main>
       </div>
     </div>

@@ -1,6 +1,8 @@
 import { NavLink, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { menus, logoutMenu } from "@/data/menu";
+import useAuthStore from "@/app/store/auth";
 
 type Props = {
   isOpen: boolean;
@@ -61,6 +63,11 @@ const SidebarContent = ({
   onLogout?: () => void;
 }) => {
   const navigate = useNavigate();
+  const { role } = useAuthStore();
+
+  const visibleMenus = menus.filter(
+    (menu) => role && menu.roles.includes(role),
+  );
 
   const handleLogout = () => {
     if (onLogout) onLogout();
@@ -71,14 +78,29 @@ const SidebarContent = ({
     <div className="flex flex-col h-full justify-between">
       {/* Top: Logo + Menu */}
       <div>
-        <div className="h-16 flex items-center px-6 text-xl font-semibold text-primary">
-          Admin Citra
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border">
+          <div>
+            <h1 className="text-xl font-bold text-primary font-serif">
+              Citra Cake
+            </h1>
+            <p className="text-xs text-muted-foreground">Admin Panel</p>
+          </div>
+
+          {/* Close button — cuma muncul di mobile drawer */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-1.5 hover:bg-gray-100 rounded-full transition cursor-pointer lg:hidden"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
-        <nav className="px-2 space-y-1">
-          {menus.map((menu) => {
+        <nav className="px-3 pt-4 space-y-1">
+          {visibleMenus.map((menu) => {
             const Icon = menu.icon;
-            console.log(menu.name, { Icon, iconUrl: menu.iconUrl });
             return (
               <NavLink
                 key={menu.name}
@@ -91,17 +113,14 @@ const SidebarContent = ({
                   <motion.div
                     whileHover={{ x: 4 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-md 
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg 
                       text-sm font-medium transition relative 
-                      ${isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground"}`}
+                      ${
+                        isActive
+                          ? "bg-purple-50 text-primary"
+                          : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground"
+                      }`}
                   >
-                    {isActive && (
-                      <motion.span
-                        layoutId="sidebar-active"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r bg-primary"
-                      />
-                    )}
-
                     {Icon ? (
                       <Icon
                         className={`w-4 h-4 ${isActive ? "text-primary" : ""}`}
@@ -114,7 +133,14 @@ const SidebarContent = ({
                       />
                     )}
 
-                    <span>{menu.name}</span>
+                    <span className="flex-1">{menu.name}</span>
+
+                    {isActive && (
+                      <motion.span
+                        layoutId="sidebar-active-dot"
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                      />
+                    )}
                   </motion.div>
                 )}
               </NavLink>
@@ -124,10 +150,10 @@ const SidebarContent = ({
       </div>
 
       {/* Bottom: LogOut + Footer */}
-      <div className="px-2 mb-4">
+      <div className="px-3 mb-4">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-red-500 hover:text-white transition cursor-pointer"
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-red-500 hover:text-white transition cursor-pointer"
         >
           <logoutMenu.icon className="w-4 h-4" />
           <span>{logoutMenu.name}</span>

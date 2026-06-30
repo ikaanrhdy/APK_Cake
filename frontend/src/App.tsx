@@ -23,6 +23,8 @@ import Register from "./page/auth/user/Register";
 import VerifyLogin from "./page/auth/user/VerifyLogin";
 // admin
 import LoginAdmin from "./page/auth/admin/LoginAdmin";
+import OrderAdmin from "@/page/admin/OrderAmin";
+
 // layout
 import UserLayout from "./layout/UserLayout";
 
@@ -50,8 +52,7 @@ import BadgeUser from "./page/badge/BadgeUser";
 import AdminLayout from "./layout/AdminLayout";
 import DashboardAdmin from "./page/admin/DashboardAdmin";
 import ProductAdmin from "./page/admin/ProductAdmin";
-import FinanceAdmin from "./page/admin/FinanceAdmin";
-import AnalyticsAdmin from "./page/admin/AnalyticsAdmin";
+
 import BadgeDetail from "./page/badge/BadgeDetail";
 import HistoryProgresBadge from "./page/badge/HistoryProgresBadge";
 import ProgresBadge from "./page/badge/ProgresBadge";
@@ -68,12 +69,13 @@ function App() {
       <Toaster position="bottom-right" richColors closeButton />
       <Routes>
         {/* admin */}
-        <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<DashboardAdmin />} />
-          <Route path="/admin/product" element={<ProductAdmin />} />
-          <Route path="/admin/finance" element={<FinanceAdmin />} />
-          <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
-          <Route path="/admin/kustomisasi" element={<KustomisasiAdmin />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<DashboardAdmin />} />
+            <Route path="/admin/product" element={<ProductAdmin />} />
+            <Route path="/admin/kustomisasi" element={<KustomisasiAdmin />} />
+            <Route path="/admin/order" element={<OrderAdmin />} />
+          </Route>
         </Route>
 
         {/* user */}

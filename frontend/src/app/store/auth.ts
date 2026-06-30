@@ -1,30 +1,57 @@
-import { type User } from "firebase/auth";
+import type { AdminRole } from "@/data/adminData";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface AuthState {
-  user: User | null;
-  token: string | null;
+  isAuthenticated: boolean;
+  userId: string | null;
+  name: string | null;
+  role: AdminRole | null;
   isLoading: boolean;
   error: string | null;
 }
 
 export interface AuthStore extends AuthState {
-  setUser: (user: User | null) => void;
-  setToken: (token: string | null) => void;
+  login: (data: { userId: string; name: string; role: AdminRole }) => void;
+  logout: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }
 
-const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
-  token: null,
-  isLoading: false,
-  error: null,
+const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      isAuthenticated: false,
+      userId: null,
+      name: null,
+      role: null,
+      isLoading: false,
+      error: null,
 
-  setUser: (user) => set({ user }),
-  setToken: (token) => set({ token }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
-}));
+      login: ({ userId, name, role }) =>
+        set({
+          isAuthenticated: true,
+          userId,
+          name,
+          role,
+          error: null,
+        }),
+
+      logout: () =>
+        set({
+          isAuthenticated: false,
+          userId: null,
+          name: null,
+          role: null,
+        }),
+
+      setLoading: (isLoading) => set({ isLoading }),
+      setError: (error) => set({ error }),
+    }),
+    {
+      name: "admin-auth", // key di localStorage
+    },
+  ),
+);
 
 export default useAuthStore;

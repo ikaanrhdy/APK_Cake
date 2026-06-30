@@ -17,6 +17,8 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, User, Lock, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
+import useAuthStore from "@/app/store/auth";
+import { dummyAdmins } from "@/data/adminData";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username wajib diisi" }),
@@ -46,6 +48,7 @@ const childVariant = {
 const LoginAdmin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login, setError, setLoading, error, isLoading } = useAuthStore();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -56,8 +59,25 @@ const LoginAdmin = () => {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-    navigate("/admin");
+    setLoading(true);
+    setError(null);
+
+    // simulasi delay request
+    setTimeout(() => {
+      const found = dummyAdmins.find(
+        (a) => a.username === data.username && a.password === data.password,
+      );
+
+      if (!found) {
+        setError("Username atau password salah");
+        setLoading(false);
+        return;
+      }
+
+      login({ userId: found.id, name: found.name, role: found.role });
+      setLoading(false);
+      navigate("/admin");
+    }, 500);
   };
 
   return (
@@ -189,13 +209,25 @@ const LoginAdmin = () => {
                   </Link>
                 </motion.div>
 
+                {/* Error message */}
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sm text-red-600 text-center"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+
                 {/* Login Button */}
                 <motion.div variants={childVariant} className="pt-2">
                   <Button
                     type="submit"
-                    className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800"
+                    disabled={isLoading}
+                    className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800 disabled:opacity-60 cursor-pointer"
                   >
-                    Login as Admin
+                    {isLoading ? "Memproses..." : "Login as Admin"}
                   </Button>
                 </motion.div>
               </div>

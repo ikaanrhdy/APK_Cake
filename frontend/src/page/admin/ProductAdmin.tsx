@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search } from "lucide-react";
+import { useOutletContext } from "react-router";
 import type { productsAdmin } from "@/types/data";
 import { useProductStore } from "@/app/store/admin/productStoreAdmin";
 import { ProductModal } from "@/components/admin/ProductModal";
 import ProductCard from "@/components/admin/ProductCard";
+import type { AdminLayoutContext } from "@/layout/AdminLayout";
+import AdminPageHeader from "@/components/admin/PageHeaders";
 
 const ProductAdmin = () => {
+  const { onOpenSidebar } = useOutletContext<AdminLayoutContext>();
+
   const products = useProductStore((state) => state.products);
   const search = useProductStore((state) => state.search);
   const setSearch = useProductStore((state) => state.setSearch);
@@ -54,21 +59,21 @@ const ProductAdmin = () => {
       className="space-y-4"
     >
       {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-        <div>
-          <p className="text-xs text-muted-foreground">
-            Kelola produk Citra Cake
-          </p>
-          <h1 className="text-lg sm:text-xl font-semibold">Produk Kue</h1>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm w-full sm:w-auto"
-        >
-          <Plus className="w-4 h-4" />
-          Tambah Produk
-        </button>
-      </div>
+      <AdminPageHeader
+        title="Produk"
+        subtitle="Kelola produk Citra Cake"
+        onOpenSidebar={onOpenSidebar}
+        action={
+          <button
+            onClick={handleAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Tambah Produk</span>
+            <span className="sm:hidden">Tambah</span>
+          </button>
+        }
+      />
 
       {/* ================= SEARCH ================= */}
       <div className="relative w-full md:max-w-sm">
