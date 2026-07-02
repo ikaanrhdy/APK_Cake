@@ -10,36 +10,48 @@ import {
   MapPin,
   LogOut,
 } from "lucide-react";
+import { useUserLayoutContext } from "@/layout/userLayoutContext";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { toast } from "sonner";
+import useAuthStore from "@/app/store/auth";
+import { useCartStore } from "@/app/store/useCartProduct";
+import { clearAllStorage } from "@/lib/clearAllStorage";
 
-interface ProfileType {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  gender?: string;
-  birthDate?: string;
-  address?: string;
-  memberSince: string;
-}
-
-const profile: ProfileType = {
-  id: 1,
-  name: "Ika Nur Hidayati",
-  email: "hidayatiikanur58@gmail.com",
-  phone: "081234567890",
-  gender: undefined,
-  birthDate: undefined,
-  address: undefined,
-  memberSince: "24/2/2026",
-};
-
-const Profile = ({ onOpenSidebar }: { onOpenSidebar?: () => void }) => {
+const Profile = () => {
   const navigate = useNavigate();
-  const data = profile;
+  const { onOpenSidebar } = useUserLayoutContext();
 
-  const handleLogout = () => {
-    // TODO: clear auth/session
-    navigate("/login");
+  // ===== Ambil data langsung dari Firebase currentUser =====
+  // Aman diakses di sini karena Profile sudah dibungkus ProtectedRoutes,
+  // yang memastikan user pasti sudah login sebelum render sampai ke sini.
+  const currentUser = auth.currentUser;
+  const store = useAuthStore();
+
+  const data = {
+    name: currentUser?.displayName || store.name || "Pengguna",
+    email: currentUser?.email || store.email || "-",
+    phone: currentUser?.phoneNumber || store.phone || undefined,
+    gender: store.gender || undefined,
+    birthDate: store.birthDate || undefined,
+    address: store.address || undefined,
+    memberSince: currentUser?.metadata.creationTime || undefined,
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      store.logout();
+      useCartStore.getState().clearCart();
+      useCartStore.getState().clearCheckout();
+
+      // baru sapu bersih localStorage & sessionStorage
+      clearAllStorage();
+
+      navigate("/login");
+    } catch {
+      toast.error("Gagal logout, coba lagi");
+    }
   };
 
   const infoRows = [
@@ -89,8 +101,16 @@ const Profile = ({ onOpenSidebar }: { onOpenSidebar?: () => void }) => {
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           {/* === HEADER CARD === */}
           <div className="bg-linear-to-r from-[#5F2C7A] to-[#825a97] px-5 py-6 flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shrink-0">
-              <User size={32} className="text-[#5F2C7A]" />
+            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shrink-0 overflow-hidden">
+              {currentUser?.photoURL ? (
+                <img
+                  src={currentUser.photoURL}
+                  alt={data.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User size={32} className="text-[#5F2C7A]" />
+              )}
             </div>
             <div className="flex flex-col gap-1 text-white">
               <h3 className="font-serif font-bold text-lg">{data.name}</h3>

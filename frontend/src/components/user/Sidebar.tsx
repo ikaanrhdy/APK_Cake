@@ -1,24 +1,15 @@
 import { Link, useLocation } from "react-router";
-import { House, ShoppingBag, User } from "lucide-react";
 import { motion } from "motion/react";
+import { menuUser } from "@/data/menu";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const location = useLocation();
 
-  const menu = [
-    { name: "Home", icon: <House size={20} />, path: "/home" },
-    {
-      name: "Riwayat Belanja",
-      icon: <ShoppingBag size={20} />,
-      path: "/order",
-    },
-    { name: "Profile", icon: <User size={20} />, path: "/profile" },
-  ];
-
   return (
     <div className="h-full p-5 space-y-3 bg-background">
-      {menu.map((item, i) => {
+      {menuUser.map((item, i) => {
         const isActive = location.pathname === item.path;
+        const Icon = item.icon;
 
         return (
           <motion.div
@@ -43,7 +34,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                 animate={isActive ? { scale: [1, 1.15, 1] } : {}}
                 transition={{ duration: 0.5, repeat: isActive ? Infinity : 0 }}
               >
-                {item.icon}
+                <Icon size={20} />
               </motion.div>
 
               <span>{item.name}</span>

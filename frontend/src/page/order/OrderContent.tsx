@@ -1,7 +1,7 @@
 import BelumBayarPage from "./tabs/BelumBayarPage";
 import DibatalkanPage from "./tabs/DibatalkanPage";
 import DikirimPage from "./tabs/DikirimPage";
-import Diproses from "./tabs/Diproses";
+import Diproses from "./tabs/DiProses";
 import Pengembalian from "./tabs/Pengembalian";
 import SelesaiPage from "./tabs/SelesaiPage";
 

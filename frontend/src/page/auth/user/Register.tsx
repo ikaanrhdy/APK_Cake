@@ -3,7 +3,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
-
+// store
+import useAuthStore from "@/app/store/auth";
+// firebase
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { getFirebaseAuthErrorMessage } from "@/utils/firebaseError";
+// toast
+import { toast } from "sonner";
 // UI
 import {
   Form,
@@ -27,13 +34,11 @@ import {
   User,
   Phone,
   ChevronLeft,
+  Loader2,
 } from "lucide-react";
 
 // motion
 import { m, LazyMotion, domAnimation } from "motion/react";
-import useAuthStore from "@/app/store/auth";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/utils/firebase";
 
 // ======================
 // VALIDATION SCHEMA
@@ -79,7 +84,6 @@ const fieldVariant = {
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const { setLoading, setError } = useAuthStore();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -93,14 +97,18 @@ const Register = () => {
     },
   });
 
+  const { isLoading, setLoading, setError } = useAuthStore();
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
+      setError(null);
       await createUserWithEmailAndPassword(auth, data.email, data.password);
-
       navigate("/2fa");
     } catch (error) {
-      setError((error as Error).message);
+      const message = getFirebaseAuthErrorMessage(error);
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -396,9 +404,17 @@ const Register = () => {
                     >
                       <Button
                         type="submit"
-                        className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800"
+                        disabled={isLoading}
+                        className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800 disabled:opacity-70"
                       >
-                        Register
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Mendaftar...
+                          </>
+                        ) : (
+                          "Register"
+                        )}
                       </Button>
                     </m.div>
 

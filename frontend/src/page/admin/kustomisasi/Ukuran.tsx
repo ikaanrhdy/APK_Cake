@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Plus } from "lucide-react";
 import {
   useKustomisasiStore,
   type KustomisasiItem,
@@ -21,11 +20,6 @@ const Ukuran = () => {
   );
 
   const data = items[TAB];
-
-  const openCreate = () => {
-    setEditTarget(null);
-    setModalOpen(true);
-  };
 
   const openEdit = (item: KustomisasiItem) => {
     setEditTarget(item);
@@ -54,15 +48,6 @@ const Ukuran = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-end px-4 pt-4">
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary/90 transition cursor-pointer"
-        >
-          <Plus size={16} /> Tambah
-        </button>
-      </div>
-
       <div className="p-4">
         <DataTable
           data={data}

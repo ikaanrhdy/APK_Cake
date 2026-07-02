@@ -1,8 +1,9 @@
 import { NavLink, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { menus, logoutMenu } from "@/data/menu";
+import { menuAdmin, logoutMenu } from "@/data/menu";
 import useAuthStore from "@/app/store/auth";
+import { clearAllStorage } from "@/lib/clearAllStorage";
 
 type Props = {
   isOpen: boolean;
@@ -65,11 +66,16 @@ const SidebarContent = ({
   const navigate = useNavigate();
   const { role } = useAuthStore();
 
-  const visibleMenus = menus.filter(
-    (menu) => role && menu.roles.includes(role),
+  // narrow: Sidebar ini konteksnya cuma admin, jadi "customer" gak relevan di sini
+  const adminRole = role !== "customer" ? role : null;
+
+  const visibleMenus = menuAdmin.filter(
+    (menu) => adminRole && menu.roles.includes(adminRole),
   );
 
   const handleLogout = () => {
+    useAuthStore.getState().logout();
+    clearAllStorage();
     if (onLogout) onLogout();
     navigate("/login-admin");
   };

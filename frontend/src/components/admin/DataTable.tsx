@@ -50,8 +50,11 @@ export const DataTable = ({
               {showWarna && (
                 <td className="py-3.5 px-4">
                   <span
-                    className="inline-block w-5 h-5 rounded-full border border-gray-200"
-                    style={{ backgroundColor: item.warna ?? "#fff" }}
+                    className="inline-block w-5 h-5 rounded-full border border-gray-200 ring-2 ring-white"
+                    style={{
+                      backgroundColor: item.warna ?? "#fff",
+                      boxShadow: `0 2px 8px 0 ${item.warna ?? "#fff"}66`,
+                    }}
                   />
                 </td>
               )}

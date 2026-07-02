@@ -136,7 +136,7 @@ const Home = () => {
         <div className="flex items-center justify-between">
           <h1 className="font-bold font-roboto text-lg md:text-xl">Terbaru</h1>
           <Link
-            to="/products?sort=terbaru"
+            to="/products/terbaru"
             className="text-sm font-medium text-primary hover:underline"
           >
             Lihat Semua

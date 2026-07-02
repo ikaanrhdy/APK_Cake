@@ -1,6 +1,7 @@
 import Sidebar from "@/components/admin/Sidebar";
 import { useState } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
+import useAuthStore from "@/app/store/auth";
 
 export type AdminLayoutContext = {
   onOpenSidebar: () => void;
@@ -8,10 +9,12 @@ export type AdminLayoutContext = {
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const logout = useAuthStore((s) => s.logout);
 
   const handleLogout = () => {
-    console.log("Logging out...");
-    // implement real logout logic here
+    logout(); // clear isAuthenticated, token, tokenExpiresAt, dst dari store (persist juga ikut kehapus)
+    navigate("/login-admin", { replace: true });
   };
 
   return (

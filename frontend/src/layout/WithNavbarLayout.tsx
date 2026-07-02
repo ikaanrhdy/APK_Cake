@@ -1,9 +1,11 @@
 import { Outlet } from "react-router";
+import { X } from "lucide-react";
 import Navbar from "../components/user/Navbar";
 import Sidebar from "../components/user/Sidebar";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useProductStore } from "@/app/store/useProduct";
+import type { UserLayoutContext } from "./userLayoutContext";
 
 const UserLayout = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -13,12 +15,11 @@ const UserLayout = () => {
     getProducts();
   }, [getProducts]);
 
+  const toggleSidebar = () => setOpenSidebar((prev) => !prev);
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar
-        onToggleSidebar={() => setOpenSidebar((prev) => !prev)}
-        isSidebarOpen={openSidebar}
-      />
+      <Navbar />
 
       <div className="flex flex-1 w-full relative">
         {/* Sidebar Desktop */}
@@ -47,6 +48,16 @@ const UserLayout = () => {
                 transition={{ type: "spring", stiffness: 90, damping: 15 }}
                 className="lg:hidden fixed top-0 left-0 h-full w-56 bg-white shadow-xl z-50"
               >
+                <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <h2 className="text-lg font-bold text-primary">Menu</h2>
+                  <button
+                    onClick={() => setOpenSidebar(false)}
+                    className="cursor-pointer text-gray-500 hover:text-gray-700"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
                 <Sidebar onClose={() => setOpenSidebar(false)} />
               </motion.aside>
 
@@ -63,7 +74,11 @@ const UserLayout = () => {
         </AnimatePresence>
 
         <main className="flex-1 p-4 lg:p-6">
-          <Outlet />
+          <Outlet
+            context={
+              { onOpenSidebar: toggleSidebar } satisfies UserLayoutContext
+            }
+          />
         </main>
       </div>
     </div>

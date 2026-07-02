@@ -1,14 +1,15 @@
 import { product } from "@/data/product";
 import type { products } from "@/types/data";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router";
-import { FaCartShopping } from "react-icons/fa6";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate, useParams } from "react-router";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useCartStore } from "@/app/store/useCartProduct";
 import { toast } from "sonner";
 import { calculatePriceBySize } from "@/utils/data";
+import RelatedProductCard from "@/components/user/productDetail/RelatedProductCard";
+import ProductDetailHeader from "@/components/user/productDetail/ProductDetailHeader";
 
 /* ================= RATING ================= */
 const RatingStars = ({ rating }: { rating: number }) => (
@@ -37,189 +38,228 @@ const ProductDetail = () => {
 
   const size = data.size || [];
 
-  /* ===== Menu lainnya pagination ===== */
-  const ITEMS_MOBILE = 3;
-  const ITEMS_DESKTOP = 5;
-  const itemsPerPage = window.innerWidth < 768 ? ITEMS_MOBILE : ITEMS_DESKTOP;
-
+  /* ===== Menu lainnya pagination (grid 3 kolom, per halaman 6 item) ===== */
+  const ITEMS_PER_PAGE = 6;
   const otherProducts = product.filter((p) => p.id !== id);
-  const displayed = otherProducts.slice(page, page + itemsPerPage);
+  const displayed = otherProducts.slice(page, page + ITEMS_PER_PAGE);
+
+  const hasDiscount = !!data.discount && data.discount > 0;
+  const basePrice = hasDiscount
+    ? data.price * (1 - (data.discount as number) / 100)
+    : data.price;
 
   const previewPrice = selectedSize
-    ? calculatePriceBySize(data.price, size, selectedSize)
-    : data.price;
-  console.log("previewPrice", previewPrice);
+    ? calculatePriceBySize(basePrice, size, selectedSize)
+    : basePrice;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-6 px-4 md:px-10 lg:px-24"
+      className="flex flex-col gap-6 px-4 md:px-10 lg:px-16 pb-28 lg:pb-10"
     >
-      {/* ===== HEADER ===== */}
-      <div className="flex items-center justify-between bg-white shadow-md p-4 md:p-5 rounded-md">
-        {/* Back */}
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 md:p-3 rounded-full hover:bg-gray-200 transition"
-        >
-          <ArrowLeft className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7 cursor-pointer" />
-        </button>
+      {/* ===== HEADER (mobile bar / desktop breadcrumb) ===== */}
+      <ProductDetailHeader category={data.category} title={data.title} />
 
-        {/* Image */}
-        <motion.img
-          src={data.image}
-          alt={data.title}
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          className="w-32 h-32 md:w-44 md:h-44 rounded-md object-cover"
-        />
-
-        {/* Cart */}
-        <Link
-          to="/cart"
-          className="p-2 md:p-3 rounded-full hover:bg-gray-200 transition"
-        >
-          <FaCartShopping className="w-4 h-4 md:w-6 md:h-6 lg:w-7 lg:h-7 text-primary cursor-pointer" />
-        </Link>
-      </div>
-
-      {/* ===== INFO ===== */}
-      <div className="flex flex-col gap-3 md:flex-row md:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">{data.title}</h2>
-          <div className="flex items-center gap-2 mt-1">
-            <RatingStars rating={data.rating} />
-            <span className="text-xs text-gray-500">
-              {data.reviews} Reviews
-            </span>
-          </div>
+      {/* ===== IMAGE + INFO (2 kolom di desktop) ===== */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-10">
+        {/* Kolom kiri: gambar (sticky di desktop) */}
+        <div className="lg:sticky lg:top-6 lg:self-start">
+          <motion.img
+            src={data.image}
+            alt={data.title}
+            initial={{ scale: 0.97 }}
+            animate={{ scale: 1 }}
+            className="w-full aspect-square lg:aspect-4/3 object-cover rounded-xl shadow-md"
+          />
         </div>
 
-        <h4 className="text-sm font-medium md:text-lg">
-          Rp {previewPrice.toLocaleString("id-ID")}
-        </h4>
-      </div>
+        {/* Kolom kanan: info produk */}
+        <div className="flex flex-col gap-6 mt-6 lg:mt-0">
+          {/* ===== INFO ===== */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold">{data.title}</h2>
+              {hasDiscount && (
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-500 font-medium">
+                  -{data.discount}%
+                </span>
+              )}
+            </div>
 
-      {/* ===== SIZE ===== */}
-      <div className="flex gap-2">
-        {size.map((s) => {
-          const active = selectedSize === s;
-          return (
-            <motion.button
-              key={s}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setSelectedSize((prev) => (prev === s ? null : s))}
-              className={`px-3 py-1 rounded-md border text-xs transition hover:scale-75 cursor-pointer
-                ${
-                  active
-                    ? "bg-primary text-white border-primary"
-                    : "bg-gray-200 text-gray-700"
+            <div className="flex items-center gap-2">
+              {hasDiscount && (
+                <span className="text-xs text-gray-400 line-through">
+                  Rp {data.price.toLocaleString("id-ID")}
+                </span>
+              )}
+              <span className="text-base font-semibold text-primary">
+                Rp {previewPrice.toLocaleString("id-ID")}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 mt-1">
+              <RatingStars rating={data.rating} />
+              <span className="text-xs text-gray-500">
+                {data.reviews} Reviews
+              </span>
+            </div>
+          </div>
+
+          {/* ===== SIZE ===== */}
+          {size.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold">Pilih Ukuran</h3>
+              <div className="flex gap-2 flex-wrap">
+                {size.map((s) => {
+                  const active = selectedSize === s;
+                  return (
+                    <motion.button
+                      key={s}
+                      whileTap={{ scale: 0.92 }}
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() =>
+                        setSelectedSize((prev) => (prev === s ? null : s))
+                      }
+                      className={`px-3 py-1.5 rounded-md border text-xs transition cursor-pointer
+                        ${
+                          active
+                            ? "bg-primary text-white border-primary"
+                            : "bg-gray-100 text-gray-700 border-gray-200"
+                        }`}
+                    >
+                      {s} cm
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ===== STATUS ===== */}
+          <div className="bg-white rounded-md border p-4 text-sm flex flex-col gap-1">
+            <div className="flex items-center justify-between">
+              <span>Status:</span>
+              <span
+                className={`font-semibold ${
+                  data.status === "Pre-Order"
+                    ? "text-yellow-600"
+                    : data.status === "Habis"
+                      ? "text-red-500"
+                      : "text-green-600"
                 }`}
+              >
+                {data.status ?? "Ready Stock"}
+              </span>
+            </div>
+            <div className="text-gray-500 text-xs">
+              Pengiriman: 1 – 3 hari kerja
+            </div>
+          </div>
+
+          {/* ===== DESKRIPSI ===== */}
+          <div className="bg-white rounded-md border p-4">
+            <h3 className="font-medium mb-1">Deskripsi</h3>
+            <p className="text-sm text-gray-600">{data.description}</p>
+          </div>
+
+          {/* ===== ACTIONS (desktop: inline, mobile/tablet: fixed di bawah) ===== */}
+          <div className="hidden lg:flex gap-3">
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (size.length > 0 && !selectedSize) {
+                  toast.error("Pilih ukuran terlebih dahulu!");
+                  return;
+                }
+                addToCart(data, selectedSize ?? "");
+                toast.success("Berhasil masukan ke keranjang!");
+              }}
+              className="flex-1 border border-primary text-primary rounded-md py-3 text-sm font-medium hover:bg-purple-50 transition cursor-pointer"
             >
-              {s} cm
+              Masukan Keranjang
             </motion.button>
-          );
-        })}
-      </div>
 
-      {/* ===== ESTIMASI ===== */}
-      <div className="bg-white rounded-md p-4 text-sm">
-        Estimasi Tiba: <b>1 – 3 hari</b>
-      </div>
-
-      {/* ===== DESKRIPSI ===== */}
-      <div className="bg-white rounded-md border p-4">
-        <h3 className="font-medium mb-1">Deskripsi</h3>
-        <p className="text-sm text-gray-600">{data.description}</p>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (size.length > 0 && !selectedSize) {
+                  toast.error("Pilih ukuran terlebih dahulu!");
+                  return;
+                }
+                addToCart(data, selectedSize ?? "");
+                navigate("/checkout");
+              }}
+              className="flex-1 bg-primary text-white rounded-md py-3 text-sm font-medium hover:bg-[#6B3489] transition cursor-pointer"
+            >
+              Beli Sekarang
+            </motion.button>
+          </div>
+        </div>
       </div>
 
       {/* ===== MENU LAINNYA ===== */}
       <div className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold">Menu Lainnya</h2>
 
-        <div className="relative">
-          <div className="flex gap-3 overflow-hidden">
-            {displayed.map((item) => (
-              <motion.div
-                key={item.id}
-                whileHover={{ y: -4 }}
-                className="min-w-30 md:min-w-40 bg-white rounded-md shadow-md p-2 cursor-pointer"
-              >
-                <Link to={`/product/${item.id}`}>
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full aspect-square object-cover rounded-md"
-                  />
-                  <h4 className="text-xs mt-1 line-clamp-2">{item.title}</h4>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-3">
+          {displayed.map((item) => (
+            <RelatedProductCard key={item.id} item={item} />
+          ))}
+        </div>
 
-          {/* Controls */}
-          <div className="flex justify-end gap-2 mt-3">
+        {otherProducts.length > ITEMS_PER_PAGE && (
+          <div className="flex justify-end gap-2">
             <button
               disabled={page === 0}
-              onClick={() => setPage((p) => p - 1)}
+              onClick={() => setPage((p) => Math.max(0, p - ITEMS_PER_PAGE))}
               className="p-2 bg-primary text-white rounded disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
             >
               <ChevronLeft size={16} />
             </button>
 
             <button
-              disabled={page + itemsPerPage >= otherProducts.length}
-              onClick={() => setPage((p) => p + 1)}
+              disabled={page + ITEMS_PER_PAGE >= otherProducts.length}
+              onClick={() => setPage((p) => p + ITEMS_PER_PAGE)}
               className="p-2 bg-primary text-white rounded disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
             >
               <ChevronRight size={16} />
             </button>
           </div>
-        </div>
+        )}
       </div>
 
-      <div className=" flex flex-row gap-4 md:gap-6 lg:gap-8">
-        {/* === Kustomisasi === */}
-        <motion.div
-          className="w-auto"
-          whileHover={{ scale: 1.03 }}
+      {/* ===== FIXED BOTTOM ACTIONS (mobile & tablet aja) ===== */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-3 flex gap-3 z-40">
+        <motion.button
           whileTap={{ scale: 0.97 }}
-          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+          onClick={() => {
+            if (size.length > 0 && !selectedSize) {
+              toast.error("Pilih ukuran terlebih dahulu!");
+              return;
+            }
+            addToCart(data, selectedSize ?? "");
+            toast.success("Berhasil masukan ke keranjang!");
+          }}
+          className="flex-1 border border-primary text-primary rounded-md py-3 text-sm font-medium hover:bg-purple-50 transition cursor-pointer"
         >
-          <Link
-            to={"/product/customitation"}
-            className=" flex bg-white px-10 py-4 text-sm border border-gray-400 items-center justify-center
-             hover:bg-gray-300 md:hover:bg-gray-200 lg:hover:bg-gray-100 transition-colors duration-300"
-          >
-            <h2 className="font-roboto font-medium">Kustomisasi</h2>
-          </Link>
-        </motion.div>
+          Masukan Keranjang
+        </motion.button>
 
-        {/* === Masukan Keranjang === */}
-
-        <motion.div
-          className="w-auto"
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={() => {
+            if (size.length > 0 && !selectedSize) {
+              toast.error("Pilih ukuran terlebih dahulu!");
+              return;
+            }
+            addToCart(data, selectedSize ?? "");
+            navigate("/cart");
+          }}
+          className="flex-1 bg-primary text-white rounded-md py-3 text-sm font-medium hover:bg-[#6B3489] transition cursor-pointer"
         >
-          <div
-            onClick={() => {
-              if (!selectedSize) {
-                toast.error("Pilih ukuran terlebih dahulu!");
-                return;
-              }
-              addToCart(data, selectedSize); // tambahkan size juga
-              toast.success("Berhasil masukan ke keranjang!");
-            }}
-            className="flex bg-primary text-white px-8 py-4 text-sm border border-gray-400  
-            items-center justify-center cursor-pointer hover:bg-[#925bb0] md:hover:bg-[#7A3E9D] 
-            lg:hover:bg-[#6B3489] hover:text-white transition-all duration-300"
-          >
-            <h5 className="font-roboto font-medium">Masukan Keranjang</h5>
-          </div>
-        </motion.div>
+          Beli Sekarang
+        </motion.button>
       </div>
     </motion.div>
   );

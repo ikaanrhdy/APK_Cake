@@ -18,14 +18,13 @@ import { Eye, EyeOff, User, Lock, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import useAuthStore from "@/app/store/auth";
-import { dummyAdmins } from "@/data/adminData";
+import { dummyAdmins, DUMMY_TOKEN_EXPIRES_IN } from "@/data/adminData";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username wajib diisi" }),
   password: z.string().min(6, { message: "Password minimal 6 karakter" }),
 });
 
-// Variants for staggered animation
 const parentVariant = {
   hidden: {},
   show: {
@@ -74,7 +73,18 @@ const LoginAdmin = () => {
         return;
       }
 
-      login({ userId: found.id, name: found.name, role: found.role });
+      // token dummy — nanti diganti token asli dari response API backend
+      const dummyToken = `dummy-token-${found.id}-${Date.now()}`;
+
+      login({
+        userId: found.id,
+        name: found.name,
+        role: found.role,
+        userType: "admin",
+        token: dummyToken,
+        expiresIn: DUMMY_TOKEN_EXPIRES_IN,
+      });
+
       setLoading(false);
       navigate("/admin");
     }, 500);
@@ -146,6 +156,7 @@ const LoginAdmin = () => {
                               className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
                               placeholder="Enter your username"
                               type="text"
+                              disabled={isLoading}
                               {...field}
                             />
                           </div>
@@ -178,6 +189,7 @@ const LoginAdmin = () => {
                               className="pl-10 pr-10 h-12 border-0 rounded-xl focus-visible:ring-0"
                               placeholder="Password"
                               type={showPassword ? "text" : "password"}
+                              disabled={isLoading}
                               {...field}
                             />
                             <button

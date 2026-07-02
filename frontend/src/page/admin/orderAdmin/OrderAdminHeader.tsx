@@ -1,4 +1,6 @@
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Menu } from "lucide-react";
+import { useOutletContext } from "react-router";
+import type { AdminLayoutContext } from "@/layout/AdminLayout";
 
 type Props = {
   search: string;
@@ -6,13 +8,25 @@ type Props = {
 };
 
 const OrderAdminHeader = ({ search, onSearchChange }: Props) => {
+  const { onOpenSidebar } = useOutletContext<AdminLayoutContext>();
+
   return (
     <div className="space-y-3">
-      <div>
-        <h1 className="font-bold text-lg sm:text-xl">Pesanan Masuk</h1>
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          Kelola dan tracking pesanan pelanggan yang masuk dari aplikasi
-        </p>
+      <div className="flex items-start gap-3">
+        {/* Hamburger — cuma muncul di mobile/tablet */}
+        <button
+          onClick={onOpenSidebar}
+          className="p-2 -ml-2 mt-0.5 hover:bg-gray-100 rounded-full transition cursor-pointer lg:hidden shrink-0"
+        >
+          <Menu size={20} />
+        </button>
+
+        <div>
+          <h1 className="font-bold text-lg sm:text-xl">Pesanan Masuk</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Kelola dan tracking pesanan pelanggan yang masuk dari aplikasi
+          </p>
+        </div>
       </div>
 
       <div className="relative">

@@ -25,3 +25,6 @@ export const dummyAdmins: AdminAccount[] = [
     role: "admin",
   },
 ];
+
+// durasi token dummy, dalam detik (1 jam)
+export const DUMMY_TOKEN_EXPIRES_IN = 3600;

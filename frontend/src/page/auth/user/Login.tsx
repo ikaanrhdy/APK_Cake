@@ -12,14 +12,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 // icons
-import { Eye, EyeOff, Mail, Lock, ChevronLeft } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import useAuthStore from "@/app/store/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/utils/firebase";
+import { getFirebaseAuthErrorMessage } from "@/utils/firebaseError";
+import { auth } from "@/lib/firebase";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email is invalid" }),
@@ -28,7 +30,6 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long" }),
 });
 
-// Variants for staggered animation
 const parentVariant = {
   hidden: {},
   show: {
@@ -50,7 +51,7 @@ const childVariant = {
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setLoading, setError } = useAuthStore();
+  const { isLoading, setLoading, setError } = useAuthStore();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -64,11 +65,14 @@ const Login = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
+      setError(null);
 
       await signInWithEmailAndPassword(auth, data.email, data.password);
       navigate("/2fa");
     } catch (error) {
-      setError((error as Error).message);
+      const message = getFirebaseAuthErrorMessage(error);
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -81,7 +85,7 @@ const Login = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center items-center bg-purple-900 text-white p-10 relative overflow-hidden"
+        className="hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center items-center text-white p-10 relative overflow-hidden"
       >
         <motion.img
           src="/logo/logo.png"
@@ -90,22 +94,19 @@ const Login = () => {
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           className="max-h-64 object-contain mb-8 relative z-10"
         />
-        <h2 className="text-3xl lg:text-4xl font-bold text-center relative z-10">
+        <h2 className="text-3xl lg:text-4xl font-bold text-center relative z-10 text-gray-700">
           Welcome Back!
         </h2>
-        <p className="text-purple-200 mt-2 text-center max-w-sm relative z-10">
+        <p className="text-gray-700 mt-2 text-center max-w-sm relative z-10">
           Glad to See You Again! Login to continue where you left off.
         </p>
 
-        {/* decorative blobs */}
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-purple-700/40 rounded-full blur-3xl" />
-        <div className="absolute -bottom-24 -right-10 w-80 h-80 bg-purple-600/30 rounded-full blur-3xl" />
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-purple-500/40 rounded-full blur-3xl" />
       </motion.div>
 
       {/* RIGHT — Form */}
       <div className="w-full md:w-1/2 lg:w-2/5 flex justify-center items-center px-6 py-10">
         <div className="w-full max-w-md">
-          {/* Back button */}
           <motion.button
             type="button"
             onClick={() => navigate(-1)}
@@ -117,7 +118,6 @@ const Login = () => {
             <ChevronLeft size={26} />
           </motion.button>
 
-          {/* HEADER (mobile only, since desktop shows it on the left panel) */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -137,7 +137,6 @@ const Login = () => {
             </motion.p>
           </motion.div>
 
-          {/* HEADER (desktop/tablet only, smaller, since logo panel is on the left) */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -152,7 +151,6 @@ const Login = () => {
             </p>
           </motion.div>
 
-          {/* FORM */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <motion.div
@@ -183,6 +181,7 @@ const Login = () => {
                                 className="pl-10 h-12 border-0 rounded-xl focus-visible:ring-0"
                                 placeholder="Enter your email"
                                 type="email"
+                                disabled={isLoading}
                                 {...field}
                               />
                             </div>
@@ -215,6 +214,7 @@ const Login = () => {
                                 className="pl-10 pr-10 h-12 border-0 rounded-xl focus-visible:ring-0"
                                 placeholder="Enter your password"
                                 type={showPassword ? "text" : "password"}
+                                disabled={isLoading}
                                 {...field}
                               />
                               <button
@@ -250,9 +250,17 @@ const Login = () => {
                   <motion.div variants={childVariant} className="pt-2">
                     <Button
                       type="submit"
-                      className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800"
+                      disabled={isLoading}
+                      className="w-full bg-purple-900 text-base h-12 font-medium rounded-xl hover:bg-purple-800 disabled:opacity-70"
                     >
-                      Login
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Logging in...
+                        </>
+                      ) : (
+                        "Login"
+                      )}
                     </Button>
                   </motion.div>
 

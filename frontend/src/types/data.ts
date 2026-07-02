@@ -5,11 +5,13 @@ export interface products {
   image: string;
   price: number;
   originalPrice?: number; // harga sebelum diskon, optional
-  discountLabel?: string; //
+  discountLabel?: string;
+  discount?: number;
   category: string;
   size: string[];
   rating: number;
   reviews: number;
+  status?: "Ready Stock" | "Pre-Order" | "Habis";
   createdAt: string; // contoh: "2026-06-20"
 }
 

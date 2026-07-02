@@ -11,6 +11,16 @@ import {
   MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/firebase";
+import { toast } from "sonner";
+import useAuthStore from "@/app/store/auth";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditProfileForm {
   name: string;
@@ -23,24 +33,48 @@ interface EditProfileForm {
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const currentUser = auth.currentUser;
+  const store = useAuthStore();
 
+  const memberSince = currentUser?.metadata.creationTime
+    ? new Date(currentUser.metadata.creationTime).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "-";
+
+  // ===== Prefill form dari data user yang sedang login =====
   const [form, setForm] = useState<EditProfileForm>({
-    name: "Ika Nur Hidayati",
-    email: "",
-    phone: "",
-    gender: "",
-    birthDate: "",
-    address: "",
+    name: currentUser?.displayName || store.name || "",
+    email: currentUser?.email || store.email || "",
+    phone: currentUser?.phoneNumber || store.phone || "",
+    gender: store.gender || "",
+    birthDate: store.birthDate || "",
+    address: store.address || "",
   });
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (key: keyof EditProfileForm, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = () => {
-    console.log("Save profile:", form);
-    // TODO: panggil API update profile
-    navigate("/profile");
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await store.updateUserProfile(form);
+      toast.success("Profil berhasil diperbarui");
+      navigate("/profile");
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Gagal menyimpan profil, coba lagi";
+      toast.error(message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -69,8 +103,16 @@ const EditProfile = () => {
           {/* === HEADER CARD === */}
           <div className="bg-linear-to-r from-[#5F2C7A] to-[#825a97] px-5 py-6 flex items-center gap-4">
             <div className="relative shrink-0">
-              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
-                <User size={32} className="text-[#5F2C7A]" />
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                {currentUser?.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt={form.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={32} className="text-[#5F2C7A]" />
+                )}
               </div>
               <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center border-2 border-white cursor-pointer hover:bg-gray-600 transition">
                 <Camera size={12} className="text-white" />
@@ -84,7 +126,9 @@ const EditProfile = () => {
                 placeholder="Ganti nama anda...."
                 className="bg-white/20 placeholder:text-white/70 text-white text-sm font-medium rounded-lg px-3 py-2 outline-none focus:bg-white/30 transition w-full max-w-55"
               />
-              <p className="text-xs text-white/80">Member since 24/2/2026</p>
+              <p className="text-xs text-white/80">
+                Member since {memberSince}
+              </p>
             </div>
           </div>
 
@@ -106,13 +150,24 @@ const EditProfile = () => {
               placeholder="Contoh : 089..."
             />
 
-            <Field
-              icon={<User size={16} />}
-              label="Jenis Kelamin"
-              value={form.gender}
-              onChange={(v) => handleChange("gender", v)}
-              placeholder="Wanita/Laki-laki"
-            />
+            <div className="flex flex-col gap-1.5">
+              <label className="flex items-center gap-2 text-xs text-gray-500">
+                <User size={16} />
+                Jenis Kelamin
+              </label>
+              <Select
+                value={form.gender}
+                onValueChange={(v) => handleChange("gender", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih jenis kelamin" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Laki-laki">Laki-laki</SelectItem>
+                  <SelectItem value="Wanita">Wanita</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <Field
               icon={<Calendar size={16} />}
@@ -142,12 +197,14 @@ const EditProfile = () => {
             <div className="flex gap-3 pt-2">
               <Button
                 onClick={handleSave}
-                className="bg-[#5F2C7A] hover:bg-[#4d2363] text-white px-8 cursor-pointer"
+                disabled={isSaving}
+                className="bg-[#5F2C7A] hover:bg-[#4d2363] text-white px-8 cursor-pointer disabled:opacity-60"
               >
-                Simpan
+                {isSaving ? "Menyimpan..." : "Simpan"}
               </Button>
               <Button
                 onClick={() => navigate(-1)}
+                disabled={isSaving}
                 className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 cursor-pointer"
               >
                 Batal

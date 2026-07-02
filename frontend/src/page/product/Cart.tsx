@@ -3,7 +3,6 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { IoMdHelpCircleOutline } from "react-icons/io";
 import { useCartStore } from "@/app/store/useCartProduct";
 import { toast } from "sonner";
 
@@ -12,7 +11,6 @@ const Cart = () => {
 
   // ambil data dari store
   const items = useCartStore((state) => state.items);
-  console.log(items);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const increaseQty = useCartStore((state) => state.increaseQty);
   const decreaseQty = useCartStore((state) => state.decreaseQty);
@@ -23,7 +21,7 @@ const Cart = () => {
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -31,7 +29,7 @@ const Cart = () => {
 
   const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.price * item.qty,
-    0
+    0,
   );
 
   const totalQty = selectedItems.reduce((sum, item) => sum + item.qty, 0);
@@ -56,11 +54,6 @@ const Cart = () => {
             <h2 className="font-medium text-sm md:text-base">Keranjang Saya</h2>
             <span className="text-xs text-gray-500">({items.length})</span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Ubah</span>
-          <IoMdHelpCircleOutline className="text-primary size-6 md:size-8" />
         </div>
       </motion.div>
 
