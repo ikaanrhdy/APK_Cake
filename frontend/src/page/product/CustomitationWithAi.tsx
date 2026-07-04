@@ -52,7 +52,7 @@ const CustomitationWithAi = () => {
       {/* ================= HEADER ================= */}
       <motion.div
         variants={item}
-        className="flex bg-white justify-between px-5 py-3 items-center shadow-sm sticky top-0 z-10"
+        className="flex bg-white justify-between px-5 py-3 lg:px-8 items-center shadow-sm sticky top-0 z-20"
       >
         <motion.button
           whileTap={{ scale: 0.9 }}
@@ -61,7 +61,7 @@ const CustomitationWithAi = () => {
         >
           <ArrowLeft size={24} />
         </motion.button>
-        <h2 className="font-medium text-sm">Custom Cake</h2>
+        <h2 className="font-medium text-sm lg:text-base">Custom Cake</h2>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
           <Link
             to="/cart"
@@ -72,37 +72,72 @@ const CustomitationWithAi = () => {
         </motion.div>
       </motion.div>
 
-      <div className="px-4 space-y-4 max-w-2xl mx-auto w-full pb-6">
-        <motion.div variants={item}>
-          <PreviewCake state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <UkuranSelector state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <LayerSelector state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <DropdownPilihan state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <ReferensiCake state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <DekorasiSection state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <UcapanCatatan state={state} />
-        </motion.div>
-        <motion.div variants={item}>
-          <TotalSummary state={state} />
-        </motion.div>
+      {/* ================= MAIN CONTENT ================= */}
+      <div className="px-4 lg:px-8 pb-28 lg:pb-10 max-w-2xl lg:max-w-6xl mx-auto w-full">
+        <div className="lg:grid lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-8 lg:items-start">
+          {/* ── KIRI (desktop): Preview + Total, sticky ── */}
+          <div className="lg:sticky lg:top-20 flex flex-col gap-4 lg:gap-5">
+            <motion.div variants={item}>
+              <PreviewCake state={state} />
+            </motion.div>
+
+            {/* Total & tombol aksi cuma tampil di sini pas desktop/tablet */}
+            <motion.div variants={item} className="hidden lg:block">
+              <TotalSummary state={state} />
+            </motion.div>
+
+            <motion.div
+              variants={item}
+              className="hidden lg:flex flex-col gap-3"
+            >
+              <Button
+                onClick={() => handleSubmit("buy")}
+                className="w-full bg-primary text-white cursor-pointer h-11"
+              >
+                Beli Sekarang
+              </Button>
+              <Button
+                onClick={() => handleSubmit("cart")}
+                className="w-full bg-white border text-black cursor-pointer hover:text-white h-11"
+              >
+                Masukkan Keranjang
+              </Button>
+            </motion.div>
+          </div>
+
+          {/* ── KANAN (desktop): semua opsi kustomisasi ── */}
+          <div className="flex flex-col gap-4 mt-4 lg:mt-0">
+            <motion.div variants={item}>
+              <UkuranSelector state={state} />
+            </motion.div>
+            <motion.div variants={item}>
+              <LayerSelector state={state} />
+            </motion.div>
+            <motion.div variants={item}>
+              <DropdownPilihan state={state} />
+            </motion.div>
+            <motion.div variants={item}>
+              <ReferensiCake state={state} />
+            </motion.div>
+            <motion.div variants={item}>
+              <DekorasiSection state={state} />
+            </motion.div>
+            <motion.div variants={item}>
+              <UcapanCatatan state={state} />
+            </motion.div>
+
+            {/* Total cuma tampil di sini pas mobile (di kolom kiri udah ada versi desktop) */}
+            <motion.div variants={item} className="lg:hidden">
+              <TotalSummary state={state} />
+            </motion.div>
+          </div>
+        </div>
       </div>
 
-      {/* ================= FOOTER ACTION ================= */}
+      {/* ================= FOOTER ACTION (mobile only) ================= */}
       <motion.div
         variants={item}
-        className="sticky bottom-0 bg-white border-t p-4 flex flex-col md:flex-row gap-3 max-w-2xl mx-auto w-full"
+        className="lg:hidden sticky bottom-0 bg-white border-t p-4 flex flex-col md:flex-row gap-3 max-w-2xl mx-auto w-full"
       >
         <Button
           onClick={() => handleSubmit("cart")}

@@ -49,6 +49,9 @@ import KustomisasiAdmin from "./page/admin/KustomisasiAdmin";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import ProtectedAdminRoute from "./middleware/ProtectedAdminRoute";
 import UserLayout from "./layout/WithNavbarLayout";
+import RincianPesananPage from "./page/order/RincianPesanan";
+import RincianPesananAdmin from "./page/admin/RincianPesananAdmin";
+import NotFoundPage from "./components/common/NotFoundPage";
 
 function App() {
   return (
@@ -63,6 +66,10 @@ function App() {
             <Route path="/admin/kustomisasi" element={<KustomisasiAdmin />} />
             <Route path="/admin/order" element={<OrderAdmin />} />
           </Route>
+          <Route
+            path="/admin/rincian-pesanan/:id"
+            element={<RincianPesananAdmin />}
+          />
         </Route>
 
         {/* user */}
@@ -85,6 +92,7 @@ function App() {
 
         {/* chat */}
         <Route element={<ScreenCS />} path="/chat-bot" />
+        <Route element={<RincianPesananPage />} path="/rincian-pesanan" />
 
         {/* cart */}
         <Route element={<ProtectedRoutes />}>
@@ -124,6 +132,9 @@ function App() {
         />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-password-success" element={<ResetPWSuccess />} />
+
+        {/* not found */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

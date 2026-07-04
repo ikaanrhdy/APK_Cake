@@ -6,7 +6,6 @@ import {
   CheckCircle,
   Upload,
   ThumbsUp,
-  AlertCircle,
   Eye,
 } from "lucide-react";
 import type {
@@ -156,9 +155,13 @@ export const STATUS_LIST: OrderStatusKey[] = [
 ];
 
 // ================= DATA DUMMY ORDERS (satu-satunya source) =================
+// NOTE: productId di-mapping ke id di productAdmin.ts
+// "1" = Black Forest Cake, "2" = Red Velvet Cake, "3" = Brownies
+// "Chocolate Brownies" di-map sementara ke id "3" (Brownies) - cek lagi apa emang produk yang sama
+// "Tiramisu Cake" belum ada di productAdmin.ts, jadi belum ada productId-nya
 export const ordersAdmin: OrderAdmin[] = [
   {
-    id: "ORD004",
+    id: "ORD001",
     date: "8/2/2026",
     status: "Menunggu",
     total: "Rp 330.000",
@@ -166,15 +169,15 @@ export const ordersAdmin: OrderAdmin[] = [
     customer: { name: "Budi Santoso", phone: "081223344556" },
     delivery: { date: "10/4/2026" },
     items: [
-      { name: "Black Forest Cake", qty: 1 },
-      { name: "Chocolate Brownies", qty: 2 },
+      { name: "Black Forest Cake", qty: 1, productId: "1" },
+      { name: "Chocolate Brownies", qty: 2, productId: "3" },
     ],
     note: "Mohon dikirim pagi hari",
     statusInfo: "Pesanan Menunggu - konfirmasi Pembayaran oleh pembeli",
     actions: [actionButtons.Proses, actionButtons.Tolak],
   },
   {
-    id: "ORD004",
+    id: "ORD002",
     date: "8/2/2026",
     status: "Diproses",
     total: "Rp 330.000",
@@ -192,7 +195,7 @@ export const ordersAdmin: OrderAdmin[] = [
     ],
   },
   {
-    id: "ORD001",
+    id: "ORD003",
     date: "8/2/2026",
     status: "Dikirim",
     total: "Rp 330.000",
@@ -200,22 +203,22 @@ export const ordersAdmin: OrderAdmin[] = [
     customer: { name: "Budi Santoso", phone: "081223344556" },
     delivery: { date: "10/4/2026" },
     items: [
-      { name: "Black Forest Cake", qty: 1 },
-      { name: "Chocolate Brownies", qty: 2 },
+      { name: "Black Forest Cake", qty: 1, productId: "1" },
+      { name: "Chocolate Brownies", qty: 2, productId: "3" },
     ],
     note: "Mohon dikirim pagi hari",
     statusInfo: "Pesanan Dikirim - Pesanan sedang menuju alamat pembeli",
     actions: [actionButtons.Dikirim, actionButtons.Sampai],
   },
   {
-    id: "ORD002",
+    id: "ORD004",
     date: "7/2/2026",
     status: "Sampai",
     total: "Rp 200.000",
     totalValue: 200000,
     customer: { name: "Siti Aminah", phone: "081223344556" },
     delivery: { date: "8/2/2026" },
-    items: [{ name: "Red Velvet Cake", qty: 1 }],
+    items: [{ name: "Red Velvet Cake", qty: 1, productId: "2" }],
     timeline: {
       icon: CheckCircle,
       title: "Pesanan Sudah Sampai",
@@ -229,7 +232,7 @@ export const ordersAdmin: OrderAdmin[] = [
     actions: [actionButtons.UploadBukti, actionButtons.Selesai],
   },
   {
-    id: "ORD004",
+    id: "ORD005",
     date: "3/2/2026",
     status: "Selesai",
     total: "Rp 560.000",
@@ -237,8 +240,8 @@ export const ordersAdmin: OrderAdmin[] = [
     customer: { name: "Dewi Lestari", phone: "081990011223" },
     delivery: { date: "10/4/2026" },
     items: [
-      { name: "Black Forest Cake", qty: 2 },
-      { name: "Red Velvet Cake", qty: 1 },
+      { name: "Black Forest Cake", qty: 2, productId: "1" },
+      { name: "Red Velvet Cake", qty: 1, productId: "2" },
     ],
     timeline: {
       icon: CheckCircle,
@@ -252,8 +255,10 @@ export const ordersAdmin: OrderAdmin[] = [
     statusInfo: "Pesanan selesai - Pembeli sudah konfirmasi",
     actions: [],
   },
+
+  // ============= DIBATALKAN — Menunggu Review =============
   {
-    id: "ORD004",
+    id: "ORD006",
     date: "3/2/2026",
     status: "Dibatalkan",
     total: "Rp 560.000",
@@ -261,26 +266,68 @@ export const ordersAdmin: OrderAdmin[] = [
     customer: { name: "Dewi Lestari", phone: "081990011223" },
     delivery: { date: "9/4/2026" },
     items: [
-      { name: "Black Forest Cake", qty: 2 },
-      { name: "Red Velvet Cake", qty: 1 },
+      { name: "Black Forest Cake", qty: 2, productId: "1" },
+      { name: "Red Velvet Cake", qty: 1, productId: "2" },
     ],
     variantInfo: "Ukuran: Small (20cm) | Varian: Classic",
-    timeline: {
-      icon: AlertCircle,
-      title: "Dibatalkan oleh Pembeli",
-      time: "6/4/2026, 00.58.51",
-      description: "Alasan: Berubah pikiran, sudah pesan di tempat lain",
-      textClass: "text-red-700",
-      bgClass: "bg-red-50",
-      borderClass: "border-red-200",
+    cancelRequest: {
+      status: "menunggu",
+      diajukan: "6/4/2026, 00.58.51",
+      alasan: "Berubah pikiran, sudah pesan di tempat lain",
     },
     statusInfo: "Permintaan pembatalan oleh pembeli",
     actions: [actionButtons.Terima, actionButtons.Tolak],
   },
 
+  // ============= DIBATALKAN — Ditolak =============
+  {
+    id: "ORD007",
+    date: "4/2/2026",
+    status: "Dibatalkan",
+    total: "Rp 400.000",
+    totalValue: 400000,
+    customer: { name: "Rina Marlina", phone: "081556677889" },
+    delivery: { date: "7/4/2026" },
+    items: [{ name: "Black Forest Cake", qty: 2, productId: "1" }],
+    variantInfo: "Ukuran: Medium (25cm) | Varian: Original",
+    cancelRequest: {
+      status: "ditolak",
+      diajukan: "13/4/2026, 00.58.51",
+      alasan: "Berubah pikiran, sudah pesan di tempat lain",
+      direview: "13/4/2026, 09.20.00",
+      catatanAdmin:
+        "Maaf, pembatalan tidak dapat diproses karena pesanan sudah masuk tahap produksi.",
+    },
+    statusInfo: "Permintaan pembatalan ditolak",
+    actions: [],
+  },
+
+  // ============= DIBATALKAN — Diterima =============
+  {
+    id: "ORD008",
+    date: "2/2/2026",
+    status: "Dibatalkan",
+    total: "Rp 275.000",
+    totalValue: 275000,
+    customer: { name: "Hendra Gunawan", phone: "081667788990" },
+    delivery: { date: "5/4/2026" },
+    items: [{ name: "Red Velvet Cake", qty: 1, productId: "2" }],
+    variantInfo: "Ukuran: Small (20cm) | Varian: Classic",
+    cancelRequest: {
+      status: "diterima",
+      diajukan: "13/4/2026, 00.58.51",
+      alasan: "Salah pilih tanggal pengiriman",
+      direview: "13/4/2026, 10.05.00",
+      catatanAdmin:
+        "Disetujui. Pesanan dibatalkan dan dana akan dikembalikan dalam 3-5 hari kerja.",
+    },
+    statusInfo: "Permintaan pembatalan diterima - pesanan dibatalkan",
+    actions: [],
+  },
+
   // ============= DIKEMBALIKAN — Menunggu Review =============
   {
-    id: "ORD004",
+    id: "ORD009",
     date: "3/2/2026",
     status: "Dikembalikan",
     total: "Rp 560.000",
@@ -289,8 +336,8 @@ export const ordersAdmin: OrderAdmin[] = [
     delivery: { date: "6/4/2026" },
     variantInfo: "Varian: Dark Chocolate",
     items: [
-      { name: "Black Forest Cake", qty: 2 },
-      { name: "Red Velvet Cake", qty: 1 },
+      { name: "Black Forest Cake", qty: 2, productId: "1" },
+      { name: "Red Velvet Cake", qty: 1, productId: "2" },
     ],
     refundRequest: {
       status: "menunggu",
@@ -309,7 +356,7 @@ export const ordersAdmin: OrderAdmin[] = [
 
   // ============= DIKEMBALIKAN — Ditolak =============
   {
-    id: "ORD004",
+    id: "ORD010",
     date: "3/2/2026",
     status: "Dikembalikan",
     total: "Rp 560.000",
@@ -318,8 +365,8 @@ export const ordersAdmin: OrderAdmin[] = [
     delivery: { date: "6/4/2026" },
     variantInfo: "Varian: Dark Chocolate",
     items: [
-      { name: "Black Forest Cake", qty: 2 },
-      { name: "Red Velvet Cake", qty: 1 },
+      { name: "Black Forest Cake", qty: 2, productId: "1" },
+      { name: "Red Velvet Cake", qty: 1, productId: "2" },
     ],
     refundRequest: {
       status: "ditolak",
@@ -336,7 +383,7 @@ export const ordersAdmin: OrderAdmin[] = [
 
   // ============= DIKEMBALIKAN — Disetujui =============
   {
-    id: "ORD004",
+    id: "ORD011",
     date: "3/2/2026",
     status: "Dikembalikan",
     total: "Rp 560.000",
@@ -345,8 +392,8 @@ export const ordersAdmin: OrderAdmin[] = [
     delivery: { date: "6/4/2026" },
     variantInfo: "Varian: Dark Chocolate",
     items: [
-      { name: "Black Forest Cake", qty: 2 },
-      { name: "Red Velvet Cake", qty: 1 },
+      { name: "Black Forest Cake", qty: 2, productId: "1" },
+      { name: "Red Velvet Cake", qty: 1, productId: "2" },
     ],
     refundRequest: {
       status: "disetujui",
@@ -363,13 +410,14 @@ export const ordersAdmin: OrderAdmin[] = [
   },
 
   {
-    id: "ORD005",
+    id: "ORD012",
     date: "5/2/2026",
     status: "Dikembalikan",
     total: "Rp 150.000",
     totalValue: 150000,
     customer: { name: "Andi Wijaya", phone: "081334455667" },
     delivery: { date: "6/2/2026" },
+    // "Tiramisu Cake" belum ada di productAdmin.ts, belum bisa di-mapping ke productId
     items: [{ name: "Tiramisu Cake", qty: 1 }],
     statusInfo: "Dana telah dikembalikan ke pembeli",
     actions: [],

@@ -12,8 +12,12 @@ export type OrderStatusKey =
   | "Dikembalikan";
 
 export interface OrderItemAdmin {
+  productId?: string; // ref ke productsAdmin.id, dipakai buat ambil image/price/size
   name: string;
   qty: number;
+  price?: number; // override manual kalau perlu (misal harga saat itu beda dari master)
+  image?: string; // override manual kalau perlu
+  ukuran?: string; // override manual kalau perlu
 }
 
 export interface ActionButtonAdmin {
@@ -34,6 +38,16 @@ export interface OrderTimelineInfo {
   borderClass: string;
 }
 
+// Sama polanya kayak RefundRequestInfo, tapi buat pengajuan pembatalan pesanan
+export interface CancelRequestInfo {
+  status: "menunggu" | "ditolak" | "diterima";
+  diajukan: string; // tanggal & waktu pengajuan pembatalan
+  alasan: string;
+  catatanPembeli?: string;
+  direview?: string;
+  catatanAdmin?: string;
+}
+
 export interface OrderAdmin {
   id: string;
   date: string;
@@ -48,6 +62,7 @@ export interface OrderAdmin {
   delivery: {
     date: string;
   };
+  alamat?: string;
   items?: OrderItemAdmin[];
   customDesc?: string;
   variantInfo?: string;
@@ -56,9 +71,12 @@ export interface OrderAdmin {
   timeline?: OrderTimelineInfo;
   actions: ActionButtonAdmin[];
   refundRequest?: RefundRequestInfo;
+  cancelRequest?: CancelRequestInfo;
+  subtotalPengiriman?: number;
+  biayaLayanan?: number;
 }
 
-// dashboard-only types (tetap dipisah karena bukan data order)
+// dashboard-only types
 export interface DashboardStat {
   title: string;
   value: string;
@@ -74,9 +92,9 @@ export interface SalesPoint {
 
 export interface RefundRequestInfo {
   status: "menunggu" | "ditolak" | "disetujui";
-  diajukan: string; // tanggal pengajuan
+  diajukan: string;
   alasan: string;
   catatanPembeli?: string;
-  direview?: string; // tanggal direview admin
+  direview?: string;
   catatanAdmin?: string;
 }

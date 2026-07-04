@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import UploadBuktiPembayaran from "@/components/user/UploadBuktiPembayaran";
 import { product } from "@/data/product";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import UploadBuktiSampaiModal from "@/components/user/UploadBuktiSampaiModal";
+import { useNavigate } from "react-router";
 
 /* ================= VARIANTS ================= */
 
@@ -51,6 +52,40 @@ const BelumBayarPage = () => {
   const data1 = product[0];
   const rekomendasi = product.slice(1, 7);
 
+  const navigate = useNavigate();
+
+  const handleLihatRincian = () => {
+    navigate("/rincian-pesanan", {
+      state: {
+        orderId: "ORD004",
+        status: "Menunggu Pembayaran",
+        alamat: "Jl. Al-barokah, Desa Sidamulih",
+        nama: "Budi Santoso",
+        telepon: "081778899001",
+        tanggalPemesanan: "8/4/2026",
+        tanggalPengiriman: "10/4/2026",
+        catatan: "Mohon dikirim pagi!",
+        product: {
+          title: data1.title,
+          image: data1.image,
+          ukuran: "10 cm",
+          price: data1.price,
+          qty: 1,
+          baseCake: "Brownies Kukus",
+          tipeCream: "Buttercream",
+          warnaCream: "Coklat",
+          layer: 1,
+          topping: "Random",
+          lilin: "Random",
+          ucapan: "Welcome Baby Boy",
+          desain: "Baby shower theme biru",
+        },
+        subtotalPengiriman: 0,
+        biayaLayanan: 0,
+      },
+    });
+  };
+
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const handleUploadSubmit = (data: {
@@ -82,14 +117,15 @@ const BelumBayarPage = () => {
               <h4 className="text-sm md:text-lg font-semibold truncate">
                 Custom Citra Cake
               </h4>
-              <motion.p
+              <motion.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-primary text-xs md:text-lg font-semibold shrink-0"
+                onClick={() => setIsUploadOpen(true)}
+                className="text-primary text-xs md:text-lg font-semibold shrink-0 cursor-pointer hover:underline"
               >
-                Belum Bayar
-              </motion.p>
+                Upload Bukti Pembayaran
+              </motion.button>
             </div>
 
             {/* PRODUCT */}
@@ -130,44 +166,41 @@ const BelumBayarPage = () => {
             {/* INFO */}
             <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
               <Button className="bg-purple-50 text-gray-800 text-xs sm:text-sm md:text-base md:py-6 w-full hover:text-white cursor-pointer">
-                Ayo bayar sekarang!
+                Ayo Bayar Segera!
               </Button>
             </motion.div>
 
-            {/* ACTION */}
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
+            {/* ACTION - 2x2 GRID */}
+            <div className="grid grid-cols-2 gap-2 md:gap-3">
               <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
-                <Button className="text-gray-800 bg-white border border-gray-300 w-full sm:w-fit md:px-6 md:py-6 cursor-pointer hover:text-white">
+                <Button
+                  onClick={handleLihatRincian}
+                  className="text-gray-800 bg-white border border-gray-300 w-full md:py-6 cursor-pointer hover:text-white"
+                >
                   Rincian Pesanan
                 </Button>
               </motion.div>
 
-              <div className="flex gap-2">
-                <motion.div
-                  {...buttonMotion}
-                  whileHover="hover"
-                  whileTap="tap"
-                  className="flex-1 sm:flex-initial"
-                >
-                  <Button className="text-primary bg-purple-50 w-full sm:w-fit md:px-6 md:py-6 cursor-pointer hover:text-white">
-                    Batalkan Pesanan
-                  </Button>
-                </motion.div>
+              <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
+                <Button className="text-primary bg-purple-50 w-full md:py-6 cursor-pointer hover:text-white">
+                  Batalkan Pesanan
+                </Button>
+              </motion.div>
 
-                <motion.div
-                  {...buttonMotion}
-                  whileHover="hover"
-                  whileTap="tap"
-                  className="flex-1 sm:flex-initial"
+              <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
+                <Button className="text-primary bg-white border border-primary w-full md:py-6 cursor-pointer hover:text-white">
+                  Ubah Pembayaran
+                </Button>
+              </motion.div>
+
+              <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
+                <Button
+                  onClick={() => setIsUploadOpen(true)}
+                  className="bg-primary text-white w-full md:py-6 cursor-pointer text-xs sm:text-sm"
                 >
-                  <Button
-                    onClick={() => setIsUploadOpen(true)}
-                    className="bg-primary text-white w-full sm:w-fit md:px-6 md:py-6 cursor-pointer text-xs sm:text-sm"
-                  >
-                    Upload Bukti
-                  </Button>
-                </motion.div>
-              </div>
+                  Upload Bukti
+                </Button>
+              </motion.div>
             </div>
           </motion.div>
         )}
@@ -208,10 +241,18 @@ const BelumBayarPage = () => {
       </motion.div>
 
       {/* ================= MODAL ================= */}
-      <UploadBuktiSampaiModal
+      <UploadBuktiPembayaran
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
         orderId="ORD003"
+        product={{
+          title: data1.title,
+          image: data1.image,
+          variant: "Putih, Merah",
+          qty: 1,
+          price: data1.price,
+          total: data1.price,
+        }}
         onSubmit={handleUploadSubmit}
       />
     </>

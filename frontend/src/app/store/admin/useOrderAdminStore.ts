@@ -64,7 +64,7 @@ const useOrderAdminStore = create<OrderStore>((set, get) => ({
       .reduce((sum, o) => sum + o.totalValue, 0);
   },
 
-  getRecentOrders: (limit = 3) => {
+  getRecentOrders: (limit = 12) => {
     return get().orders.slice(0, limit);
   },
 }));

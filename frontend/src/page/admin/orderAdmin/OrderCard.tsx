@@ -1,18 +1,47 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Calendar, Sparkles } from "lucide-react";
 import { statusConfig } from "@/data/orderAdminDummy";
 import type { OrderAdmin } from "@/types/orderAdmin";
+import { useNavigate } from "react-router";
+import UploadBuktiSampaiAdmin from "@/components/admin/UploadBuktiSampaiAdmin"; // sesuaikan path
 
 const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
   const st = statusConfig[order.status];
   const StatusIcon = st.icon;
+  const navigate = useNavigate();
+
+  const [showUploadBukti, setShowUploadBukti] = useState(false);
+
+  const handleOpenDetail = () => {
+    navigate(`/admin/rincian-pesanan/${order.id}`);
+  };
+
+  const handleActionClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    actionLabel: string,
+  ) => {
+    e.stopPropagation(); // biar klik tombol aksi nggak ikut trigger navigate ke detail
+
+    if (actionLabel === "Upload Bukti") {
+      setShowUploadBukti(true);
+      return;
+    }
+    // TODO: handle action lain (Proses, Tolak, Selesai, dst)
+  };
+
+  const handleUploadBuktiSubmit = (data: { file: File; catatan: string }) => {
+    console.log("Upload bukti submitted:", order.id, data);
+    // TODO: kirim ke API di sini
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm"
+      onClick={handleOpenDetail}
+      className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 shadow-sm cursor-pointer hover:shadow-md hover:border-purple-300 transition"
     >
       {/* ── Header ── */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -84,7 +113,7 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
         </div>
       )}
 
-      {/* ── Timeline Info Box (Sampai / Selesai / Dibatalkan) ── */}
+      {/* ── Timeline Info Box (Sampai / Selesai) ── */}
       {order.timeline && (
         <div
           className={`flex gap-2 rounded-md px-3 py-2.5 border ${order.timeline.bgClass} ${order.timeline.borderClass}`}
@@ -114,6 +143,7 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
             return (
               <button
                 key={action.label}
+                onClick={(e) => handleActionClick(e, action.label)}
                 className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border transition-opacity hover:opacity-80 cursor-pointer ${action.textClass} ${action.bgClass} ${action.borderClass}`}
               >
                 <ActionIcon className="w-3.5 h-3.5" />
@@ -124,7 +154,64 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
         </div>
       )}
 
-      {/* ── Refund Request ── */}
+      {/* ── Cancel Request (status Dibatalkan) ── */}
+      {order.cancelRequest && (
+        <div
+          className={`rounded-md px-3 py-2.5 border ${
+            order.cancelRequest.status === "menunggu"
+              ? "bg-amber-50 border-amber-200"
+              : order.cancelRequest.status === "ditolak"
+                ? "bg-red-50 border-red-200"
+                : "bg-green-50 border-green-200"
+          }`}
+        >
+          <p
+            className={`text-xs font-semibold flex items-center gap-1 ${
+              order.cancelRequest.status === "menunggu"
+                ? "text-amber-700"
+                : order.cancelRequest.status === "ditolak"
+                  ? "text-red-700"
+                  : "text-green-700"
+            }`}
+          >
+            {order.cancelRequest.status === "menunggu" &&
+              "⏱ Pengajuan Pembatalan - Menunggu Review"}
+            {order.cancelRequest.status === "ditolak" &&
+              "✕ Pengajuan Pembatalan Ditolak"}
+            {order.cancelRequest.status === "diterima" &&
+              "✓ Pengajuan Pembatalan Diterima"}
+          </p>
+
+          <p className="text-[11px] text-gray-500 mt-1">
+            Diajukan: {order.cancelRequest.diajukan}
+          </p>
+          <p className="text-xs mt-1">
+            <span className="font-medium">Alasan:</span>{" "}
+            {order.cancelRequest.alasan}
+          </p>
+          {order.cancelRequest.catatanPembeli && (
+            <p className="text-xs mt-1">
+              <span className="font-medium">Catatan Pembeli:</span>{" "}
+              {order.cancelRequest.catatanPembeli}
+            </p>
+          )}
+
+          {order.cancelRequest.direview && (
+            <>
+              <hr className="my-2 border-gray-200" />
+              <p className="text-[11px] text-gray-500">
+                Direview: {order.cancelRequest.direview}
+              </p>
+              <p className="text-xs mt-1">
+                <span className="font-medium">Catatan Admin:</span>{" "}
+                {order.cancelRequest.catatanAdmin}
+              </p>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Refund Request (status Dikembalikan) ── */}
       {order.refundRequest && (
         <div
           className={`rounded-md px-3 py-2.5 border ${
@@ -191,6 +278,14 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
       {order.statusInfo && (
         <p className="text-[11px] text-gray-400">{order.statusInfo}</p>
       )}
+
+      {/* ── Modal Upload Bukti Sampai ── */}
+      <UploadBuktiSampaiAdmin
+        isOpen={showUploadBukti}
+        onClose={() => setShowUploadBukti(false)}
+        orderId={order.id}
+        onSubmit={handleUploadBuktiSubmit}
+      />
     </motion.div>
   );
 };
