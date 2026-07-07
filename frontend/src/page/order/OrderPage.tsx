@@ -6,7 +6,7 @@ import { useUserLayoutContext } from "@/layout/userLayoutContext";
 
 const TABS = [
   "Belum Bayar",
-  "DiProses",
+  "Diproses",
   "Dikirim",
   "Selesai",
   "Pengembalian",

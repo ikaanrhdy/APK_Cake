@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 export type IconType = ComponentType<SVGProps<SVGSVGElement>>;
@@ -5,9 +6,10 @@ export type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 export interface DashboardStat {
   title: string;
   value: string;
-  icon: IconType;
+  icon: LucideIcon; // sesuaikan import type yg sudah ada
   color: string;
   bg: string;
+  onClick?: () => void;
 }
 
 export interface BadgeData {

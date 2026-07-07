@@ -1,5 +1,10 @@
 import { Minus, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import {
+  TOPPING_OPTIONS,
+  LILIN_OPTIONS,
+  TOPPER_PRICE_PER_PCS,
+} from "@/data/cake/cakeOption";
 import type { CakeCustomizationState } from "@/hooks/useCakeCustomization";
 
 const formatRp = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
@@ -10,32 +15,59 @@ interface Props {
 
 const DekorasiSection = ({ state }: Props) => {
   const {
-    toppingOptions,
-    toppingId,
-    setToppingId,
-    toppingQty,
-    setToppingQty,
-    lilinOptions,
-    lilinId,
-    setLilinId,
-    lilinAngka,
-    setLilinAngka,
-    lilinQty,
-    setLilinQty,
-    topperHarga,
-    topperNama,
-    setTopperNama,
-    topperQty,
-    setTopperQty,
-    dekorasiLainnya,
+    dekorasi,
+    setTopping,
+    setLilin,
+    setLilinDetail,
+    toggleTopper,
+    setTopperDetail,
     setDekorasiLainnya,
-    selectedTopping,
-    selectedLilin,
-    subtotalTopping,
-    subtotalLilin,
-    subtotalTopper,
-    totalDekorasi,
+    priceBreakdown,
   } = state;
+
+  const selectedTopping = TOPPING_OPTIONS.find(
+    (t) => t.id === dekorasi.topping,
+  );
+  const selectedLilin = LILIN_OPTIONS.find((l) => l.id === dekorasi.lilin);
+
+  const jumlahLilin =
+    dekorasi.lilin === "random" ? 0 : Math.max(dekorasi.lilinJumlah, 1);
+  const subtotalTopping = selectedTopping?.price ?? 0;
+  const subtotalLilin = (selectedLilin?.price ?? 0) * jumlahLilin;
+  const subtotalTopper = dekorasi.topperAktif
+    ? TOPPER_PRICE_PER_PCS * Math.max(dekorasi.topperJumlah, 1)
+    : 0;
+
+  const handleToppingClick = (id: typeof dekorasi.topping) => {
+    setTopping(dekorasi.topping === id ? "random" : id);
+  };
+
+  const handleLilinClick = (id: typeof dekorasi.lilin) => {
+    if (dekorasi.lilin === id) {
+      setLilin("random");
+      setLilinDetail(dekorasi.lilinCatatan, 0);
+    } else {
+      setLilin(id);
+      setLilinDetail(dekorasi.lilinCatatan, Math.max(dekorasi.lilinJumlah, 1));
+    }
+  };
+
+  const handleTopperMinus = () => {
+    const next = Math.max(0, dekorasi.topperJumlah - 1);
+    setTopperDetail(dekorasi.topperNama, next);
+    if (next === 0 && dekorasi.topperAktif) toggleTopper();
+  };
+
+  const handleTopperPlus = () => {
+    const next = dekorasi.topperJumlah + 1;
+    setTopperDetail(dekorasi.topperNama, next);
+    if (!dekorasi.topperAktif) toggleTopper();
+  };
+
+  const adaDekorasiDipilih =
+    dekorasi.topping !== "random" ||
+    dekorasi.lilin !== "random" ||
+    dekorasi.topperJumlah > 0;
 
   return (
     <div className="bg-primary/5 rounded-xl p-4 space-y-5">
@@ -50,23 +82,20 @@ const DekorasiSection = ({ state }: Props) => {
       <div>
         <p className="text-sm font-medium mb-2">Topping</p>
         <div className="grid grid-cols-3 gap-2">
-          {toppingOptions.map((t) => (
+          {TOPPING_OPTIONS.map((t) => (
             <button
               key={t.id}
               type="button"
-              onClick={() => {
-                setToppingId(t.id === toppingId ? "" : t.id);
-                setToppingQty(1);
-              }}
+              onClick={() => handleToppingClick(t.id)}
               className={`py-2 rounded text-xs cursor-pointer transition flex flex-col items-center gap-0.5 ${
-                toppingId === t.id
+                dekorasi.topping === t.id
                   ? "bg-primary text-white"
                   : "bg-white border text-gray-700 hover:bg-gray-100"
               }`}
             >
-              <span>{t.nama}</span>
+              <span>{t.label}</span>
               <span className="opacity-80">
-                {t.harga ? formatRp(t.harga) : "(free)"}
+                {t.price ? formatRp(t.price) : "(free)"}
               </span>
             </button>
           ))}
@@ -79,23 +108,20 @@ const DekorasiSection = ({ state }: Props) => {
           Pilih Tipe Lilin <span className="text-gray-400">(Pilih 1)</span>
         </p>
         <div className="grid grid-cols-3 gap-2">
-          {lilinOptions.map((l) => (
+          {LILIN_OPTIONS.map((l) => (
             <button
               key={l.id}
               type="button"
-              onClick={() => {
-                setLilinId(l.id === lilinId ? "" : l.id);
-                setLilinQty(l.id === lilinId ? 0 : 1);
-              }}
+              onClick={() => handleLilinClick(l.id)}
               className={`py-2 rounded text-xs cursor-pointer transition flex flex-col items-center gap-0.5 ${
-                lilinId === l.id
+                dekorasi.lilin === l.id
                   ? "bg-primary text-white"
                   : "bg-white border text-gray-700 hover:bg-gray-100"
               }`}
             >
-              <span>{l.nama}</span>
+              <span>{l.label}</span>
               <span className="opacity-80">
-                {l.harga ? formatRp(l.harga) : "(free)"}
+                {l.price ? formatRp(l.price) : "(free)"}
               </span>
             </button>
           ))}
@@ -108,19 +134,23 @@ const DekorasiSection = ({ state }: Props) => {
           Topper <span className="text-gray-400">(Opsional)</span>
         </p>
         <div className="flex items-center justify-between bg-white border rounded-md px-3 py-2">
-          <span className="text-xs">Tambah Topper {formatRp(topperHarga)}</span>
+          <span className="text-xs">
+            Tambah Topper {formatRp(TOPPER_PRICE_PER_PCS)}
+          </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setTopperQty((q) => Math.max(0, q - 1))}
+              onClick={handleTopperMinus}
               className="p-1 rounded border cursor-pointer hover:bg-gray-100"
             >
               <Minus size={14} />
             </button>
-            <span className="text-sm w-4 text-center">{topperQty}</span>
+            <span className="text-sm w-4 text-center">
+              {dekorasi.topperJumlah}
+            </span>
             <button
               type="button"
-              onClick={() => setTopperQty((q) => q + 1)}
+              onClick={handleTopperPlus}
               className="p-1 rounded border cursor-pointer hover:bg-gray-100"
             >
               <Plus size={14} />
@@ -135,7 +165,7 @@ const DekorasiSection = ({ state }: Props) => {
           Dekorasi Lainnya <span className="text-gray-400">(Opsional)</span>
         </p>
         <Input
-          value={dekorasiLainnya}
+          value={dekorasi.dekorasiLainnya}
           onChange={(e) => setDekorasiLainnya(e.target.value)}
           placeholder="Tambahkan detail aksesori / warna / preferensi lainnya..."
           className="bg-white text-sm"
@@ -143,32 +173,46 @@ const DekorasiSection = ({ state }: Props) => {
       </div>
 
       {/* CATATAN & RINCIAN HARGA DEKORASI */}
-      {(selectedTopping || selectedLilin || topperQty > 0) && (
+      {adaDekorasiDipilih && (
         <div className="bg-white rounded-md border p-3 space-y-3">
           <p className="text-sm font-medium">
             Catatan & Rincian Harga Dekorasi
           </p>
 
-          {selectedLilin && (
+          {dekorasi.lilin !== "random" && (
             <div className="flex items-center gap-2">
               <Input
-                value={lilinAngka}
-                onChange={(e) => setLilinAngka(e.target.value)}
+                value={dekorasi.lilinCatatan}
+                onChange={(e) =>
+                  setLilinDetail(e.target.value, dekorasi.lilinJumlah)
+                }
                 placeholder="Cantumkan Angka/huruf (misal: 23)"
                 className="text-xs flex-1"
               />
               <div className="flex items-center gap-1 border rounded-md px-2 py-1">
                 <button
                   type="button"
-                  onClick={() => setLilinQty((q) => Math.max(0, q - 1))}
+                  onClick={() =>
+                    setLilinDetail(
+                      dekorasi.lilinCatatan,
+                      Math.max(0, dekorasi.lilinJumlah - 1),
+                    )
+                  }
                   className="cursor-pointer"
                 >
                   <Minus size={12} />
                 </button>
-                <span className="text-xs w-4 text-center">{lilinQty}</span>
+                <span className="text-xs w-4 text-center">
+                  {dekorasi.lilinJumlah}
+                </span>
                 <button
                   type="button"
-                  onClick={() => setLilinQty((q) => q + 1)}
+                  onClick={() =>
+                    setLilinDetail(
+                      dekorasi.lilinCatatan,
+                      dekorasi.lilinJumlah + 1,
+                    )
+                  }
                   className="cursor-pointer"
                 >
                   <Plus size={12} />
@@ -177,46 +221,43 @@ const DekorasiSection = ({ state }: Props) => {
             </div>
           )}
 
-          {topperQty > 0 && (
+          {dekorasi.topperJumlah > 0 && (
             <div className="flex items-center gap-2">
               <Input
-                value={topperNama}
-                onChange={(e) => setTopperNama(e.target.value)}
+                value={dekorasi.topperNama}
+                onChange={(e) =>
+                  setTopperDetail(e.target.value, dekorasi.topperJumlah)
+                }
                 placeholder="Nama / tema topper (misal: Doraemon)"
                 className="text-xs flex-1"
               />
-              <p className="text-[10px] text-gray-400 shrink-0">
-                Klik tombol Topper di atas untuk mengaktifkan
-              </p>
             </div>
           )}
 
           <div className="space-y-1 text-xs pt-1 border-t">
-            {selectedTopping && (
+            {dekorasi.topping !== "random" && (
               <div className="flex justify-between">
-                <span>
-                  {selectedTopping.nama} x{toppingQty}
-                </span>
+                <span>{selectedTopping?.label}</span>
                 <span>{formatRp(subtotalTopping)}</span>
               </div>
             )}
-            {selectedLilin && (
+            {dekorasi.lilin !== "random" && (
               <div className="flex justify-between">
                 <span>
-                  {selectedLilin.nama} x{lilinQty}
+                  {selectedLilin?.label} x{jumlahLilin}
                 </span>
                 <span>{formatRp(subtotalLilin)}</span>
               </div>
             )}
-            {topperQty > 0 && (
+            {dekorasi.topperJumlah > 0 && (
               <div className="flex justify-between">
-                <span>Topper x{topperQty}</span>
+                <span>Topper x{dekorasi.topperJumlah}</span>
                 <span>{formatRp(subtotalTopper)}</span>
               </div>
             )}
             <div className="flex justify-between font-semibold pt-1 border-t">
               <span>Total Dekorasi</span>
-              <span>{formatRp(totalDekorasi)}</span>
+              <span>{formatRp(priceBreakdown.hargaDekorasi)}</span>
             </div>
           </div>
         </div>

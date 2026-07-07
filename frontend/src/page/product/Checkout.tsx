@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
@@ -49,16 +49,45 @@ const rekeningList = [
 
 const SERVICE_FEE = 1000;
 
+/* ================= TYPES ================= */
+
+interface OrderStateItem {
+  id: string;
+  title: string;
+  image: string;
+  price: number;
+  qty: number;
+  ukuran?: string;
+}
+
+interface OrderState {
+  orderId?: string;
+  fromOrder?: boolean; // true kalau masuk dari "Ubah Pembayaran" di halaman pesanan
+  buyNow?: boolean; // true kalau masuk dari "Beli Sekarang" di ProductDetail
+  items?: OrderStateItem[];
+  alamat?: string;
+  telepon?: string;
+  tanggalKirim?: string;
+  catatan?: string;
+  subtotalPengiriman?: number;
+  biayaLayanan?: number;
+}
+
 const Checkout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const cartStore = useCartStore();
 
-  // ===== STATE =====
-  const [alamat, setAlamat] = useState("");
-  const [telepon, setTelepon] = useState("");
-  const [tanggalKirim, setTanggalKirim] = useState<Date | undefined>(undefined);
+  const orderState = location.state as OrderState | null;
+
+  // ===== STATE ===== (prefill dari orderState kalau datang dari "Ubah Pembayaran")
+  const [alamat, setAlamat] = useState(orderState?.alamat ?? "");
+  const [telepon, setTelepon] = useState(orderState?.telepon ?? "");
+  const [tanggalKirim, setTanggalKirim] = useState<Date | undefined>(
+    orderState?.tanggalKirim ? new Date(orderState.tanggalKirim) : undefined,
+  );
   const [openCalendar, setOpenCalendar] = useState(false);
-  const [catatan, setCatatan] = useState("");
+  const [catatan, setCatatan] = useState(orderState?.catatan ?? "");
   const [payment, setPayment] = useState("transfer");
   const [selectedBank, setSelectedBank] = useState(rekeningList[0].id);
 
@@ -69,8 +98,18 @@ const Checkout = () => {
     tanggalKirim?: string;
   }>({});
 
-  // ===== DATA CHECKOUT DARI STORE =====
-  const data = cartStore.getCheckout();
+  // ===== DATA CHECKOUT: dari order lama / buy-now (state) atau dari cart biasa =====
+  const cartData = cartStore.getCheckout();
+
+  const data = orderState?.items
+    ? {
+        items: orderState.items,
+        subtotal: orderState.items.reduce(
+          (sum, item) => sum + item.price * item.qty,
+          0,
+        ),
+      }
+    : cartData;
 
   if (!data || data.items.length === 0) {
     return (
@@ -80,8 +119,15 @@ const Checkout = () => {
     );
   }
 
-  const shipping = 0;
-  const total = data.subtotal + shipping + SERVICE_FEE;
+  const shipping = orderState?.subtotalPengiriman ?? 0;
+  const serviceFee = orderState?.biayaLayanan ?? SERVICE_FEE;
+  const total = data.subtotal + shipping + serviceFee;
+
+  const headerTitle = orderState?.fromOrder
+    ? "Ubah Pembayaran"
+    : orderState?.buyNow
+      ? "Beli Sekarang"
+      : "Checkout";
 
   const handleTeleponChange = (value: string) => {
     const onlyDigits = value.replace(/\D/g, "").slice(0, 15);
@@ -130,6 +176,21 @@ const Checkout = () => {
       return;
     }
 
+    // ===== Mode "Ubah Pembayaran" dari pesanan yang sudah ada =====
+    if (orderState?.fromOrder) {
+      toast.success("Metode pembayaran berhasil diubah (dummy)");
+      navigate("/belum-bayar"); // sesuaikan dengan route detail pesanan kamu
+      return;
+    }
+
+    // ===== Mode "Beli Sekarang" langsung dari ProductDetail =====
+    if (orderState?.buyNow) {
+      toast.success("Pesanan dibuat (dummy)");
+      navigate("/home");
+      return;
+    }
+
+    // ===== Mode checkout biasa dari keranjang =====
     toast.success("Pesanan dibuat (dummy)");
     cartStore.clearCart();
     cartStore.clearCheckout();
@@ -146,53 +207,31 @@ const Checkout = () => {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="font-medium">Checkout</h2>
+        <h2 className="font-medium">{headerTitle}</h2>
       </div>
 
       {/* ================= CONTENT ================= */}
       <div className="flex-1 space-y-3 p-4 max-w-4xl mx-auto w-full">
         {/* ===== PRODUCT ===== */}
         <div className="bg-white border rounded-md divide-y">
-          {data.items.map((item) => (
-            <Link
-              key={item.id}
-              to={`${item.id}/detail`}
-              state={{
-                item,
-                subtotal: item.price * item.qty,
-                shipping,
-                serviceFee: SERVICE_FEE,
-                alamat,
-                telepon,
-                tanggalKirim: tanggalKirim
-                  ? format(tanggalKirim, "yyyy-MM-dd")
-                  : "",
-                catatan,
-                payment,
-                bankName:
-                  payment === "transfer"
-                    ? rekeningList.find((r) => r.id === selectedBank)?.bank
-                    : undefined,
-              }}
-              className="block"
-            >
-              <div className="p-4 flex gap-4">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-16 h-16 object-cover border rounded-md shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium line-clamp-1">
-                    {item.title}
-                  </p>
-                  <p className="text-sm font-semibold mt-1">
-                    Rp {item.price.toLocaleString("id-ID")}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500 shrink-0">x{item.qty}</p>
+          {data.items.map((item, i) => (
+            <div key={item.id ?? i} className="p-4 flex gap-4">
+              <img
+                src={item.image}
+                alt={item.title}
+                className="w-16 h-16 object-cover border rounded-md shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium line-clamp-1">{item.title}</p>
+                {"ukuran" in item && item.ukuran && (
+                  <p className="text-xs text-gray-400">Uk. {item.ukuran}</p>
+                )}
+                <p className="text-sm font-semibold mt-1">
+                  Rp {item.price.toLocaleString("id-ID")}
+                </p>
               </div>
-            </Link>
+              <p className="text-xs text-gray-500 shrink-0">x{item.qty}</p>
+            </div>
           ))}
         </div>
 
@@ -459,7 +498,7 @@ const Checkout = () => {
 
           <div className="flex justify-between">
             <span>Biaya Layanan</span>
-            <span>Rp {SERVICE_FEE.toLocaleString("id-ID")}</span>
+            <span>Rp {serviceFee.toLocaleString("id-ID")}</span>
           </div>
 
           <hr />
@@ -481,7 +520,7 @@ const Checkout = () => {
           className="w-full bg-primary text-white py-3 rounded-md cursor-pointer shadow-md font-medium"
           onClick={handleSubmit}
         >
-          Buat Pesanan
+          {orderState?.fromOrder ? "Simpan Perubahan" : "Buat Pesanan"}
         </motion.button>
       </div>
     </div>

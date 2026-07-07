@@ -6,7 +6,7 @@ interface Props {
 }
 
 const UcapanCatatan = ({ state }: Props) => {
-  const { ucapan, setUcapan, catatan, setCatatan } = state;
+  const { ucapan, setUcapan, catatanPesanan, setCatatanPesanan } = state;
 
   return (
     <div className="space-y-3">
@@ -22,8 +22,8 @@ const UcapanCatatan = ({ state }: Props) => {
       <div>
         <label className="text-sm font-semibold">Catatan Pesanan</label>
         <Input
-          value={catatan}
-          onChange={(e) => setCatatan(e.target.value)}
+          value={catatanPesanan}
+          onChange={(e) => setCatatanPesanan(e.target.value)}
           placeholder="Tambah catatan tambahan untuk penjual..."
           className="mt-1 bg-white text-sm"
         />

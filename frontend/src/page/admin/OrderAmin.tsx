@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import useOrderAdminStore from "@/app/store/admin/useOrderAdminStore";
 import { statusConfig } from "@/data/orderAdminDummy";
 import OrderAdminHeader from "./orderAdmin/OrderAdminHeader";
@@ -12,17 +12,22 @@ const INITIAL_LIMIT = 5;
 const LOAD_MORE_STEP = 5;
 
 const OrderAdmin = () => {
-  const { search, setSearch, activeStatus, getFilteredOrders } =
-    useOrderAdminStore();
+  const {
+    search,
+    setSearch,
+    activeStatus,
+    activeOnly,
+    setActiveOnly,
+    getFilteredOrders,
+  } = useOrderAdminStore();
   const filteredOrders = getFilteredOrders();
 
   const [visibleCount, setVisibleCount] = useState(INITIAL_LIMIT);
 
-  // snapshot filter sebelumnya, buat dideteksi saat render (bukan via useEffect)
   const [prevFilterKey, setPrevFilterKey] = useState(
-    `${search}-${activeStatus}`,
+    `${search}-${activeStatus}-${activeOnly}`,
   );
-  const currentFilterKey = `${search}-${activeStatus}`;
+  const currentFilterKey = `${search}-${activeStatus}-${activeOnly}`;
 
   if (currentFilterKey !== prevFilterKey) {
     setPrevFilterKey(currentFilterKey);
@@ -32,9 +37,11 @@ const OrderAdmin = () => {
   const visibleOrders = filteredOrders.slice(0, visibleCount);
   const hasMore = visibleCount < filteredOrders.length;
 
-  const sectionTitle = activeStatus
-    ? `Pesanan ${statusConfig[activeStatus].label}`
-    : "Semua Pesanan";
+  const sectionTitle = activeOnly
+    ? "Pesanan Aktif"
+    : activeStatus
+      ? `Pesanan ${statusConfig[activeStatus].label}`
+      : "Semua Pesanan";
 
   return (
     <motion.div
@@ -43,7 +50,23 @@ const OrderAdmin = () => {
       className="space-y-4"
     >
       <OrderAdminHeader search={search} onSearchChange={setSearch} />
-      <OrderStatusFilterGrid />
+
+      {activeOnly ? (
+        <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-md px-3 py-2">
+          <span className="text-sm font-medium text-blue-700">
+            Menampilkan Pesanan Aktif saja
+          </span>
+          <button
+            onClick={() => setActiveOnly(false)}
+            className="flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            Lihat Semua
+          </button>
+        </div>
+      ) : (
+        <OrderStatusFilterGrid />
+      )}
 
       <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
         <h2 className="font-semibold text-sm text-gray-800">

@@ -4,9 +4,17 @@ import { Phone, Calendar, Sparkles } from "lucide-react";
 import { statusConfig } from "@/data/orderAdminDummy";
 import type { OrderAdmin } from "@/types/orderAdmin";
 import { useNavigate } from "react-router";
-import UploadBuktiSampaiAdmin from "@/components/admin/UploadBuktiSampaiAdmin"; // sesuaikan path
+import UploadBuktiSampaiAdmin from "@/components/admin/UploadBuktiSampaiAdmin";
 
-const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
+const OrderCard = ({
+  order,
+  index,
+  readOnly = false,
+}: {
+  order: OrderAdmin;
+  index: number;
+  readOnly?: boolean;
+}) => {
   const st = statusConfig[order.status];
   const StatusIcon = st.icon;
   const navigate = useNavigate();
@@ -21,7 +29,8 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
     e: React.MouseEvent<HTMLButtonElement>,
     actionLabel: string,
   ) => {
-    e.stopPropagation(); // biar klik tombol aksi nggak ikut trigger navigate ke detail
+    e.stopPropagation();
+    if (readOnly) return;
 
     if (actionLabel === "Upload Bukti") {
       setShowUploadBukti(true);
@@ -136,7 +145,7 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
       )}
 
       {/* ── Actions ── */}
-      {order.actions.length > 0 && (
+      {!readOnly && order.actions.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
           {order.actions.map((action) => {
             const ActionIcon = action.icon;
@@ -144,7 +153,7 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
               <button
                 key={action.label}
                 onClick={(e) => handleActionClick(e, action.label)}
-                className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border transition-opacity hover:opacity-80 cursor-pointer ${action.textClass} ${action.bgClass} ${action.borderClass}`}
+                className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border transition-opacity cursor-pointer hover:opacity-80 ${action.textClass} ${action.bgClass} ${action.borderClass}`}
               >
                 <ActionIcon className="w-3.5 h-3.5" />
                 {action.label}
@@ -266,7 +275,7 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
             </>
           )}
 
-          {order.refundRequest.status === "menunggu" && (
+          {order.refundRequest.status === "menunggu" && !readOnly && (
             <button className="mt-2 text-xs font-medium px-3 py-1.5 rounded-md bg-orange-500 text-white hover:opacity-80">
               Review Pengajuan
             </button>
@@ -280,12 +289,14 @@ const OrderCard = ({ order, index }: { order: OrderAdmin; index: number }) => {
       )}
 
       {/* ── Modal Upload Bukti Sampai ── */}
-      <UploadBuktiSampaiAdmin
-        isOpen={showUploadBukti}
-        onClose={() => setShowUploadBukti(false)}
-        orderId={order.id}
-        onSubmit={handleUploadBuktiSubmit}
-      />
+      {!readOnly && (
+        <UploadBuktiSampaiAdmin
+          isOpen={showUploadBukti}
+          onClose={() => setShowUploadBukti(false)}
+          orderId={order.id}
+          onSubmit={handleUploadBuktiSubmit}
+        />
+      )}
     </motion.div>
   );
 };

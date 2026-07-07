@@ -1,3 +1,8 @@
+import {
+  BASE_CAKE_OPTIONS,
+  TIPE_CREAM_OPTIONS,
+  WARNA_CREAM_OPTIONS,
+} from "@/data/cake/cakeOption";
 import type { CakeCustomizationState } from "@/hooks/useCakeCustomization";
 
 const formatRp = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
@@ -8,15 +13,12 @@ interface Props {
 
 const DropdownPilihan = ({ state }: Props) => {
   const {
-    baseCakeOptions,
-    baseCakeId,
-    setBaseCakeId,
-    tipeCreamOptions,
-    tipeCreamId,
-    setTipeCreamId,
-    warnaCreamOptions,
-    warnaCreamId,
-    setWarnaCreamId,
+    baseCake,
+    setBaseCake,
+    tipeCream,
+    setTipeCream,
+    warnaCream,
+    setWarnaCream,
   } = state;
 
   return (
@@ -26,14 +28,14 @@ const DropdownPilihan = ({ state }: Props) => {
           Pilih Base Cake <span className="text-red-500">*</span>
         </label>
         <select
-          value={baseCakeId}
-          onChange={(e) => setBaseCakeId(e.target.value)}
+          value={baseCake ?? ""}
+          onChange={(e) => setBaseCake(e.target.value)}
           className="mt-1 w-full bg-white border rounded-md px-3 py-2 text-sm cursor-pointer"
         >
           <option value="">Pilih base cake...</option>
-          {baseCakeOptions.map((b) => (
+          {BASE_CAKE_OPTIONS.map((b) => (
             <option key={b.id} value={b.id}>
-              {b.nama} {b.harga ? `(+${formatRp(b.harga)})` : "(Gratis)"}
+              {b.label} {b.price ? `(+${formatRp(b.price)})` : "(Gratis)"}
             </option>
           ))}
         </select>
@@ -44,14 +46,14 @@ const DropdownPilihan = ({ state }: Props) => {
           Tipe Cream <span className="text-red-500">*</span>
         </label>
         <select
-          value={tipeCreamId}
-          onChange={(e) => setTipeCreamId(e.target.value)}
+          value={tipeCream ?? ""}
+          onChange={(e) => setTipeCream(e.target.value)}
           className="mt-1 w-full bg-white border rounded-md px-3 py-2 text-sm cursor-pointer"
         >
           <option value="">Pilih tipe cream...</option>
-          {tipeCreamOptions.map((t) => (
+          {TIPE_CREAM_OPTIONS.map((t) => (
             <option key={t.id} value={t.id}>
-              {t.nama} {t.harga ? `(+${formatRp(t.harga)})` : "(Gratis)"}
+              {t.label} {t.price ? `(+${formatRp(t.price)})` : "(Gratis)"}
             </option>
           ))}
         </select>
@@ -62,14 +64,14 @@ const DropdownPilihan = ({ state }: Props) => {
           Pilih Warna Cream <span className="text-red-500">*</span>
         </label>
         <select
-          value={warnaCreamId}
-          onChange={(e) => setWarnaCreamId(e.target.value)}
+          value={warnaCream ?? ""}
+          onChange={(e) => setWarnaCream(e.target.value)}
           className="mt-1 w-full bg-white border rounded-md px-3 py-2 text-sm cursor-pointer"
         >
           <option value="">Pilih warna cream...</option>
-          {warnaCreamOptions.map((w) => (
+          {WARNA_CREAM_OPTIONS.map((w) => (
             <option key={w.id} value={w.id}>
-              {w.nama}
+              {w.label}
             </option>
           ))}
         </select>

@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router";
-import { menus } from "@/data/menu";
+import { menuAdmin } from "@/data/menu";
 
 type NavbarProps = {
   onToggle: () => void;
@@ -9,7 +9,7 @@ type NavbarProps = {
 
 const Navbar = ({ onToggle }: NavbarProps) => {
   const location = useLocation();
-  const activeMenu = menus.find((m) => m.path === location.pathname);
+  const activeMenu = menuAdmin.find((m) => m.path === location.pathname);
 
   return (
     <motion.header

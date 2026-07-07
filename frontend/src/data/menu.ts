@@ -38,12 +38,6 @@ export const menuAdmin: MenuAdmin[] = [
     roles: ["admin"],
   },
   {
-    name: "Order",
-    path: "/admin/order",
-    icon: Package,
-    roles: ["admin"],
-  },
-  {
     name: "Bahan Kustomisasi",
     path: "/admin/kustomisasi",
     icon: Sparkles,

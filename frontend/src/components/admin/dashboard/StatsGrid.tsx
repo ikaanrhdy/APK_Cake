@@ -15,15 +15,34 @@ const StatsGrid = ({ stats }: { stats: DashboardStat[] }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {stats.map((item, i) => {
         const Icon = item.icon;
-        console.log(item);
+        const isClickable = Boolean(item.onClick);
+        const Wrapper = motion.div;
+
         return (
-          <motion.div
+          <Wrapper
             key={item.title}
             variants={cardVariant}
             initial="hidden"
             animate="show"
             custom={i}
-            className="bg-card border border-border rounded-lg p-3 sm:p-4 flex items-center gap-3"
+            onClick={item.onClick}
+            role={isClickable ? "button" : undefined}
+            tabIndex={isClickable ? 0 : undefined}
+            onKeyDown={
+              isClickable
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      item.onClick?.();
+                    }
+                  }
+                : undefined
+            }
+            className={`bg-card border border-border rounded-lg p-3 sm:p-4 flex items-center gap-3 ${
+              isClickable
+                ? "cursor-pointer hover:shadow-sm hover:border-border/80 transition"
+                : ""
+            }`}
           >
             <div
               className={`${item.bg} ${item.color} p-2.5 sm:p-3 rounded-lg shrink-0`}
@@ -38,7 +57,7 @@ const StatsGrid = ({ stats }: { stats: DashboardStat[] }) => {
                 {item.value}
               </h2>
             </div>
-          </motion.div>
+          </Wrapper>
         );
       })}
     </div>

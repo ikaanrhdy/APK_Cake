@@ -97,6 +97,30 @@ const BelumBayarPage = () => {
     // TODO: panggil API upload di sini
   };
 
+  const handleUbahPembayaran = () => {
+    navigate("/checkout", {
+      state: {
+        orderId: "ORD004",
+        fromOrder: true, // penanda: ini "ubah pembayaran" dari pesanan lama, bukan checkout baru
+        items: [
+          {
+            id: data1.id,
+            title: data1.title,
+            image: data1.image,
+            price: data1.price,
+            qty: 1,
+          },
+        ],
+        alamat: "Jl. Al-barokah, Desa Sidamulih",
+        telepon: "081778899001",
+        tanggalKirim: "2026-04-10",
+        catatan: "Mohon dikirim pagi!",
+        subtotalPengiriman: 0,
+        biayaLayanan: 0,
+      },
+    });
+  };
+
   return (
     <>
       <motion.div
@@ -188,7 +212,10 @@ const BelumBayarPage = () => {
               </motion.div>
 
               <motion.div {...buttonMotion} whileHover="hover" whileTap="tap">
-                <Button className="text-primary bg-white border border-primary w-full md:py-6 cursor-pointer hover:text-white">
+                <Button
+                  onClick={handleUbahPembayaran}
+                  className="text-primary bg-white border border-primary w-full md:py-6 cursor-pointer hover:text-white"
+                >
                   Ubah Pembayaran
                 </Button>
               </motion.div>

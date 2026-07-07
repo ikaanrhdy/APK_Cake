@@ -1,161 +1,173 @@
-import { useState } from "react";
-import { product } from "@/data/product";
-import { useKustomisasiStore } from "@/app/store/admin/useKustomisasiStore";
+import { create } from "zustand";
+import type {
+  CakeCustomizationState,
+  CakeCustomizationFields,
+  UkuranCm,
+  LayerCount,
+  ToppingId,
+  LilinId,
+} from "@/types/cake";
+import {
+  calculatePriceBreakdown,
+  isCakeCustomizationValid,
+} from "@/data/cake/pricingCake";
+import { getPreviewSummary } from "@/data/cake/summaryCake";
 
-export const useCakeCustomization = () => {
-  const data = product[0];
-  const storeItems = useKustomisasiStore((s) => s.items);
-
-  const available = (tab: keyof typeof storeItems) =>
-    storeItems[tab].filter((i) => i.status === "Tersedia");
-
-  const ukuranOptions = available("Ukuran");
-  const layerOptions = available("Layer");
-  const baseCakeOptions = available("Base Cake");
-  const tipeCreamOptions = available("Tipe Cream");
-  const warnaCreamOptions = available("Warna Cream");
-  const toppingOptions = available("Topping");
-  const lilinOptions = available("Lilin");
-  const topperOptions = available("Topper");
-
-  // ===== STATE PILIHAN USER =====
-  const [ukuranId, setUkuranId] = useState(ukuranOptions[2]?.id ?? "");
-  const [layerId, setLayerId] = useState(layerOptions[2]?.id ?? "");
-  const [baseCakeId, setBaseCakeId] = useState(baseCakeOptions[0]?.id ?? "");
-  const [tipeCreamId, setTipeCreamId] = useState(tipeCreamOptions[0]?.id ?? "");
-  const [warnaCreamId, setWarnaCreamId] = useState("");
-
-  const [referensiMode, setReferensiMode] = useState<"url" | "upload">("url");
-  const [referensiUrl, setReferensiUrl] = useState("");
-  const [referensiFile, setReferensiFile] = useState<File | null>(null);
-
-  const [toppingId, setToppingId] = useState("");
-  const [toppingQty, setToppingQty] = useState(1);
-
-  const [lilinId, setLilinId] = useState("");
-  const [lilinAngka, setLilinAngka] = useState("");
-  const [lilinQty, setLilinQty] = useState(0);
-
-  const [topperNama, setTopperNama] = useState("");
-  const [topperQty, setTopperQty] = useState(0);
-
-  const [dekorasiLainnya, setDekorasiLainnya] = useState("");
-  const [ucapan, setUcapan] = useState("");
-  const [catatan, setCatatan] = useState("");
-
-  // ===== DERIVED DATA =====
-  const selectedUkuran = ukuranOptions.find((u) => u.id === ukuranId);
-  const selectedLayer = layerOptions.find((l) => l.id === layerId);
-  const selectedBaseCake = baseCakeOptions.find((b) => b.id === baseCakeId);
-  const selectedTipeCream = tipeCreamOptions.find((t) => t.id === tipeCreamId);
-  const selectedWarnaCream = warnaCreamOptions.find(
-    (w) => w.id === warnaCreamId,
-  );
-  const selectedTopping = toppingOptions.find((t) => t.id === toppingId);
-  const selectedLilin = lilinOptions.find((l) => l.id === lilinId);
-  const topperHarga = topperOptions[0]?.harga ?? 0;
-
-  // ===== HITUNG HARGA =====
-  const hargaUkuran = selectedUkuran?.harga ?? 0;
-  const hargaLayer = selectedLayer?.harga ?? 0;
-  const hargaBaseCake = selectedBaseCake?.harga ?? 0;
-  const hargaTipeCream = selectedTipeCream?.harga ?? 0;
-
-  const subtotalTopping = (selectedTopping?.harga ?? 0) * toppingQty;
-  const subtotalLilin = (selectedLilin?.harga ?? 0) * lilinQty;
-  const subtotalTopper = topperQty > 0 ? topperHarga * topperQty : 0;
-  const totalDekorasi = subtotalTopping + subtotalLilin + subtotalTopper;
-
-  const hargaKueDasar = data?.price ?? 0;
-
-  const totalHarga =
-    hargaKueDasar +
-    hargaUkuran +
-    hargaLayer +
-    hargaBaseCake +
-    hargaTipeCream +
-    totalDekorasi;
-
-  const isValid = Boolean(
-    selectedUkuran &&
-    selectedLayer &&
-    selectedBaseCake &&
-    selectedTipeCream &&
-    selectedWarnaCream,
-  );
-
-  return {
-    data,
-    // options
-    ukuranOptions,
-    layerOptions,
-    baseCakeOptions,
-    tipeCreamOptions,
-    warnaCreamOptions,
-    toppingOptions,
-    lilinOptions,
-    topperHarga,
-    // selected ids + setter
-    ukuranId,
-    setUkuranId,
-    layerId,
-    setLayerId,
-    baseCakeId,
-    setBaseCakeId,
-    tipeCreamId,
-    setTipeCreamId,
-    warnaCreamId,
-    setWarnaCreamId,
-    // selected objects
-    selectedUkuran,
-    selectedLayer,
-    selectedBaseCake,
-    selectedTipeCream,
-    selectedWarnaCream,
-    selectedTopping,
-    selectedLilin,
-    // referensi
-    referensiMode,
-    setReferensiMode,
-    referensiUrl,
-    setReferensiUrl,
-    referensiFile,
-    setReferensiFile,
-    // dekorasi
-    toppingId,
-    setToppingId,
-    toppingQty,
-    setToppingQty,
-    lilinId,
-    setLilinId,
-    lilinAngka,
-    setLilinAngka,
-    lilinQty,
-    setLilinQty,
-    topperNama,
-    setTopperNama,
-    topperQty,
-    setTopperQty,
-    dekorasiLainnya,
-    setDekorasiLainnya,
-    // ucapan & catatan
-    ucapan,
-    setUcapan,
-    catatan,
-    setCatatan,
-    // harga
-    hargaKueDasar,
-    hargaUkuran,
-    hargaLayer,
-    hargaBaseCake,
-    hargaTipeCream,
-    subtotalTopping,
-    subtotalLilin,
-    subtotalTopper,
-    totalDekorasi,
-    totalHarga,
-    isValid,
-  };
+const initialFields: CakeCustomizationFields = {
+  ukuran: null,
+  layer: null,
+  baseCake: null,
+  tipeCream: null,
+  warnaCream: null,
+  referensi: { url: "", fileName: null },
+  dekorasi: {
+    topping: "random",
+    lilin: "random",
+    lilinCatatan: "",
+    lilinJumlah: 1,
+    topperAktif: false,
+    topperNama: "",
+    topperJumlah: 0,
+    dekorasiLainnya: "",
+  },
+  ucapan: "",
+  catatanPesanan: "",
 };
 
-export type CakeCustomizationState = ReturnType<typeof useCakeCustomization>;
+function deriveFrom(fields: CakeCustomizationFields) {
+  return {
+    isValid: isCakeCustomizationValid(fields),
+    priceBreakdown: calculatePriceBreakdown(fields),
+    previewSummary: getPreviewSummary(fields),
+  };
+}
+
+function getFields(s: CakeCustomizationState): CakeCustomizationFields {
+  return {
+    ukuran: s.ukuran,
+    layer: s.layer,
+    baseCake: s.baseCake,
+    tipeCream: s.tipeCream,
+    warnaCream: s.warnaCream,
+    referensi: s.referensi,
+    dekorasi: s.dekorasi,
+    ucapan: s.ucapan,
+    catatanPesanan: s.catatanPesanan,
+  };
+}
+
+export const useCakeCustomization = create<CakeCustomizationState>((set) => ({
+  ...initialFields,
+  ...deriveFrom(initialFields),
+
+  setUkuran: (v: UkuranCm) =>
+    set((s) => {
+      const fields = { ...getFields(s), ukuran: v };
+      return { ukuran: v, ...deriveFrom(fields) };
+    }),
+
+  setLayer: (v: LayerCount) =>
+    set((s) => {
+      const fields = { ...getFields(s), layer: v };
+      return { layer: v, ...deriveFrom(fields) };
+    }),
+
+  setBaseCake: (v: string) =>
+    set((s) => {
+      const fields = { ...getFields(s), baseCake: v };
+      return { baseCake: v, ...deriveFrom(fields) };
+    }),
+
+  setTipeCream: (v: string) =>
+    set((s) => {
+      const fields = { ...getFields(s), tipeCream: v };
+      return { tipeCream: v, ...deriveFrom(fields) };
+    }),
+
+  setWarnaCream: (v: string) =>
+    set((s) => {
+      const fields = { ...getFields(s), warnaCream: v };
+      return { warnaCream: v, ...deriveFrom(fields) };
+    }),
+
+  setReferensiUrl: (url: string) =>
+    set((s) => {
+      const referensi = { ...s.referensi, url };
+      const fields = { ...getFields(s), referensi };
+      return { referensi, ...deriveFrom(fields) };
+    }),
+
+  setReferensiFile: (fileName: string | null) =>
+    set((s) => {
+      const referensi = { ...s.referensi, fileName };
+      const fields = { ...getFields(s), referensi };
+      return { referensi, ...deriveFrom(fields) };
+    }),
+
+  setTopping: (v: ToppingId) =>
+    set((s) => {
+      const dekorasi = { ...s.dekorasi, topping: v };
+      const fields = { ...getFields(s), dekorasi };
+      return { dekorasi, ...deriveFrom(fields) };
+    }),
+
+  setLilin: (v: LilinId) =>
+    set((s) => {
+      const dekorasi = { ...s.dekorasi, lilin: v };
+      const fields = { ...getFields(s), dekorasi };
+      return { dekorasi, ...deriveFrom(fields) };
+    }),
+
+  setLilinDetail: (catatan: string, jumlah: number) =>
+    set((s) => {
+      const dekorasi = {
+        ...s.dekorasi,
+        lilinCatatan: catatan,
+        lilinJumlah: jumlah,
+      };
+      const fields = { ...getFields(s), dekorasi };
+      return { dekorasi, ...deriveFrom(fields) };
+    }),
+
+  toggleTopper: () =>
+    set((s) => {
+      const dekorasi = { ...s.dekorasi, topperAktif: !s.dekorasi.topperAktif };
+      const fields = { ...getFields(s), dekorasi };
+      return { dekorasi, ...deriveFrom(fields) };
+    }),
+
+  setTopperDetail: (nama: string, jumlah: number) =>
+    set((s) => {
+      const dekorasi = {
+        ...s.dekorasi,
+        topperNama: nama,
+        topperJumlah: jumlah,
+      };
+      const fields = { ...getFields(s), dekorasi };
+      return { dekorasi, ...deriveFrom(fields) };
+    }),
+
+  setDekorasiLainnya: (v: string) =>
+    set((s) => {
+      const dekorasi = { ...s.dekorasi, dekorasiLainnya: v };
+      const fields = { ...getFields(s), dekorasi };
+      return { dekorasi, ...deriveFrom(fields) };
+    }),
+
+  setUcapan: (v: string) =>
+    set((s) => {
+      const fields = { ...getFields(s), ucapan: v };
+      return { ucapan: v, ...deriveFrom(fields) };
+    }),
+
+  setCatatanPesanan: (v: string) =>
+    set((s) => {
+      const fields = { ...getFields(s), catatanPesanan: v };
+      return { catatanPesanan: v, ...deriveFrom(fields) };
+    }),
+
+  reset: () => set({ ...initialFields, ...deriveFrom(initialFields) }),
+}));
+
+// Biar semua komponen yang sebelumnya `import type { CakeCustomizationState } from "@/hooks/useCakeCustomization"` tetap jalan tanpa ubah import
+export type { CakeCustomizationState } from "@/types/cake";

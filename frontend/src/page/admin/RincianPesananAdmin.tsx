@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin } from "lucide-react";
 import useOrderAdminStore from "@/app/store/admin/useOrderAdminStore";
+import useAuthStore from "@/app/store/auth";
 import NotFoundState from "@/components/common/NotFoundState";
 import { product as productList } from "@/data/productAdmin";
 import type { OrderAdmin } from "@/types/orderAdmin";
@@ -12,7 +13,6 @@ const formatRp = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
 
 /* ================= HELPERS ================= */
 
-// Judul header per status (dan per status cancelRequest/refundRequest kalau ada)
 const getPageTitle = (order: OrderAdmin) => {
   if (order.status === "Dibatalkan" && order.cancelRequest) {
     if (order.cancelRequest.status === "menunggu")
@@ -45,7 +45,6 @@ const getPageTitle = (order: OrderAdmin) => {
   return titleMap[order.status] ?? `Pesanan ${order.status}`;
 };
 
-// Parse customDesc "Label: value | Label2: value2" jadi array baris {label, value}
 const parseCustomDesc = (customDesc?: string) => {
   if (!customDesc) return [];
   return customDesc
@@ -63,7 +62,8 @@ const RincianPesananAdmin = () => {
   const { orders } = useOrderAdminStore();
   const [showUploadBukti, setShowUploadBukti] = useState(false);
 
-  console.log("Rincian Pesanan Admin", orders);
+  const { role } = useAuthStore();
+  const isOwner = role === "owner";
 
   const order = orders.find((o) => o.id === id);
 
@@ -73,7 +73,7 @@ const RincianPesananAdmin = () => {
       <div className="flex flex-col gap-4 p-2 md:p-4 lg:p-6 md:max-w-6xl md:mx-auto">
         <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-3 md:p-4">
           <button
-            onClick={() => navigate("/admin/pesanan")}
+            onClick={() => navigate(-1)}
             className="p-1.5 rounded-full hover:bg-gray-100 transition cursor-pointer"
           >
             <ArrowLeft size={20} />
@@ -87,7 +87,7 @@ const RincianPesananAdmin = () => {
           title={`Pesanan ${id ? `"${id}" ` : ""}tidak ditemukan`}
           description="Pesanan mungkin sudah dihapus, atau ID pesanan yang kamu buka tidak valid. Coba buka lagi dari daftar pesanan."
           actionLabel="Kembali ke Daftar Pesanan"
-          onAction={() => navigate("/admin/pesanan")}
+          onAction={() => navigate("/admin/order")}
         />
       </div>
     );
@@ -114,7 +114,6 @@ const RincianPesananAdmin = () => {
     };
   });
 
-  // kalau pesanan kustom & belum ada items eksplisit, tampilkan 1 kartu representasi "Cake Kustom"
   const showCustomPlaceholder = order.isCustom && items.length === 0;
   const customDescRows = parseCustomDesc(order.customDesc);
 
@@ -135,7 +134,6 @@ const RincianPesananAdmin = () => {
   const hasProductSection =
     items.length > 0 || showCustomPlaceholder || order.variantInfo;
 
-  // modal
   const handleActionClick = (actionLabel: string) => {
     if (actionLabel === "Upload Bukti") {
       setShowUploadBukti(true);
@@ -150,11 +148,11 @@ const RincianPesananAdmin = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-6 p-2 md:p-4 lg:p-6 md:max-w-6xl md:mx-auto">
+    <div className="flex flex-col gap-4 pb-6 p-2 md:p-4 lg:p-6 md:max-w-6xl md:mx-auto bg-white">
       {/* HEADER */}
       <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-3 md:p-4">
         <button
-          onClick={() => navigate("/admin/order")}
+          onClick={() => navigate(-1)}
           className="p-1.5 rounded-full hover:bg-gray-100 transition cursor-pointer"
         >
           <ArrowLeft size={20} />
@@ -165,46 +163,46 @@ const RincianPesananAdmin = () => {
       <div className="flex flex-col md:grid md:grid-cols-5 gap-4 md:items-start">
         {/* KIRI */}
         <div className="flex flex-col gap-4 md:col-span-2">
-          {/* ALAMAT */}
+          {/* ALAMAT + INFO PESANAN (digabung) */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-purple-50 rounded-lg p-4 flex flex-col gap-2"
+            className="bg-white border border-gray-300 rounded-lg p-4 flex flex-col gap-3"
           >
-            <p className="text-sm font-medium text-gray-800">
-              Alamat Pengiriman
-            </p>
-            <div className="flex items-start gap-2">
-              <MapPin size={16} className="text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-primary">{alamat}</p>
+            {/* Alamat */}
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium text-gray-800">
+                Alamat Pengiriman
+              </p>
+              <div className="flex items-start gap-2">
+                <MapPin size={16} className="text-red-500 shrink-0 mt-0.5" />
+                <p className="text-sm text-primary">{alamat}</p>
+              </div>
             </div>
-          </motion.div>
 
-          {/* INFO PESANAN */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col gap-2.5"
-          >
-            <InfoRow label="Nama" value={nama} />
-            <InfoRow label="Nomor Telepon" value={telepon} />
-            <InfoRow label="Tanggal Pemesanan" value={tanggalPemesanan} />
-            <InfoRow label="Tanggal Pengiriman" value={tanggalPengiriman} />
-            <InfoRow label="No. Pesanan" value={order.id} />
+            <hr className="border-gray-300 w-full" />
 
-            {order.cancelRequest && (
-              <InfoRow
-                label="Tgl Pengajuan Pembatalan"
-                value={order.cancelRequest.diajukan}
-              />
-            )}
-            {order.refundRequest && (
-              <InfoRow
-                label="Tgl Pengajuan Pengembalian"
-                value={order.refundRequest.diajukan}
-              />
-            )}
+            {/* Info Pesanan */}
+            <div className="flex flex-col gap-2.5">
+              <InfoRow label="Nama" value={nama} />
+              <InfoRow label="Nomor Telepon" value={telepon} />
+              <InfoRow label="Tanggal Pemesanan" value={tanggalPemesanan} />
+              <InfoRow label="Tanggal Pengiriman" value={tanggalPengiriman} />
+              <InfoRow label="No. Pesanan" value={order.id} />
+
+              {order.cancelRequest && (
+                <InfoRow
+                  label="Tgl Pengajuan Pembatalan"
+                  value={order.cancelRequest.diajukan}
+                />
+              )}
+              {order.refundRequest && (
+                <InfoRow
+                  label="Tgl Pengajuan Pengembalian"
+                  value={order.refundRequest.diajukan}
+                />
+              )}
+            </div>
           </motion.div>
 
           {/* CATATAN */}
@@ -328,112 +326,119 @@ const RincianPesananAdmin = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="bg-purple-50 rounded-lg p-4 flex flex-col gap-3"
+            className="flex flex-col gap-3"
           >
             <p className="text-sm font-medium text-gray-800">
               Deskripsi Produk
             </p>
 
-            {hasProductSection && (
-              <div className="flex flex-col gap-3 border-2 border-primary rounded-lg p-2 bg-white">
-                {items.map((item, i) => (
-                  <div
-                    key={item.name + i}
-                    className={`flex gap-3 pb-3 ${
-                      i < items.length - 1 ? "border-b border-gray-100" : ""
-                    }`}
-                  >
-                    {item.image && (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 rounded object-cover border border-gray-200 shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm md:text-base font-semibold truncate">
-                        {item.name}
-                      </h3>
-                      {item.ukuran && (
-                        <p className="text-xs text-gray-400">
-                          Uk. {item.ukuran}
-                        </p>
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              {/* List Produk */}
+              {hasProductSection && (
+                <div className="flex flex-col">
+                  {items.map((item, i) => (
+                    <div
+                      key={item.name + i}
+                      className={`flex gap-3 p-3 ${
+                        i < items.length - 1 ? "border-b border-gray-100" : ""
+                      }`}
+                    >
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-16 h-16 rounded-md object-cover border border-gray-200 shrink-0"
+                        />
                       )}
-                      <div className="flex justify-between items-center mt-2">
-                        {item.price != null && (
-                          <p className="text-sm md:text-base font-semibold">
-                            {formatRp(item.price)}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm md:text-base font-semibold truncate">
+                          {item.name}
+                        </h3>
+                        {item.ukuran && (
+                          <p className="text-xs text-gray-400">
+                            Uk. {item.ukuran}
                           </p>
                         )}
-                        <p className="text-xs text-gray-500">x{item.qty}</p>
+                        <div className="flex justify-between items-center mt-2">
+                          {item.price != null && (
+                            <p className="text-sm md:text-base font-semibold">
+                              {formatRp(item.price)}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-500">x{item.qty}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {/* PLACEHOLDER "CAKE KUSTOM" - dipakai kalau pesanan kustom tanpa items eksplisit */}
-                {showCustomPlaceholder && (
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm md:text-base font-semibold truncate">
-                      Cake Kustom
-                    </h3>
-                    <div className="flex justify-between items-center mt-2">
-                      <p className="text-sm md:text-base font-semibold">
-                        {order.total}
-                      </p>
-                      <p className="text-xs text-gray-500">x1</p>
+                  {/* PLACEHOLDER "CAKE KUSTOM" */}
+                  {showCustomPlaceholder && (
+                    <div className="p-3">
+                      <h3 className="text-sm md:text-base font-semibold truncate">
+                        Cake Kustom
+                      </h3>
+                      <div className="flex justify-between items-center mt-2">
+                        <p className="text-sm md:text-base font-semibold">
+                          {order.total}
+                        </p>
+                        <p className="text-xs text-gray-500">x1</p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+              )}
+
+              {/* DETAIL KUSTOM */}
+              {customDescRows.length > 0 && (
+                <div className="flex flex-col gap-1.5 p-3 border-t border-gray-100">
+                  {customDescRows.map((row) => (
+                    <div
+                      key={row.label}
+                      className="flex justify-between items-center text-xs"
+                    >
+                      <span className="text-gray-500">{row.label}</span>
+                      <span className="text-gray-700 font-medium text-right">
+                        {row.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {order.variantInfo && (
+                <p className="text-xs text-gray-600 px-3 pt-2">
+                  {order.variantInfo}
+                </p>
+              )}
+
+              {/* TOTAL */}
+              <div className="flex flex-col gap-1.5 p-3 border-t border-gray-100">
+                <TotalRow
+                  label={`Total ${jumlahProduk} Produk`}
+                  value={totalProduk > 0 ? formatRp(totalProduk) : order.total}
+                />
+                <TotalRow
+                  label="Subtotal Pengiriman"
+                  value={formatRp(subtotalPengiriman)}
+                />
+                <TotalRow
+                  label="Biaya Layanan"
+                  value={formatRp(biayaLayanan)}
+                />
+                <TotalRow
+                  label="Total Pembayaran"
+                  value={
+                    totalPembayaran != null
+                      ? formatRp(totalPembayaran)
+                      : order.total
+                  }
+                  bold
+                />
               </div>
-            )}
-
-            {/* DETAIL KUSTOM (Base Cake, Tipe Cream, dst) */}
-            {customDescRows.length > 0 && (
-              <div className="flex flex-col gap-1.5">
-                {customDescRows.map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex justify-between items-center text-xs"
-                  >
-                    <span className="text-gray-500">{row.label}</span>
-                    <span className="text-gray-700 font-medium text-right">
-                      {row.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {order.variantInfo && (
-              <p className="text-xs text-gray-600">{order.variantInfo}</p>
-            )}
-
-            {/* TOTAL */}
-            <div className="flex flex-col gap-1.5 pt-2 border-t border-purple-100">
-              <TotalRow
-                label={`Total ${jumlahProduk} Produk`}
-                value={totalProduk > 0 ? formatRp(totalProduk) : order.total}
-              />
-              <TotalRow
-                label="Subtotal Pengiriman"
-                value={formatRp(subtotalPengiriman)}
-              />
-              <TotalRow label="Biaya Layanan" value={formatRp(biayaLayanan)} />
-              <TotalRow
-                label="Total Pembayaran"
-                value={
-                  totalPembayaran != null
-                    ? formatRp(totalPembayaran)
-                    : order.total
-                }
-                bold
-              />
             </div>
           </motion.div>
-
-          {/* ACTIONS */}
-          {order.actions.length > 0 && (
+          {/* ACTIONS — hanya untuk role selain owner */}
+          {!isOwner && order.actions.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -463,13 +468,15 @@ const RincianPesananAdmin = () => {
         </div>
       </div>
 
-      {/* modal */}
-      <UploadBuktiSampaiAdmin
-        isOpen={showUploadBukti}
-        onClose={() => setShowUploadBukti(false)}
-        orderId={order.id}
-        onSubmit={handleUploadBuktiSubmit}
-      />
+      {/* modal — hanya untuk role selain owner */}
+      {!isOwner && (
+        <UploadBuktiSampaiAdmin
+          isOpen={showUploadBukti}
+          onClose={() => setShowUploadBukti(false)}
+          orderId={order.id}
+          onSubmit={handleUploadBuktiSubmit}
+        />
+      )}
     </div>
   );
 };

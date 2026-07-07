@@ -38,7 +38,7 @@ const ProductDetail = () => {
 
   const size = data.size || [];
 
-  /* ===== Menu lainnya pagination (grid 3 kolom, per halaman 6 item) ===== */
+  /* ===== Menu lainnya pagination (grid, per halaman 6 item) ===== */
   const ITEMS_PER_PAGE = 6;
   const otherProducts = product.filter((p) => p.id !== id);
   const displayed = otherProducts.slice(page, page + ITEMS_PER_PAGE);
@@ -52,30 +52,66 @@ const ProductDetail = () => {
     ? calculatePriceBySize(basePrice, size, selectedSize)
     : basePrice;
 
+  /* ===== HANDLER: Masukan Keranjang ===== */
+  const handleAddToCart = () => {
+    if (size.length > 0 && !selectedSize) {
+      toast.error("Pilih ukuran terlebih dahulu!");
+      return;
+    }
+    addToCart(data, selectedSize ?? "");
+    toast.success("Berhasil masukan ke keranjang!");
+  };
+
+  /* ===== HANDLER: Beli Sekarang (langsung ke Checkout, terpisah dari cart) ===== */
+  const handleBuyNow = () => {
+    if (size.length > 0 && !selectedSize) {
+      toast.error("Pilih ukuran terlebih dahulu!");
+      return;
+    }
+
+    navigate("/checkout", {
+      state: {
+        buyNow: true,
+        items: [
+          {
+            id: data.id,
+            title: data.title,
+            image: data.image,
+            price: previewPrice,
+            qty: 1,
+            ukuran: selectedSize ?? undefined,
+          },
+        ],
+        subtotalPengiriman: 0,
+        biayaLayanan: 1000,
+      },
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-6 px-4 md:px-10 lg:px-16 pb-28 lg:pb-10"
+      className="flex flex-col gap-6 px-4 md:px-10 lg:px-16 pb-28 md:pb-10"
     >
       {/* ===== HEADER (mobile bar / desktop breadcrumb) ===== */}
       <ProductDetailHeader category={data.category} title={data.title} />
 
-      {/* ===== IMAGE + INFO (2 kolom di desktop) ===== */}
-      <div className="lg:grid lg:grid-cols-2 lg:gap-10">
-        {/* Kolom kiri: gambar (sticky di desktop) */}
-        <div className="lg:sticky lg:top-6 lg:self-start">
+      {/* ===== IMAGE + INFO (2 kolom mulai dari tablet) ===== */}
+      <div className="md:grid md:grid-cols-2 md:gap-10">
+        {/* Kolom kiri: gambar (sticky mulai dari tablet) */}
+        <div className="md:sticky md:top-6 md:self-start">
           <motion.img
             src={data.image}
             alt={data.title}
             initial={{ scale: 0.97 }}
             animate={{ scale: 1 }}
-            className="w-full aspect-square lg:aspect-4/3 object-cover rounded-xl shadow-md"
+            className="w-full aspect-square md:aspect-4/3 object-cover rounded-xl shadow-md"
           />
         </div>
 
         {/* Kolom kanan: info produk */}
-        <div className="flex flex-col gap-6 mt-6 lg:mt-0">
+        <div className="flex flex-col gap-6 mt-6 md:mt-0">
           {/* ===== INFO ===== */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
@@ -163,18 +199,11 @@ const ProductDetail = () => {
             <p className="text-sm text-gray-600">{data.description}</p>
           </div>
 
-          {/* ===== ACTIONS (desktop: inline, mobile/tablet: fixed di bawah) ===== */}
-          <div className="hidden lg:flex gap-3">
+          {/* ===== ACTIONS (tablet & desktop: inline, mobile: fixed di bawah) ===== */}
+          <div className="hidden md:flex gap-3">
             <motion.button
               whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                if (size.length > 0 && !selectedSize) {
-                  toast.error("Pilih ukuran terlebih dahulu!");
-                  return;
-                }
-                addToCart(data, selectedSize ?? "");
-                toast.success("Berhasil masukan ke keranjang!");
-              }}
+              onClick={handleAddToCart}
               className="flex-1 border border-primary text-primary rounded-md py-3 text-sm font-medium hover:bg-purple-50 transition cursor-pointer"
             >
               Masukan Keranjang
@@ -182,14 +211,7 @@ const ProductDetail = () => {
 
             <motion.button
               whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                if (size.length > 0 && !selectedSize) {
-                  toast.error("Pilih ukuran terlebih dahulu!");
-                  return;
-                }
-                addToCart(data, selectedSize ?? "");
-                navigate("/checkout");
-              }}
+              onClick={handleBuyNow}
               className="flex-1 bg-primary text-white rounded-md py-3 text-sm font-medium hover:bg-[#6B3489] transition cursor-pointer"
             >
               Beli Sekarang
@@ -202,7 +224,7 @@ const ProductDetail = () => {
       <div className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold">Menu Lainnya</h2>
 
-        <div className="grid grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
           {displayed.map((item) => (
             <RelatedProductCard key={item.id} item={item} />
           ))}
@@ -229,18 +251,11 @@ const ProductDetail = () => {
         )}
       </div>
 
-      {/* ===== FIXED BOTTOM ACTIONS (mobile & tablet aja) ===== */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-3 flex gap-3 z-40">
+      {/* ===== FIXED BOTTOM ACTIONS (mobile aja, tablet ke atas pakai actions inline) ===== */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-3 flex gap-3 z-40">
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={() => {
-            if (size.length > 0 && !selectedSize) {
-              toast.error("Pilih ukuran terlebih dahulu!");
-              return;
-            }
-            addToCart(data, selectedSize ?? "");
-            toast.success("Berhasil masukan ke keranjang!");
-          }}
+          onClick={handleAddToCart}
           className="flex-1 border border-primary text-primary rounded-md py-3 text-sm font-medium hover:bg-purple-50 transition cursor-pointer"
         >
           Masukan Keranjang
@@ -248,14 +263,7 @@ const ProductDetail = () => {
 
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={() => {
-            if (size.length > 0 && !selectedSize) {
-              toast.error("Pilih ukuran terlebih dahulu!");
-              return;
-            }
-            addToCart(data, selectedSize ?? "");
-            navigate("/cart");
-          }}
+          onClick={handleBuyNow}
           className="flex-1 bg-primary text-white rounded-md py-3 text-sm font-medium hover:bg-[#6B3489] transition cursor-pointer"
         >
           Beli Sekarang

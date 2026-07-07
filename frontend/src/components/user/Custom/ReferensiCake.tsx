@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link2, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { CakeCustomizationState } from "@/hooks/useCakeCustomization";
@@ -7,14 +8,18 @@ interface Props {
 }
 
 const ReferensiCake = ({ state }: Props) => {
-  const {
-    referensiMode,
-    setReferensiMode,
-    referensiUrl,
-    setReferensiUrl,
-    referensiFile,
-    setReferensiFile,
-  } = state;
+  const { referensi, setReferensiUrl, setReferensiFile } = state;
+  const [mode, setMode] = useState<"url" | "upload">("url");
+
+  const handleFileChange = (file: File | null) => {
+    if (!file) {
+      setReferensiFile(null);
+      setReferensiUrl("");
+      return;
+    }
+    setReferensiFile(file.name);
+    setReferensiUrl(URL.createObjectURL(file));
+  };
 
   return (
     <div className="bg-primary/5 rounded-xl p-4 space-y-3">
@@ -25,9 +30,9 @@ const ReferensiCake = ({ state }: Props) => {
       <div className="flex bg-white rounded-md border p-1 gap-1">
         <button
           type="button"
-          onClick={() => setReferensiMode("url")}
+          onClick={() => setMode("url")}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded text-sm cursor-pointer transition ${
-            referensiMode === "url"
+            mode === "url"
               ? "bg-primary text-white"
               : "text-gray-600 hover:bg-gray-100"
           }`}
@@ -36,9 +41,9 @@ const ReferensiCake = ({ state }: Props) => {
         </button>
         <button
           type="button"
-          onClick={() => setReferensiMode("upload")}
+          onClick={() => setMode("upload")}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded text-sm cursor-pointer transition ${
-            referensiMode === "upload"
+            mode === "upload"
               ? "bg-primary text-white"
               : "text-gray-600 hover:bg-gray-100"
           }`}
@@ -47,9 +52,9 @@ const ReferensiCake = ({ state }: Props) => {
         </button>
       </div>
 
-      {referensiMode === "url" ? (
+      {mode === "url" ? (
         <Input
-          value={referensiUrl}
+          value={referensi.url}
           onChange={(e) => setReferensiUrl(e.target.value)}
           placeholder="https://example.com/image.jpg"
           className="bg-white text-sm"
@@ -58,13 +63,15 @@ const ReferensiCake = ({ state }: Props) => {
         <label className="flex flex-col items-center justify-center gap-1 bg-white border-2 border-dashed rounded-md py-6 cursor-pointer text-center">
           <Upload className="w-5 h-5 text-gray-400" />
           <span className="text-xs text-gray-500">
-            {referensiFile ? referensiFile.name : "Klik untuk upload gambar"}
+            {referensi.fileName
+              ? referensi.fileName
+              : "Klik untuk upload gambar"}
           </span>
           <input
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={(e) => setReferensiFile(e.target.files?.[0] ?? null)}
+            onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
           />
         </label>
       )}
