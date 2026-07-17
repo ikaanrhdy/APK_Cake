@@ -123,7 +123,7 @@ const BelumBayarPage = () => {
             {/* HEADER */}
             <div className="flex justify-between items-center gap-2">
               <h4 className="text-sm md:text-lg font-semibold truncate">
-                Custom Citra Cake
+                Citra Cake
               </h4>
               <button
                 onClick={() => openUpload(order)}

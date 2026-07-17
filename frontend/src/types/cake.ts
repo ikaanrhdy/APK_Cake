@@ -1,4 +1,4 @@
-export type UkuranCm = 12 | 18 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55;
+export type UkuranCm = 10 | 12 | 18 | 20 | 25;
 export type LayerCount = 1 | 2 | 3 | 4;
 
 export interface SelectOption {
@@ -29,7 +29,7 @@ export interface ReferensiCake {
 
 export interface DekorasiState {
   topping: ToppingId;
-  toppingCatatan: string; // diisi kalau topping = "random"
+  toppingCatatan: string; // diisi user waktu topping = "random"
   lilin: LilinId;
   lilinCatatan: string; // misal isi angka/huruf yang diminta
   lilinJumlah: number;

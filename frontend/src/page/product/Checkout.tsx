@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, type Location } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
@@ -41,11 +41,7 @@ const paymentMethods = [
   },
 ];
 
-const rekeningList = [
-  { id: "bca", bank: "BCA", nomor: "1234567890" },
-  { id: "bri", bank: "BRI", nomor: "0987654321" },
-  { id: "mandiri", bank: "Mandiri", nomor: "1122334455" },
-];
+const rekeningList = [{ id: "bri", bank: "BRI", nomor: "0987654321" }];
 
 const SERVICE_FEE = 1000;
 
@@ -58,12 +54,16 @@ interface OrderStateItem {
   price: number;
   qty: number;
   ukuran?: string;
+  // ↓ khusus item hasil custom cake (dari CustomitationWithAi)
+  isCustom?: boolean;
+  customFields?: unknown; // snapshot CakeCustomizationFields, dibiarkan unknown biar gak circular import
 }
 
 interface OrderState {
   orderId?: string;
   fromOrder?: boolean; // true kalau masuk dari "Ubah Pembayaran" di halaman pesanan
   buyNow?: boolean; // true kalau masuk dari "Beli Sekarang" di ProductDetail
+  backgroundLocation?: Location;
   items?: OrderStateItem[];
   alamat?: string;
   telepon?: string;
@@ -79,6 +79,9 @@ const Checkout = () => {
   const cartStore = useCartStore();
 
   const orderState = location.state as OrderState | null;
+  const backgroundLocation = (location.state as any)?.backgroundLocation as
+    | Location
+    | undefined;
 
   // ===== STATE ===== (prefill dari orderState kalau datang dari "Ubah Pembayaran")
   const [alamat, setAlamat] = useState(orderState?.alamat ?? "");
@@ -183,9 +186,13 @@ const Checkout = () => {
       return;
     }
 
-    // ===== Mode "Beli Sekarang" langsung dari ProductDetail =====
     if (orderState?.buyNow) {
       toast.success("Pesanan dibuat (dummy)");
+      cartStore.clearCheckout();
+      if (backgroundLocation) {
+        navigate(-1);
+        return;
+      }
       navigate("/home");
       return;
     }
@@ -222,9 +229,20 @@ const Checkout = () => {
                 className="w-16 h-16 object-cover border rounded-md shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium line-clamp-1">{item.title}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-medium line-clamp-1">
+                    {item.title}
+                  </p>
+                  {"isCustom" in item && item.isCustom && (
+                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium shrink-0">
+                      Custom
+                    </span>
+                  )}
+                </div>
                 {"ukuran" in item && item.ukuran && (
-                  <p className="text-xs text-gray-400">Uk. {item.ukuran}</p>
+                  <p className="text-xs text-gray-400 line-clamp-1">
+                    {item.ukuran}
+                  </p>
                 )}
                 <p className="text-sm font-semibold mt-1">
                   Rp {item.price.toLocaleString("id-ID")}

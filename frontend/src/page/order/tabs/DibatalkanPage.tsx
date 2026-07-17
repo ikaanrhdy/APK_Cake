@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useOrderStore } from "@/app/store/useOrderStore";
 import { useShallow } from "zustand/react/shallow";
 
 const DibatalkanPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const orders = useOrderStore(useShallow((s) => s.getByStatus("Dibatalkan")));
 
   if (orders.length === 0) {
@@ -56,6 +57,7 @@ const DibatalkanPage = () => {
         alamat: order.alamat ?? "",
         telepon: order.telepon ?? "",
         tanggalKirim: tanggalKirimValid,
+        backgroundLocation: location,
       },
     });
   };
@@ -81,9 +83,7 @@ const DibatalkanPage = () => {
           className="flex flex-col gap-4 p-5 bg-white border border-gray-300 rounded-lg overflow-hidden md:p-6 lg:p-7"
         >
           <div className="flex justify-between items-center gap-2">
-            <h4 className="text-sm font-semibold truncate">
-              Custom Citra Cake
-            </h4>
+            <h4 className="text-sm font-semibold truncate">Citra Cake</h4>
             <p className="text-sm font-semibold text-primary shrink-0">
               Dibatalkan
             </p>

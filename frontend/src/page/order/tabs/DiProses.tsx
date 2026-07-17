@@ -7,7 +7,6 @@ import { useShallow } from "zustand/react/shallow";
 const Diproses = () => {
   const orders = useOrderStore(useShallow((s) => s.getByStatus("Diproses")));
   const navigate = useNavigate();
-
   if (orders.length === 0) {
     return (
       <p className="text-center text-gray-500 py-10">
@@ -29,7 +28,7 @@ const Diproses = () => {
         >
           <div className="flex justify-between items-center gap-2">
             <h4 className="text-sm md:text-lg font-semibold truncate">
-              Custom Citra Cake
+              Citra Cake
             </h4>
             <p className="text-primary text-sm md:text-lg font-semibold shrink-0">
               Diproses
